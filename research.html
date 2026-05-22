@@ -37,6 +37,14 @@
     <p data-i18n="hero.research.subtitle">Результаты исследований аналитической команды</p>
   </section>
 
+  <div class="search-bar">
+    <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="11" cy="11" r="7"/>
+      <path d="m20 20-3.5-3.5"/>
+    </svg>
+    <input type="search" class="search-input" data-i18n-placeholder="search.placeholder.research" placeholder="Поиск по исследованиям…" autocomplete="off">
+  </div>
+
   <main class="content">
 
     <section class="bu-section">
@@ -68,10 +76,13 @@
 
   </main>
 
+  <div class="no-results" hidden data-i18n="search.no_results">Ничего не найдено</div>
+
   <footer class="page-footer">v3 · 2026</footer>
 
   <script src="https://cdn.jsdelivr.net/npm/@twemoji/api@latest/dist/twemoji.min.js" defer></script>
   <script src="i18n.js" defer></script>
+  <script src="search.js" defer></script>
 
 </body>
 </html>

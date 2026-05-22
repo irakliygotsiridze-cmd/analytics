@@ -38,7 +38,11 @@
     'card.primary_sales':   { ru: 'Первичные продажи', en: 'Primary sales',   es: 'Ventas primarias',   id: 'Penjualan primer',   ms: 'Jualan primer' },
     'card.open':            { ru: 'Открыть',           en: 'Open',            es: 'Abrir',              id: 'Buka',               ms: 'Buka' },
 
-    'empty.coming_soon': { ru: 'Скоро будет', en: 'Coming soon', es: 'Próximamente', id: 'Segera hadir', ms: 'Akan datang' }
+    'empty.coming_soon': { ru: 'Скоро будет', en: 'Coming soon', es: 'Próximamente', id: 'Segera hadir', ms: 'Akan datang' },
+
+    'search.placeholder.dashboards': { ru: 'Поиск по дэшбордам…',       en: 'Search dashboards…',  es: 'Buscar dashboards…',  id: 'Cari dasbor…',           ms: 'Cari papan pemuka…' },
+    'search.placeholder.research':   { ru: 'Поиск по исследованиям…',   en: 'Search research…',    es: 'Buscar investigación…', id: 'Cari riset…',          ms: 'Cari penyelidikan…' },
+    'search.no_results':             { ru: 'Ничего не найдено',         en: 'Nothing found',       es: 'No se encontró nada', id: 'Tidak ada hasil',        ms: 'Tiada hasil' }
   };
 
   const PAGE_TITLES = {
@@ -65,6 +69,12 @@
       if (dict && dict[lang]) el.textContent = dict[lang];
     });
 
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+      const key = el.getAttribute('data-i18n-placeholder');
+      const dict = STRINGS[key];
+      if (dict && dict[lang]) el.placeholder = dict[lang];
+    });
+
     const page = document.body.getAttribute('data-page');
     if (page && PAGE_TITLES[page] && PAGE_TITLES[page][lang]) {
       document.title = PAGE_TITLES[page][lang];
@@ -89,6 +99,7 @@
   function setLang(lang) {
     localStorage.setItem(STORAGE_KEY, lang);
     applyLang(lang);
+    document.dispatchEvent(new CustomEvent('algonova:langchange', { detail: { lang: lang } }));
   }
 
   function initSwitcher() {
