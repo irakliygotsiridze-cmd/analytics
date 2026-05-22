@@ -9,57 +9,68 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
-<body>
+<body data-page="dashboards">
 
   <header class="topbar">
     <div class="brand">
       <span class="dot"></span>
       <span>Algonova · Analytics</span>
     </div>
-    <nav class="nav">
-      <a href="/" class="nav-link">Боты</a>
-      <a href="/dashboards" class="nav-link active">Дэшборды</a>
-      <a href="/research" class="nav-link">Исследования</a>
-    </nav>
+    <div class="topbar-right">
+      <nav class="nav">
+        <a href="/" class="nav-link" data-i18n="nav.bots">Боты</a>
+        <a href="/dashboards" class="nav-link active" data-i18n="nav.dashboards">Дэшборды</a>
+        <a href="/research" class="nav-link" data-i18n="nav.research">Исследования</a>
+      </nav>
+      <div class="lang-switcher">
+        <button class="lang-button" id="lang-button" aria-haspopup="listbox" aria-expanded="false" aria-label="Language">
+          <span id="lang-current">RU</span>
+          <span class="caret">▾</span>
+        </button>
+        <ul class="lang-menu" id="lang-menu" role="listbox" hidden></ul>
+      </div>
+    </div>
   </header>
 
   <section class="hero">
     <h1>Sales <span class="accent">Dashboards</span></h1>
-    <p>BI-дэшборды и регулярная отчётность по бизнес-юнитам</p>
+    <p data-i18n="hero.dashboards.subtitle">BI-дэшборды и регулярная отчётность по бизнес-юнитам</p>
   </section>
 
   <main class="content">
 
     <section class="bu-section">
-      <h2 class="bu-title"><span class="bu-flag">🌎</span> Латам</h2>
+      <h2 class="bu-title"><span class="bu-flag">🇮🇩</span> <span data-i18n="bu.indonesia">Индонезия</span></h2>
       <div class="grid">
         <div class="card card-empty">
-          <span class="empty-text">Coming soon</span>
+          <span class="empty-text" data-i18n="empty.coming_soon">Скоро будет</span>
         </div>
       </div>
     </section>
 
     <section class="bu-section">
-      <h2 class="bu-title"><span class="bu-flag">🇮🇩</span> Индонезия</h2>
+      <h2 class="bu-title"><span class="bu-flag">🇲🇾</span> <span data-i18n="bu.malaysia">Малайзия</span></h2>
       <div class="grid">
         <div class="card card-empty">
-          <span class="empty-text">Coming soon</span>
+          <span class="empty-text" data-i18n="empty.coming_soon">Скоро будет</span>
         </div>
       </div>
     </section>
 
     <section class="bu-section">
-      <h2 class="bu-title"><span class="bu-flag">🇲🇾</span> Малайзия</h2>
+      <h2 class="bu-title"><span class="bu-flag">🌎</span> <span data-i18n="bu.latam">Латам</span></h2>
       <div class="grid">
         <div class="card card-empty">
-          <span class="empty-text">Coming soon</span>
+          <span class="empty-text" data-i18n="empty.coming_soon">Скоро будет</span>
         </div>
       </div>
     </section>
 
   </main>
 
-  <footer class="page-footer">v2 · 2026</footer>
+  <footer class="page-footer">v3 · 2026</footer>
+
+  <script src="i18n.js" defer></script>
 
 </body>
 </html>
