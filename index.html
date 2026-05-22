@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sales Chatbots — Algonova</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-page="bots">
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="dot"></span>
+      <span>Algonova · Analytics</span>
+    </div>
+    <div class="topbar-right">
+      <nav class="nav">
+        <a href="/" class="nav-link active" data-i18n="nav.bots">Боты</a>
+        <a href="/dashboards" class="nav-link" data-i18n="nav.dashboards">Дэшборды</a>
+        <a href="/research" class="nav-link" data-i18n="nav.research">Исследования</a>
+      </nav>
+      <div class="lang-switcher">
+        <button class="lang-button" id="lang-button" aria-haspopup="listbox" aria-expanded="false" aria-label="Language">
+          <span id="lang-current">RU</span>
+          <span class="caret">▾</span>
+        </button>
+        <ul class="lang-menu" id="lang-menu" role="listbox" hidden></ul>
+      </div>
+    </div>
+  </header>
+
+  <section class="hero">
+    <h1>Sales <span class="accent">Chatbots</span></h1>
+    <p data-i18n="hero.bots.subtitle">Чат-боты для работы с продажами по бизнес-юнитам</p>
+  </section>
+
+  <main class="content">
+
+    <section class="bu-section">
+      <h2 class="bu-title"><span class="bu-flag">🇮🇩</span> <span data-i18n="bu.indonesia">Индонезия</span></h2>
+      <div class="grid">
+        <a class="card card-bot" href="https://claude.ai/project/019d7103-9989-7370-9858-fbec31c97ddd" target="_blank" rel="noopener noreferrer">
+          <div class="flag">🇮🇩</div>
+          <div class="card-title" data-i18n="card.secondary_sales">Вторичные продажи</div>
+          <div class="btn" data-i18n="card.open">Открыть</div>
+        </a>
+        <a class="card card-bot" href="https://claude.ai/project/019d76bf-5b8f-726e-a881-b3702ce46a29" target="_blank" rel="noopener noreferrer">
+          <div class="flag">🇮🇩</div>
+          <div class="card-title" data-i18n="card.primary_sales">Первичные продажи</div>
+          <div class="btn" data-i18n="card.open">Открыть</div>
+        </a>
+      </div>
+    </section>
+
+    <section class="bu-section">
+      <h2 class="bu-title"><span class="bu-flag">🇲🇾</span> <span data-i18n="bu.malaysia">Малайзия</span></h2>
+      <div class="grid">
+        <a class="card card-bot" href="https://claude.ai/project/019e448e-128f-7447-ae72-e51e93740999" target="_blank" rel="noopener noreferrer">
+          <div class="flag">🇲🇾</div>
+          <div class="card-title" data-i18n="card.primary_sales">Первичные продажи</div>
+          <div class="btn" data-i18n="card.open">Открыть</div>
+        </a>
+      </div>
+    </section>
+
+    <section class="bu-section">
+      <h2 class="bu-title"><span class="bu-flag">🌎</span> <span data-i18n="bu.latam">Латам</span></h2>
+      <div class="grid">
+        <div class="card card-empty">
+          <span class="empty-text" data-i18n="empty.coming_soon">Скоро будет</span>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="page-footer">v3 · 2026</footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@twemoji/api@latest/dist/twemoji.min.js" defer></script>
+  <script src="i18n.js" defer></script>
+
+</body>
+</html>
