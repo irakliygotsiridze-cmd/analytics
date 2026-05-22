@@ -132,10 +132,21 @@
     });
   }
 
+  function renderEmoji() {
+    if (window.twemoji && typeof window.twemoji.parse === 'function') {
+      window.twemoji.parse(document.body, {
+        folder: 'svg',
+        ext: '.svg',
+        className: 'emoji'
+      });
+    }
+  }
+
   function init() {
     buildMenu();
     initSwitcher();
     applyLang(getLang());
+    renderEmoji();
   }
 
   if (document.readyState === 'loading') {

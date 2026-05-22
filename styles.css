@@ -24,6 +24,16 @@ body{
   padding:32px 24px;
 }
 
+/* ── Twemoji rendering (Windows-safe flags) ──── */
+
+img.emoji{
+  height:1em;
+  width:1em;
+  margin:0 .05em 0 .1em;
+  vertical-align:-.125em;
+  display:inline-block;
+}
+
 /* ── Top bar ─────────────────────────────────── */
 
 .topbar{
