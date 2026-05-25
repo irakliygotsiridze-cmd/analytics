@@ -1,22 +1,26 @@
 (function () {
   'use strict';
 
-  const QR_OPTS = {
-    width: 112,
-    margin: 0,
-    color: { dark: '#0A0A0A', light: '#FFFFFF' },
-    errorCorrectionLevel: 'M'
-  };
+  const QR_SIZE = 112;
 
   function generate(url, container) {
-    if (!window.QRCode) return;
-    window.QRCode.toCanvas(url, QR_OPTS, (err, canvas) => {
-      if (err) { console.error('QR generation failed', err); return; }
-      // Stop click on QR from bubbling to the parent <a> (so users can long-press
-      // the QR on touch devices without triggering navigation in-tab).
-      canvas.classList.add('qr-canvas');
-      container.appendChild(canvas);
-    });
+    if (!window.QRious) return;
+    const canvas = document.createElement('canvas');
+    canvas.className = 'qr-canvas';
+    container.appendChild(canvas);
+    try {
+      new window.QRious({
+        element: canvas,
+        value: url,
+        size: QR_SIZE,
+        background: '#FFFFFF',
+        foreground: '#0A0A0A',
+        level: 'M'
+      });
+    } catch (e) {
+      console.error('QR generation failed', e);
+      canvas.remove();
+    }
   }
 
   function init() {

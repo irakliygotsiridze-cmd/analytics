@@ -548,7 +548,7 @@ window.Algonova = window.Algonova || {};
       role: t('Team Lead, Analytics', 'Тимлид аналитики', 'Team Lead de Analítica', 'Team Lead Analitik', 'Ketua Pasukan Analitik'),
       bus: ['indonesia', 'malaysia', 'latam'],
       contact: { url: 'https://t.me/gotzir', label: '@gotzir' },
-      photo: 'assets/team/iraklii.jpg',
+      photo: 'assets/team/iraklii.png',
       initials: 'ИГ'
     },
     {
@@ -556,7 +556,7 @@ window.Algonova = window.Algonova || {};
       role: t('BI Analyst', 'BI-аналитик', 'BI Analyst', 'BI Analyst', 'BI Analyst'),
       bus: ['indonesia', 'malaysia'],
       contact: { url: 'https://chat.alg.team/algoritmika/messages/@danila.zhilnikov', label: '@danila.zhilnikov' },
-      photo: 'assets/team/danila.jpg',
+      photo: 'assets/team/danila.png',
       initials: 'ДЖ'
     },
     {
