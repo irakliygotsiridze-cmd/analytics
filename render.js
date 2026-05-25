@@ -70,12 +70,38 @@
     // Match patterns surrounded by word boundaries; the patterns are case-sensitive
     // (mostly upper-case abbreviations and capitalised words)
     const re = new RegExp('\\b(' + parts.join('|') + ')\\b', 'g');
-    // Build replacement on already-escaped text; chunk through matches manually
     const escaped = escapeHtml(text);
+    // Use <span> instead of <a> because the metric pill lives INSIDE a dashboard
+    // <a class="card-dash"> link, and HTML disallows nested anchors — the browser
+    // auto-closes the outer <a> at the inner <a>, splitting the card and hiding
+    // everything that comes after the first metric link. A span with a click
+    // handler navigates to the glossary the same way without breaking the parser.
     return escaped.replace(re, (match) => {
       const term = terms.find(x => x.pattern === match);
       if (!term) return match;
-      return '<a class="metric-link" href="glossary#' + term.slug + '">' + match + '</a>';
+      return '<span class="metric-link" data-glossary-slug="' + term.slug +
+             '" role="link" tabindex="0">' + match + '</span>';
+    });
+  }
+
+  // Global click + keyboard delegation for metric links — registered once.
+  function ensureMetricLinkDelegation() {
+    if (window.__algonovaMetricLinkBound) return;
+    window.__algonovaMetricLinkBound = true;
+    function go(slug) { window.location.href = 'glossary#' + slug; }
+    document.addEventListener('click', e => {
+      const link = e.target.closest('.metric-link');
+      if (!link) return;
+      e.preventDefault();
+      e.stopPropagation();
+      go(link.getAttribute('data-glossary-slug'));
+    }, true);
+    document.addEventListener('keydown', e => {
+      if (e.key !== 'Enter' && e.key !== ' ') return;
+      const link = e.target.closest && e.target.closest('.metric-link');
+      if (!link) return;
+      e.preventDefault();
+      go(link.getAttribute('data-glossary-slug'));
     });
   }
 
@@ -133,14 +159,6 @@
               '</div>' +
             '</a>'
           );
-
-          // Stop clicks on the metric anchor from triggering the parent <a> navigation
-          card.querySelectorAll('.metric-link').forEach(a => {
-            a.addEventListener('click', e => {
-              e.stopPropagation();
-              // Allow the anchor's own click to navigate
-            });
-          });
 
           grid.appendChild(card);
         });
@@ -271,6 +289,7 @@
       if (target) {
         const terms = buildGlossaryIndex(data.glossary || []);
         renderDashboards(target, data.dashboards, lang, terms);
+        ensureMetricLinkDelegation();
       }
     } else if (page === 'glossary') {
       const target = document.querySelector('[data-render="glossary"]');
