@@ -3,13 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Research — Algonova B2C Analytics</title>
+  <title>FAQ — Algonova B2C Analytics</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
-<body data-page="research">
+<body data-page="faq">
 
   <header class="topbar">
     <div class="brand">
@@ -20,10 +20,10 @@
       <nav class="nav">
         <a href="/" class="nav-link" data-i18n="nav.bots">Bots</a>
         <a href="/dashboards" class="nav-link" data-i18n="nav.dashboards">Dashboards</a>
-        <a href="/research" class="nav-link active" data-i18n="nav.research">Research</a>
+        <a href="/research" class="nav-link" data-i18n="nav.research">Research</a>
         <a href="/glossary" class="nav-link" data-i18n="nav.glossary">Glossary</a>
         <a href="/team" class="nav-link" data-i18n="nav.team">Team</a>
-        <a href="/faq" class="nav-link" data-i18n="nav.faq">FAQ</a>
+        <a href="/faq" class="nav-link active" data-i18n="nav.faq">FAQ</a>
       </nav>
       <div class="lang-switcher">
         <button class="lang-button" id="lang-button" aria-haspopup="listbox" aria-expanded="false" aria-label="Language">
@@ -36,8 +36,8 @@
   </header>
 
   <section class="hero">
-    <h1>Sales <span class="accent">Research</span></h1>
-    <p data-i18n="hero.research.subtitle">Findings published by the analytics team</p>
+    <h1>Frequently asked <span class="accent">questions</span></h1>
+    <p data-i18n="hero.faq.subtitle">Frequently asked questions about analytics, data and dashboards</p>
   </section>
 
   <div class="search-bar">
@@ -45,39 +45,10 @@
       <circle cx="11" cy="11" r="7"/>
       <path d="m20 20-3.5-3.5"/>
     </svg>
-    <input type="search" class="search-input" data-i18n-placeholder="search.placeholder.research" placeholder="Search research…" autocomplete="off">
+    <input type="search" class="search-input" data-i18n-placeholder="search.placeholder.faq" placeholder="Search FAQ…" autocomplete="off">
   </div>
 
-  <main class="content">
-
-    <section class="bu-section">
-      <h2 class="bu-title"><span class="bu-flag">🇮🇩</span> <span data-i18n="bu.indonesia">Indonesia</span></h2>
-      <div class="grid">
-        <div class="card card-empty">
-          <span class="empty-text" data-i18n="empty.coming_soon">Coming soon</span>
-        </div>
-      </div>
-    </section>
-
-    <section class="bu-section">
-      <h2 class="bu-title"><span class="bu-flag">🇲🇾</span> <span data-i18n="bu.malaysia">Malaysia</span></h2>
-      <div class="grid">
-        <div class="card card-empty">
-          <span class="empty-text" data-i18n="empty.coming_soon">Coming soon</span>
-        </div>
-      </div>
-    </section>
-
-    <section class="bu-section">
-      <h2 class="bu-title"><span class="bu-flag">🌎</span> <span data-i18n="bu.latam">LatAm</span></h2>
-      <div class="grid">
-        <div class="card card-empty">
-          <span class="empty-text" data-i18n="empty.coming_soon">Coming soon</span>
-        </div>
-      </div>
-    </section>
-
-  </main>
+  <main class="content" data-render="faq"></main>
 
   <div class="no-results" hidden data-i18n="search.no_results">Nothing found</div>
 
@@ -89,6 +60,8 @@
   <footer class="page-footer" data-i18n="footer.version">v4 · 2026</footer>
 
   <script src="https://cdn.jsdelivr.net/npm/@twemoji/api@latest/dist/twemoji.min.js" defer></script>
+  <script src="data.js" defer></script>
+  <script src="render.js" defer></script>
   <script src="i18n.js" defer></script>
   <script src="search.js" defer></script>
 

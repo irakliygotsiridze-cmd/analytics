@@ -3,13 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Dashboards — Algonova B2C Analytics</title>
+  <title>Team — Algonova B2C Analytics</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
-<body data-page="dashboards">
+<body data-page="team">
 
   <header class="topbar">
     <div class="brand">
@@ -19,10 +19,10 @@
     <div class="topbar-right">
       <nav class="nav">
         <a href="/" class="nav-link" data-i18n="nav.bots">Bots</a>
-        <a href="/dashboards" class="nav-link active" data-i18n="nav.dashboards">Dashboards</a>
+        <a href="/dashboards" class="nav-link" data-i18n="nav.dashboards">Dashboards</a>
         <a href="/research" class="nav-link" data-i18n="nav.research">Research</a>
         <a href="/glossary" class="nav-link" data-i18n="nav.glossary">Glossary</a>
-        <a href="/team" class="nav-link" data-i18n="nav.team">Team</a>
+        <a href="/team" class="nav-link active" data-i18n="nav.team">Team</a>
         <a href="/faq" class="nav-link" data-i18n="nav.faq">FAQ</a>
       </nav>
       <div class="lang-switcher">
@@ -36,21 +36,11 @@
   </header>
 
   <section class="hero">
-    <h1>Sales <span class="accent">Dashboards</span></h1>
-    <p data-i18n="hero.dashboards.subtitle">BI dashboards and recurring reports by business unit</p>
+    <h1>The <span class="accent">Team</span></h1>
+    <p data-i18n="hero.team.subtitle">The people behind the numbers — who owns what</p>
   </section>
 
-  <div class="search-bar">
-    <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <circle cx="11" cy="11" r="7"/>
-      <path d="m20 20-3.5-3.5"/>
-    </svg>
-    <input type="search" class="search-input" data-i18n-placeholder="search.placeholder.dashboards" placeholder="Search dashboards…" autocomplete="off">
-  </div>
-
-  <main class="content" data-render="dashboards"></main>
-
-  <div class="no-results" hidden data-i18n="search.no_results">Nothing found</div>
+  <main class="content" data-render="team"></main>
 
   <a class="bug-button" href="https://t.me/gotzir" target="_blank" rel="noopener noreferrer" data-i18n-title="bug.tooltip">
     <span class="bug-icon">🐞</span>
@@ -63,7 +53,6 @@
   <script src="data.js" defer></script>
   <script src="render.js" defer></script>
   <script src="i18n.js" defer></script>
-  <script src="search.js" defer></script>
 
 </body>
 </html>

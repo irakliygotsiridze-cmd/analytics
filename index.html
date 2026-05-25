@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="ru">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Sales Chatbots — Algonova</title>
+  <title>Bots — Algonova B2C Analytics</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -14,17 +14,20 @@
   <header class="topbar">
     <div class="brand">
       <span class="dot"></span>
-      <span>Algonova · Analytics</span>
+      <span>Algonova B2C Analytics</span>
     </div>
     <div class="topbar-right">
       <nav class="nav">
-        <a href="/" class="nav-link active" data-i18n="nav.bots">Боты</a>
-        <a href="/dashboards" class="nav-link" data-i18n="nav.dashboards">Дэшборды</a>
-        <a href="/research" class="nav-link" data-i18n="nav.research">Исследования</a>
+        <a href="/" class="nav-link active" data-i18n="nav.bots">Bots</a>
+        <a href="/dashboards" class="nav-link" data-i18n="nav.dashboards">Dashboards</a>
+        <a href="/research" class="nav-link" data-i18n="nav.research">Research</a>
+        <a href="/glossary" class="nav-link" data-i18n="nav.glossary">Glossary</a>
+        <a href="/team" class="nav-link" data-i18n="nav.team">Team</a>
+        <a href="/faq" class="nav-link" data-i18n="nav.faq">FAQ</a>
       </nav>
       <div class="lang-switcher">
         <button class="lang-button" id="lang-button" aria-haspopup="listbox" aria-expanded="false" aria-label="Language">
-          <span id="lang-current">RU</span>
+          <span id="lang-current">EN</span>
           <span class="caret">▾</span>
         </button>
         <ul class="lang-menu" id="lang-menu" role="listbox" hidden></ul>
@@ -34,53 +37,62 @@
 
   <section class="hero">
     <h1>Sales <span class="accent">Chatbots</span></h1>
-    <p data-i18n="hero.bots.subtitle">Чат-боты для работы с продажами по бизнес-юнитам</p>
+    <p data-i18n="hero.bots.subtitle">Sales chatbots organised by business unit</p>
   </section>
 
   <main class="content">
 
     <section class="bu-section">
-      <h2 class="bu-title"><span class="bu-flag">🇮🇩</span> <span data-i18n="bu.indonesia">Индонезия</span></h2>
+      <h2 class="bu-title"><span class="bu-flag">🇮🇩</span> <span data-i18n="bu.indonesia">Indonesia</span></h2>
       <div class="grid">
         <a class="card card-bot" href="https://claude.ai/project/019d7103-9989-7370-9858-fbec31c97ddd" target="_blank" rel="noopener noreferrer">
           <div class="flag">🇮🇩</div>
-          <div class="card-title" data-i18n="card.secondary_sales">Вторичные продажи</div>
-          <div class="btn" data-i18n="card.open">Открыть</div>
+          <div class="card-title" data-i18n="card.primary_sales">Primary sales</div>
+          <div class="btn" data-i18n="card.open">Open</div>
         </a>
         <a class="card card-bot" href="https://claude.ai/project/019d76bf-5b8f-726e-a881-b3702ce46a29" target="_blank" rel="noopener noreferrer">
           <div class="flag">🇮🇩</div>
-          <div class="card-title" data-i18n="card.primary_sales">Первичные продажи</div>
-          <div class="btn" data-i18n="card.open">Открыть</div>
+          <div class="card-title" data-i18n="card.secondary_sales">Secondary sales</div>
+          <div class="btn" data-i18n="card.open">Open</div>
         </a>
       </div>
     </section>
 
     <section class="bu-section">
-      <h2 class="bu-title"><span class="bu-flag">🇲🇾</span> <span data-i18n="bu.malaysia">Малайзия</span></h2>
+      <h2 class="bu-title"><span class="bu-flag">🇲🇾</span> <span data-i18n="bu.malaysia">Malaysia</span></h2>
       <div class="grid">
         <a class="card card-bot" href="https://claude.ai/project/019e448e-128f-7447-ae72-e51e93740999" target="_blank" rel="noopener noreferrer">
           <div class="flag">🇲🇾</div>
-          <div class="card-title" data-i18n="card.primary_sales">Первичные продажи</div>
-          <div class="btn" data-i18n="card.open">Открыть</div>
+          <div class="card-title" data-i18n="card.primary_sales">Primary sales</div>
+          <div class="btn" data-i18n="card.open">Open</div>
         </a>
       </div>
     </section>
 
     <section class="bu-section">
-      <h2 class="bu-title"><span class="bu-flag">🌎</span> <span data-i18n="bu.latam">Латам</span></h2>
+      <h2 class="bu-title"><span class="bu-flag">🌎</span> <span data-i18n="bu.latam">LatAm</span></h2>
       <div class="grid">
         <div class="card card-empty">
-          <span class="empty-text" data-i18n="empty.coming_soon">Скоро будет</span>
+          <span class="empty-text" data-i18n="empty.coming_soon">Coming soon</span>
         </div>
       </div>
     </section>
 
   </main>
 
-  <footer class="page-footer">v3 · 2026</footer>
+  <a class="bug-button" href="https://t.me/gotzir" target="_blank" rel="noopener noreferrer" data-i18n-title="bug.tooltip">
+    <span class="bug-icon">🐞</span>
+    <span data-i18n="bug.button">Found a bug?</span>
+  </a>
+
+  <footer class="page-footer" data-i18n="footer.version">v4 · 2026</footer>
 
   <script src="https://cdn.jsdelivr.net/npm/@twemoji/api@latest/dist/twemoji.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js" defer></script>
+  <script src="data.js" defer></script>
+  <script src="render.js" defer></script>
   <script src="i18n.js" defer></script>
+  <script src="qr.js" defer></script>
 
 </body>
 </html>
