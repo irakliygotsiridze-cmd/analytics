@@ -1,0 +1,20 @@
+include:
+  - project: algoritmika_org/devops/ci
+    ref: master
+    file: ci-deploy.yml
+
+deploy-dev:
+  extends: .deploy
+  variables:
+    ROOT_IMAGE_PATH: services
+    VALUES: ai-services
+    CLUSTER: in-hel-fin-develop
+    ENV: dev
+    DST: environments.yaml
+    TAG: ${CI_COMMIT_SHORT_SHA}
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+      when: never
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      when: on_success
+
