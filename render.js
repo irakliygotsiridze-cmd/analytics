@@ -19,6 +19,10 @@
     }[c]));
   }
 
+  function escapeRegex(s) {
+    return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+
   // ── BU section helpers ───────────────────────────────────────
 
   const BU_META = {
@@ -33,38 +37,77 @@
     meaning:     { en: 'Meaning',     ru: 'Смысл',            es: 'Significado',    id: 'Arti',         ms: 'Maksud' },
     formula:     { en: 'Formula',     ru: 'Формула',          es: 'Fórmula',        id: 'Formula',      ms: 'Formula' },
     role:        { en: 'Role',        ru: 'Роль',             es: 'Rol',            id: 'Peran',        ms: 'Peranan' },
-    coming_soon: { en: 'Coming soon', ru: 'Скоро будет',      es: 'Próximamente',   id: 'Segera hadir', ms: 'Akan datang' }
+    coming_soon: { en: 'Coming soon', ru: 'Скоро будет',      es: 'Próximamente',   id: 'Segera hadir', ms: 'Akan datang' },
+    contact:     { en: 'Contact',     ru: 'Контакт',          es: 'Contacto',       id: 'Kontak',       ms: 'Hubungi' }
   };
+
+  // ── Build a lookup of {pattern, slug} from glossary for cross-linking ──
+
+  function buildGlossaryIndex(glossary) {
+    const out = [];
+    const seen = new Set();
+    glossary.forEach(cat => {
+      cat.items.forEach(item => {
+        if (!item.slug) return;
+        const nameEn = pick(item.name, 'en');
+        if (!nameEn) return;
+        // Take the part before "," "(" — that's the "pattern"
+        const pattern = nameEn.split(/[,(]/)[0].trim();
+        if (!pattern || pattern.length < 2) return;
+        if (seen.has(pattern)) return;
+        seen.add(pattern);
+        out.push({ pattern: pattern, slug: item.slug });
+      });
+    });
+    // Sort by length desc to match longest first in regex alternation
+    out.sort((a, b) => b.pattern.length - a.pattern.length);
+    return out;
+  }
+
+  function linkifyMetrics(text, terms) {
+    if (!terms.length || !text) return escapeHtml(text);
+    const parts = terms.map(t => escapeRegex(t.pattern));
+    // Match patterns surrounded by word boundaries; the patterns are case-sensitive
+    // (mostly upper-case abbreviations and capitalised words)
+    const re = new RegExp('\\b(' + parts.join('|') + ')\\b', 'g');
+    // Build replacement on already-escaped text; chunk through matches manually
+    const escaped = escapeHtml(text);
+    return escaped.replace(re, (match) => {
+      const term = terms.find(x => x.pattern === match);
+      if (!term) return match;
+      return '<a class="metric-link" href="glossary#' + term.slug + '">' + match + '</a>';
+    });
+  }
 
   // ── Renderers ────────────────────────────────────────────────
 
-  function renderDashboards(target, data, lang) {
+  function renderDashboards(target, data, lang, glossaryTerms) {
     target.innerHTML = '';
 
     ['indonesia', 'malaysia', 'latam'].forEach(buKey => {
       const buMeta = BU_META[buKey];
       const buData = data[buKey] || [];
-      const section = el(`
-        <section class="bu-section">
-          <h2 class="bu-title"><span class="bu-flag">${buMeta.flag}</span> <span>${pick(buMeta.label, lang)}</span></h2>
-        </section>
-      `);
+      const section = el(
+        '<section class="bu-section">' +
+          '<h2 class="bu-title"><span class="bu-flag">' + buMeta.flag + '</span> <span>' + escapeHtml(pick(buMeta.label, lang)) + '</span></h2>' +
+        '</section>'
+      );
 
       if (buData.length === 0) {
-        section.appendChild(el(`
-          <div class="grid">
-            <div class="card card-empty">
-              <span class="empty-text">${pick(META_LABELS.coming_soon, lang)}</span>
-            </div>
-          </div>
-        `));
+        section.appendChild(el(
+          '<div class="grid">' +
+            '<div class="card card-empty">' +
+              '<span class="empty-text">' + escapeHtml(pick(META_LABELS.coming_soon, lang)) + '</span>' +
+            '</div>' +
+          '</div>'
+        ));
         target.appendChild(section);
         return;
       }
 
       buData.forEach(group => {
         const groupTitle = pick(group.section, lang);
-        const groupBlock = el(`<div class="dash-group"><h3 class="dash-group-title">${escapeHtml(groupTitle)}</h3></div>`);
+        const groupBlock = el('<div class="dash-group"><h3 class="dash-group-title">' + escapeHtml(groupTitle) + '</h3></div>');
         const grid = el('<div class="grid"></div>');
 
         group.items.forEach(item => {
@@ -74,22 +117,31 @@
           const platform = item.platform || '';
           const url = item.url || '#';
 
-          const card = el(`
-            <a class="card card-dash" href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">
-              <span class="platform-badge">${escapeHtml(platform)}</span>
-              <div class="card-name">${escapeHtml(name)}</div>
-              <div class="card-meta">
-                <div class="meta-row">
-                  <span class="meta-label">${pick(META_LABELS.key_metrics, lang)}</span>
-                  <span class="meta-val">${escapeHtml(metrics)}</span>
-                </div>
-                <div class="meta-row">
-                  <span class="meta-label">${pick(META_LABELS.update, lang)}</span>
-                  <span class="meta-val">${escapeHtml(update)}</span>
-                </div>
-              </div>
-            </a>
-          `);
+          const card = el(
+            '<a class="card card-dash" href="' + escapeHtml(url) + '" target="_blank" rel="noopener noreferrer">' +
+              '<span class="platform-badge">' + escapeHtml(platform) + '</span>' +
+              '<div class="card-name">' + escapeHtml(name) + '</div>' +
+              '<div class="card-meta">' +
+                '<div class="meta-row">' +
+                  '<span class="meta-label">' + escapeHtml(pick(META_LABELS.key_metrics, lang)) + '</span>' +
+                  '<span class="meta-val">' + linkifyMetrics(metrics, glossaryTerms) + '</span>' +
+                '</div>' +
+                '<div class="meta-row">' +
+                  '<span class="meta-label">' + escapeHtml(pick(META_LABELS.update, lang)) + '</span>' +
+                  '<span class="meta-val">' + escapeHtml(update) + '</span>' +
+                '</div>' +
+              '</div>' +
+            '</a>'
+          );
+
+          // Stop clicks on the metric anchor from triggering the parent <a> navigation
+          card.querySelectorAll('.metric-link').forEach(a => {
+            a.addEventListener('click', e => {
+              e.stopPropagation();
+              // Allow the anchor's own click to navigate
+            });
+          });
+
           grid.appendChild(card);
         });
 
@@ -103,49 +155,84 @@
 
   function renderGlossary(target, data, lang) {
     target.innerHTML = '';
-    const grid = el('<div class="grid grid-wide"></div>');
 
-    data.forEach(item => {
-      const card = el(`
-        <div class="card card-glossary">
-          <div class="card-name">${escapeHtml(pick(item.name, lang))}</div>
-          <div class="card-meta">
-            <div class="meta-row">
-              <span class="meta-label">${pick(META_LABELS.meaning, lang)}</span>
-              <span class="meta-val">${escapeHtml(pick(item.meaning, lang))}</span>
-            </div>
-            <div class="meta-row">
-              <span class="meta-label">${pick(META_LABELS.formula, lang)}</span>
-              <span class="meta-val">${escapeHtml(pick(item.formula, lang))}</span>
-            </div>
-          </div>
-        </div>
-      `);
-      grid.appendChild(card);
+    data.forEach(cat => {
+      const wrap = el(
+        '<section class="glossary-category">' +
+          '<h2 class="bu-title"><span>' + escapeHtml(pick(cat.category, lang)) + '</span></h2>' +
+          '<div class="grid grid-wide"></div>' +
+        '</section>'
+      );
+      const grid = wrap.querySelector('.grid');
+
+      cat.items.forEach(item => {
+        const meaning = item.meaning ? pick(item.meaning, lang) : '';
+        const formula = item.formula ? pick(item.formula, lang) : '';
+        const nameStr = pick(item.name, lang);
+
+        let metaHtml = '';
+        if (meaning) {
+          metaHtml +=
+            '<div class="meta-row">' +
+              '<span class="meta-label">' + escapeHtml(pick(META_LABELS.meaning, lang)) + '</span>' +
+              '<span class="meta-val">' + escapeHtml(meaning) + '</span>' +
+            '</div>';
+        }
+        if (formula) {
+          metaHtml +=
+            '<div class="meta-row">' +
+              '<span class="meta-label">' + escapeHtml(pick(META_LABELS.formula, lang)) + '</span>' +
+              '<span class="meta-val">' + escapeHtml(formula) + '</span>' +
+            '</div>';
+        }
+
+        const card = el(
+          '<div class="card card-glossary" id="' + escapeHtml(item.slug || '') + '">' +
+            '<div class="card-name">' + escapeHtml(nameStr) + '</div>' +
+            '<div class="card-meta">' + metaHtml + '</div>' +
+          '</div>'
+        );
+
+        grid.appendChild(card);
+      });
+
+      target.appendChild(wrap);
     });
-
-    target.appendChild(grid);
   }
 
-  function renderTeam(target, data, lang) {
+  function renderTeam(target, data, lang, buLabels) {
     target.innerHTML = '';
     const grid = el('<div class="grid"></div>');
 
     data.forEach(person => {
-      const tg = person.telegram || '@TBD';
-      const tgUrl = (tg && tg !== '@TBD') ? `https://t.me/${tg.replace(/^@/, '')}` : null;
-      const tgHtml = tgUrl
-        ? `<a class="card-contact" href="${escapeHtml(tgUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(tg)}</a>`
-        : `<span class="card-contact contact-tbd">${escapeHtml(tg)}</span>`;
+      const contact = person.contact || {};
+      const contactHtml = contact.url
+        ? '<a class="card-contact" href="' + escapeHtml(contact.url) + '" target="_blank" rel="noopener noreferrer">' + escapeHtml(contact.label || contact.url) + '</a>'
+        : '<span class="card-contact contact-tbd">@TBD</span>';
 
-      const card = el(`
-        <div class="card card-team">
-          <div class="avatar">${escapeHtml(person.initials || '?')}</div>
-          <div class="card-name">${escapeHtml(pick(person.name, lang))}</div>
-          <div class="card-role">${escapeHtml(pick(person.role, lang))}</div>
-          ${tgHtml}
-        </div>
-      `);
+      const photoUrl = person.photo || '';
+      const initials = person.initials || '?';
+      const avatarHtml =
+        '<div class="avatar">' +
+          (photoUrl ? '<img class="avatar-img" src="' + escapeHtml(photoUrl) + '" alt="" onerror="this.remove()">' : '') +
+          '<span class="initials">' + escapeHtml(initials) + '</span>' +
+        '</div>';
+
+      const busHtml = (person.bus && person.bus.length && buLabels)
+        ? '<div class="bu-chips">' +
+            person.bus.map(b => '<span class="bu-chip">' + escapeHtml(pick(buLabels[b] || {}, lang) || b) + '</span>').join('') +
+          '</div>'
+        : '';
+
+      const card = el(
+        '<div class="card card-team">' +
+          avatarHtml +
+          '<div class="card-name">' + escapeHtml(pick(person.name, lang)) + '</div>' +
+          '<div class="card-role">' + escapeHtml(pick(person.role, lang)) + '</div>' +
+          busHtml +
+          contactHtml +
+        '</div>'
+      );
       grid.appendChild(card);
     });
 
@@ -157,15 +244,15 @@
     const list = el('<div class="faq-list"></div>');
 
     data.forEach(item => {
-      const node = el(`
-        <details class="card card-faq">
-          <summary>
-            <span class="faq-q">${escapeHtml(pick(item.q, lang))}</span>
-            <span class="faq-chevron" aria-hidden="true">+</span>
-          </summary>
-          <div class="faq-a">${escapeHtml(pick(item.a, lang))}</div>
-        </details>
-      `);
+      const node = el(
+        '<details class="card card-faq">' +
+          '<summary>' +
+            '<span class="faq-q">' + escapeHtml(pick(item.q, lang)) + '</span>' +
+            '<span class="faq-chevron" aria-hidden="true">+</span>' +
+          '</summary>' +
+          '<div class="faq-a">' + escapeHtml(pick(item.a, lang)) + '</div>' +
+        '</details>'
+      );
       list.appendChild(node);
     });
 
@@ -181,13 +268,16 @@
 
     if (page === 'dashboards') {
       const target = document.querySelector('[data-render="dashboards"]');
-      if (target) renderDashboards(target, data.dashboards, lang);
+      if (target) {
+        const terms = buildGlossaryIndex(data.glossary || []);
+        renderDashboards(target, data.dashboards, lang, terms);
+      }
     } else if (page === 'glossary') {
       const target = document.querySelector('[data-render="glossary"]');
       if (target) renderGlossary(target, data.glossary, lang);
     } else if (page === 'team') {
       const target = document.querySelector('[data-render="team"]');
-      if (target) renderTeam(target, data.team, lang);
+      if (target) renderTeam(target, data.team, lang, data.buLabels);
     } else if (page === 'faq') {
       const target = document.querySelector('[data-render="faq"]');
       if (target) renderFAQ(target, data.faq, lang);

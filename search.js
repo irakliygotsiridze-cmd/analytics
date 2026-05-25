@@ -22,6 +22,13 @@
           if (matches) anyCardVisible = true;
         });
 
+        // Hide dashboard sub-groups whose cards all got filtered out
+        section.querySelectorAll('.dash-group').forEach(group => {
+          const visibleInGroup = Array.from(group.querySelectorAll('.card'))
+            .some(c => c.style.display !== 'none');
+          group.style.display = visibleInGroup ? '' : 'none';
+        });
+
         section.style.display = anyCardVisible ? '' : 'none';
         if (anyCardVisible) anyVisible = true;
       });
