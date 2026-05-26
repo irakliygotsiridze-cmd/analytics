@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Q2 · Органика → Продажи · Algonova</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg:#0b0d16; --card:#131520; --card2:#181b28; --border:#232640;
+  --accent:#6c63ff; --green:#22c55e; --red:#ef4444; --orange:#f59e0b;
+  --blue:#38bdf8; --purple:#a78bfa; --text:#dde4f0; --muted:#4e5a7a;
+  --input-bg:#0d0f1a;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;font-size:14px;line-height:1.5}
+.page{max-width:1200px;margin:0 auto;padding:24px 20px}
+
+/* ── Goal banner ── */
+.goal-banner{
+  background:linear-gradient(135deg,#130d2a 0%,#0d1624 100%);
+  border:1px solid rgba(108,99,255,.5);border-radius:14px;
+  padding:20px 28px;margin-bottom:20px;
+  display:grid;grid-template-columns:auto auto auto 1fr;
+  gap:0;align-items:center
+}
+@media(max-width:860px){.goal-banner{grid-template-columns:1fr 1fr;gap:12px}}
+.gb-item{text-align:center;padding:0 20px;border-right:1px solid var(--border)}
+.gb-item:last-child{border-right:none}
+.gb-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px}
+.gb-val{font-size:26px;font-weight:900;line-height:1}
+.gb-input{font-size:24px;font-weight:900;background:transparent;border:none;
+          border-bottom:2px solid currentColor;color:inherit;text-align:center;
+          width:90px;outline:none;padding:1px 0}
+.gb-input:focus{opacity:.8}
+.gb-arrow{font-size:20px;color:var(--muted)}
+/* Big total output */
+.gb-total{padding:0 24px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.gb-total-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.gb-total-val{font-size:52px;font-weight:900;line-height:1;transition:color .25s}
+.gb-total-sub{font-size:11px;margin-top:4px;display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.gb-total-sub span{padding:2px 8px;border-radius:99px;font-size:10px;font-weight:700}
+.gb-res-lbl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.gb-res-val{font-size:28px;font-weight:900}
+
+/* ── Main calc layout ── */
+.calc-grid{display:grid;grid-template-columns:360px 1fr;gap:16px;margin-bottom:16px}
+@media(max-width:860px){.calc-grid{grid-template-columns:1fr}}
+
+/* ── Input panel ── */
+.input-panel{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px}
+.ip-section{margin-bottom:20px}
+.ip-section:last-child{margin-bottom:0}
+.ip-section-title{
+  font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;
+  letter-spacing:.08em;margin-bottom:12px;display:flex;align-items:center;gap:6px
+}
+.ip-section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+
+.ip-row{margin-bottom:14px}
+.ip-row:last-child{margin-bottom:0}
+.ip-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px}
+.ip-name{font-size:12px;font-weight:600;color:var(--text)}
+.ip-hint{font-size:10px;color:var(--muted)}
+.ip-controls{display:flex;gap:6px;align-items:center}
+
+input[type=range].slider{
+  flex:1;-webkit-appearance:none;height:5px;border-radius:3px;
+  background:linear-gradient(to right, var(--accent) var(--pct,30%), var(--border) var(--pct,30%));
+  cursor:pointer;outline:none
+}
+input[type=range].slider::-webkit-slider-thumb{
+  -webkit-appearance:none;width:16px;height:16px;border-radius:50%;
+  background:var(--accent);cursor:pointer;border:2px solid var(--bg);
+  box-shadow:0 0 0 3px rgba(108,99,255,.25)
+}
+input[type=range].slider.orange{
+  background:linear-gradient(to right, var(--orange) var(--pct,30%), var(--border) var(--pct,30%))
+}
+input[type=range].slider.orange::-webkit-slider-thumb{background:var(--orange);box-shadow:0 0 0 3px rgba(245,158,11,.25)}
+input[type=range].slider.green{
+  background:linear-gradient(to right, var(--green) var(--pct,30%), var(--border) var(--pct,30%))
+}
+input[type=range].slider.green::-webkit-slider-thumb{background:var(--green);box-shadow:0 0 0 3px rgba(34,197,94,.25)}
+
+.num-in{
+  background:var(--input-bg);border:1px solid var(--border);color:var(--text);
+  border-radius:6px;padding:5px 8px;font-size:13px;font-weight:700;
+  text-align:right;width:88px;outline:none
+}
+.num-in:focus{border-color:var(--accent)}
+.ip-badge{font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px;
+           background:rgba(108,99,255,.12);color:var(--accent);white-space:nowrap}
+
+/* ── Output panel ── */
+.output-panel{display:flex;flex-direction:column;gap:12px}
+
+.kpi-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:12px;
+     padding:16px 18px;position:relative;overflow:hidden}
+.kpi-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
+.kpi-val{font-size:32px;font-weight:900;line-height:1;transition:color .2s}
+.kpi-sub{font-size:11px;color:var(--muted);margin-top:5px}
+.kpi-tag{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px;margin-top:6px}
+.kpi-glow{position:absolute;top:-30px;right:-30px;width:100px;height:100px;border-radius:50%;opacity:.06;filter:blur(20px)}
+
+/* ── Gap bar ── */
+.gap-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 20px}
+.gap-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.gap-title{font-size:12px;font-weight:700;color:var(--text)}
+.gap-status{font-size:13px;font-weight:800;padding:4px 12px;border-radius:99px}
+.gap-track{height:12px;background:var(--border);border-radius:6px;overflow:hidden;margin-bottom:8px}
+.gap-fill{height:100%;border-radius:6px;transition:width .4s}
+.gap-markers{display:flex;justify-content:space-between;font-size:10px;color:var(--muted)}
+
+/* ── Flow arrows (visual connector) ── */
+.flow-row{display:flex;align-items:center;gap:0;margin:12px 0;flex-wrap:wrap}
+.flow-box{background:var(--card2);border:1px solid var(--border);border-radius:10px;
+          padding:10px 14px;text-align:center;flex:1;min-width:100px}
+.flow-box.hl{border-color:var(--accent);background:rgba(108,99,255,.06)}
+.flow-box.hl2{border-color:var(--orange);background:rgba(245,158,11,.05)}
+.flow-box.hl3{border-color:var(--green);background:rgba(34,197,94,.06)}
+.flow-lbl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px}
+.flow-val{font-size:18px;font-weight:800}
+.flow-op{font-size:18px;color:var(--muted);padding:0 8px;flex-shrink:0}
+
+/* ── Monthly breakdown ── */
+.mo-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.mo{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center}
+.mo-name{font-size:10px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em}
+.mo-leads{font-size:20px;font-weight:800;color:var(--orange)}
+.mo-sales{font-size:14px;font-weight:700;margin-top:3px}
+.mo-views{font-size:10px;color:var(--muted);margin-top:3px}
+
+/* ── Scenarios ── */
+.sc-table{width:100%;border-collapse:collapse}
+.sc-table th{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;
+              padding:6px 10px;text-align:right;border-bottom:1px solid var(--border)}
+.sc-table th:first-child{text-align:left}
+.sc-table td{padding:9px 10px;text-align:right;font-size:13px;border-bottom:1px solid var(--border)}
+.sc-table td:first-child{text-align:left;font-weight:600}
+.sc-table tr:last-child td{border-bottom:none}
+.sc-table tr.sc-active td{background:rgba(108,99,255,.06)}
+
+/* ── Chart card ── */
+.chart-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px}
+.section-title{font-size:11px;font-weight:700;color:#fff;text-transform:uppercase;
+               letter-spacing:.06em;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.section-title::before{content:'';width:3px;height:14px;background:var(--accent);border-radius:2px}
+
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:14px}
+
+footer{margin-top:28px;padding-top:14px;border-top:1px solid var(--border);
+       font-size:10px;color:var(--muted);text-align:center}
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- ══ GOAL BANNER ══════════════════════════════════════════════════════════ -->
+<div class="goal-banner">
+
+  <!-- INPUTS: Платные + Органика% -->
+  <div class="gb-item">
+    <div class="gb-label">Платных продаж Q2 <span style="font-size:9px">(CPC/др.)</span></div>
+    <input class="gb-input" id="g-paid" type="number" value="667" style="color:var(--blue)" oninput="recalc()">
+    <div style="font-size:9px;color:var(--muted);margin-top:2px">83% от 804</div>
+  </div>
+
+  <div class="gb-item">
+    <div class="gb-label">Доля органики %</div>
+    <div style="display:flex;align-items:flex-end;gap:3px;justify-content:center">
+      <input class="gb-input" id="g-orgpct" type="number" value="17" style="color:var(--orange);width:60px" oninput="recalc()">
+      <span style="font-size:20px;font-weight:900;color:var(--orange);padding-bottom:3px">%</span>
+    </div>
+    <div style="font-size:9px;color:var(--muted);margin-top:2px">цель Q2</div>
+  </div>
+
+  <div style="font-size:22px;color:var(--muted);padding:0 8px">=</div>
+
+  <!-- BIG COMPUTED TOTAL -->
+  <div class="gb-total">
+    <div class="gb-total-label">Прогноз продаж Q2 — меняй параметры ↓</div>
+    <div class="gb-total-val" id="r-total-proj">804</div>
+    <div class="gb-total-sub">
+      <span id="r-paid-badge" style="background:rgba(56,189,248,.12);color:var(--blue)">667 платных</span>
+      <span style="color:var(--muted)">+</span>
+      <span id="r-org-badge" style="background:rgba(245,158,11,.12);color:var(--orange)">137 органика</span>
+      <span id="r-vs-badge" style="background:rgba(34,197,94,.12);color:var(--green)">= 804 ✓</span>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══ MAIN CALCULATOR ════════════════════════════════════════════════════ -->
+<div class="calc-grid">
+
+  <!-- INPUT PANEL -->
+  <div class="input-panel">
+
+    <!-- CONTENT -->
+    <div class="ip-section">
+      <div class="ip-section-title">📹 Контент (видео)</div>
+
+      <div class="ip-row">
+        <div class="ip-top">
+          <span class="ip-name">Просмотров за Q2</span>
+          <span class="ip-hint" id="h-views">50 000 000</span>
+        </div>
+        <div class="ip-controls">
+          <input type="range" class="slider" id="s-views"
+            min="1000000" max="150000000" step="1000000" value="50000000"
+            oninput="syncSN('s-views','n-views');recalc()">
+          <input class="num-in" id="n-views" type="number" value="50000000"
+            oninput="syncNS('n-views','s-views');recalc()">
+        </div>
+      </div>
+
+      <div class="ip-row">
+        <div class="ip-top">
+          <span class="ip-name">views → lead %</span>
+          <span class="ip-hint">сейчас ≈ 0.001% · цель 0.005%</span>
+        </div>
+        <div class="ip-controls">
+          <input type="range" class="slider orange" id="s-v2l"
+            min="0.0002" max="0.02" step="0.0001" value="0.001"
+            oninput="syncSN('s-v2l','n-v2l');recalc()">
+          <input class="num-in" id="n-v2l" type="number" value="0.001" step="0.0001"
+            style="color:var(--orange)" oninput="syncNS('n-v2l','s-v2l');recalc()">
+        </div>
+        <div style="margin-top:5px;display:flex;gap:6px;flex-wrap:wrap">
+          <button onclick="setV2L(0.001)" class="preset-btn" style="border-color:var(--red);color:var(--red)">0.001% сейчас</button>
+          <button onclick="setV2L(0.0017)" class="preset-btn" style="border-color:var(--orange);color:var(--orange)">0.0017% нужно</button>
+          <button onclick="setV2L(0.005)" class="preset-btn" style="border-color:var(--green);color:var(--green)">0.005% цель Q2</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- LEADS -->
+    <div class="ip-section">
+      <div class="ip-section-title">👥 SMM лиды (прямые + тёплые)</div>
+
+      <div class="ip-row">
+        <div class="ip-top">
+          <span class="ip-name">Дополнительные лиды Q2</span>
+          <span class="ip-hint">Q1 факт: 3 500</span>
+        </div>
+        <div class="ip-controls">
+          <input type="range" class="slider" id="s-extra"
+            min="0" max="10000" step="100" value="3500"
+            oninput="syncSN('s-extra','n-extra');recalc()">
+          <input class="num-in" id="n-extra" type="number" value="3500"
+            oninput="syncNS('n-extra','s-extra');recalc()">
+        </div>
+        <div style="margin-top:5px;display:flex;gap:6px;flex-wrap:wrap">
+          <button onclick="setExtra(3500)" class="preset-btn">Q1 факт 3 500</button>
+          <button onclick="setExtra(4500)" class="preset-btn">+29%  →  4 500</button>
+          <button onclick="setExtra(6000)" class="preset-btn">+71%  →  6 000</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONVERSIONS -->
+    <div class="ip-section">
+      <div class="ip-section-title">📊 Конверсии</div>
+
+      <div class="ip-row">
+        <div class="ip-top">
+          <span class="ip-name">L2Sale % (лид → продажа)</span>
+          <span class="ip-hint">факт органика: 3.6%</span>
+        </div>
+        <div class="ip-controls">
+          <input type="range" class="slider green" id="s-l2s"
+            min="0.5" max="20" step="0.1" value="3.6"
+            oninput="syncSN('s-l2s','n-l2s');recalc()">
+          <input class="num-in" id="n-l2s" type="number" value="3.6" step="0.1"
+            style="color:var(--green)" oninput="syncNS('n-l2s','s-l2s');recalc()">
+        </div>
+        <div style="margin-top:5px;display:flex;gap:6px;flex-wrap:wrap">
+          <button onclick="setL2S(3.6)"  class="preset-btn">3.6% общий SMM</button>
+          <button onclick="setL2S(13.23)" class="preset-btn" style="border-color:var(--purple);color:var(--purple)">13.23% Instagram</button>
+          <button onclick="setL2S(15.92)" class="preset-btn" style="border-color:var(--green);color:var(--green)">15.92% лучший</button>
+        </div>
+      </div>
+
+      <div class="ip-row" style="margin-top:10px">
+        <div class="ip-top">
+          <span class="ip-name">AOV $ (средний чек)</span>
+          <span class="ip-hint">факт: $341</span>
+        </div>
+        <div class="ip-controls">
+          <input type="range" class="slider green" id="s-aov"
+            min="50" max="800" step="1" value="341"
+            oninput="syncSN('s-aov','n-aov');recalc()">
+          <input class="num-in" id="n-aov" type="number" value="341"
+            style="color:var(--green)" oninput="syncNS('n-aov','s-aov');recalc()">
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /input-panel -->
+
+  <!-- OUTPUT PANEL -->
+  <div class="output-panel">
+
+    <!-- FLOW -->
+    <div class="card" style="margin-bottom:0">
+      <div class="section-title">Как считается</div>
+      <div class="flow-row">
+        <div class="flow-box hl">
+          <div class="flow-lbl">Просмотры</div>
+          <div class="flow-val" id="f-views" style="color:var(--accent)">50M</div>
+        </div>
+        <div class="flow-op">×</div>
+        <div class="flow-box hl2">
+          <div class="flow-lbl">views→lead</div>
+          <div class="flow-val" id="f-v2l" style="color:var(--orange)">0.001%</div>
+        </div>
+        <div class="flow-op">=</div>
+        <div class="flow-box">
+          <div class="flow-lbl">Лидов из видео</div>
+          <div class="flow-val" id="f-vleads" style="color:var(--blue)">500</div>
+        </div>
+        <div class="flow-op">+</div>
+        <div class="flow-box">
+          <div class="flow-lbl">Прямых лидов</div>
+          <div class="flow-val" id="f-extra" style="color:var(--blue)">3 500</div>
+        </div>
+        <div class="flow-op">=</div>
+        <div class="flow-box hl3">
+          <div class="flow-lbl">Итого лидов</div>
+          <div class="flow-val" id="f-total-leads" style="color:var(--green)">4 000</div>
+        </div>
+      </div>
+      <div class="flow-row" style="margin-top:4px">
+        <div class="flow-box hl3" style="flex:none;min-width:120px">
+          <div class="flow-lbl">Итого лидов</div>
+          <div class="flow-val" id="f-total-leads2" style="color:var(--green)">4 000</div>
+        </div>
+        <div class="flow-op">×</div>
+        <div class="flow-box hl2">
+          <div class="flow-lbl">L2Sale %</div>
+          <div class="flow-val" id="f-l2s" style="color:var(--orange)">3.6%</div>
+        </div>
+        <div class="flow-op">=</div>
+        <div class="flow-box" style="border-color:var(--green);background:rgba(34,197,94,.06)">
+          <div class="flow-lbl">Продаж органика</div>
+          <div class="flow-val" id="f-sales" style="color:var(--green);font-size:24px">144</div>
+        </div>
+        <div class="flow-op">×</div>
+        <div class="flow-box">
+          <div class="flow-lbl">AOV $</div>
+          <div class="flow-val" id="f-aov" style="color:var(--muted)">$341</div>
+        </div>
+        <div class="flow-op">=</div>
+        <div class="flow-box hl3">
+          <div class="flow-lbl">Выручка</div>
+          <div class="flow-val" id="f-rev" style="color:var(--green)">$49K</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- KPIs -->
+    <div class="kpi-row">
+      <div class="kpi">
+        <div class="kpi-glow" id="kpi-glow-1" style="background:var(--orange)"></div>
+        <div class="kpi-lbl">Лидов за Q2</div>
+        <div class="kpi-val" id="kpi-leads" style="color:var(--orange)">4 000</div>
+        <div class="kpi-sub">из видео + прямых</div>
+        <div class="kpi-tag" id="kpi-leads-tag" style="background:rgba(245,158,11,.12);color:var(--orange)">из видео: 500</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-glow" id="kpi-glow-2" style="background:var(--green)"></div>
+        <div class="kpi-lbl">Продаж органика Q2</div>
+        <div class="kpi-val" id="kpi-sales" style="color:var(--green)">144</div>
+        <div class="kpi-sub">цель: <span id="kpi-sales-target">137</span></div>
+        <div class="kpi-tag" id="kpi-sales-tag" style="background:rgba(34,197,94,.12);color:var(--green)">+7 СВЕРХ ЦЕЛИ ✓</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-glow" style="background:var(--green)"></div>
+        <div class="kpi-lbl">Выручка органика Q2</div>
+        <div class="kpi-val" id="kpi-rev" style="color:var(--green)">$49K</div>
+        <div class="kpi-sub">от органических продаж</div>
+        <div class="kpi-tag" id="kpi-rev-tag" style="background:rgba(34,197,94,.12);color:var(--green)">$341 AOV</div>
+      </div>
+    </div>
+
+    <!-- GAP BAR -->
+    <div class="gap-card">
+      <div class="gap-header">
+        <span class="gap-title">Прогресс к цели: <span id="g-sales-now">144</span> из <span id="g-sales-need">137</span> органических продаж</span>
+        <span class="gap-status" id="gap-status" style="background:rgba(34,197,94,.15);color:var(--green)">✓ ДОСТИГНУТО</span>
+      </div>
+      <div class="gap-track">
+        <div class="gap-fill" id="gap-fill" style="width:100%;background:var(--green)"></div>
+      </div>
+      <div class="gap-markers">
+        <span>0</span>
+        <span id="gap-mid" style="color:var(--orange)">Цель 137</span>
+        <span id="gap-right">Текущий: 144</span>
+      </div>
+      <div style="margin-top:12px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;font-size:11px">
+        <div style="text-align:center;padding:8px;background:var(--card2);border-radius:8px">
+          <div style="color:var(--muted);font-size:9px;text-transform:uppercase;margin-bottom:2px">Из видео (UTM)</div>
+          <div id="g-from-video" style="font-weight:800;color:var(--blue)">18 прод.</div>
+          <div style="color:var(--muted);font-size:9px">500 лидов × 3.6%</div>
+        </div>
+        <div style="text-align:center;padding:8px;background:var(--card2);border-radius:8px">
+          <div style="color:var(--muted);font-size:9px;text-transform:uppercase;margin-bottom:2px">Прямые / тёплые</div>
+          <div id="g-from-extra" style="font-weight:800;color:var(--purple)">126 прод.</div>
+          <div style="color:var(--muted);font-size:9px">3 500 лидов × 3.6%</div>
+        </div>
+        <div style="text-align:center;padding:8px;background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.25);border-radius:8px">
+          <div style="color:var(--muted);font-size:9px;text-transform:uppercase;margin-bottom:2px">Итого vs цель</div>
+          <div id="g-total-vs" style="font-weight:800;color:var(--green)">144 / 137</div>
+          <div id="g-total-gap" style="color:var(--green);font-size:9px">+7 сверх ✓</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MONTHLY -->
+    <div class="card" style="margin-bottom:0">
+      <div class="section-title">По месяцам Q2</div>
+      <div class="mo-row" id="mo-row"></div>
+    </div>
+
+  </div><!-- /output-panel -->
+</div><!-- /calc-grid -->
+
+<!-- ══ SCENARIOS ═════════════════════════════════════════════════════════════ -->
+<div class="card">
+  <div class="section-title">Сценарии: что будет при разных views→lead %</div>
+  <table class="sc-table" id="sc-table"></table>
+</div>
+
+<!-- ══ CHART ══════════════════════════════════════════════════════════════════ -->
+<div class="chart-card">
+  <div class="section-title">Факт + прогноз: органические продажи по месяцам</div>
+  <canvas id="chart" style="max-height:200px"></canvas>
+</div>
+
+<footer>
+  orai.csv · 267 413 лидов · дек 2024 – апр 2026 · Органика = smm / tiktok / instagram / social_media
+  · Q1 SMM лиды: 3 500 · Факт AOV: $341 · Instagram L2Sale 13.23% · TikTok L2Sale 4.43%
+</footer>
+</div><!-- /page -->
+
+<style>
+.preset-btn{
+  background:transparent;border:1px solid var(--border);color:var(--muted);
+  border-radius:6px;padding:3px 9px;font-size:10px;cursor:pointer;font-family:inherit;
+  transition:all .15s
+}
+.preset-btn:hover{border-color:var(--accent);color:var(--text);background:rgba(108,99,255,.08)}
+</style>
+
+<script>
+// ── Slider sync ──────────────────────────────────────────────────────────────
+function syncSN(sid, nid) {
+  const v = document.getElementById(sid).value;
+  document.getElementById(nid).value = v;
+  updateSliderTrack(sid);
+}
+function syncNS(nid, sid) {
+  const el = document.getElementById(sid);
+  const v  = document.getElementById(nid).value;
+  el.value = v;
+  updateSliderTrack(sid);
+}
+function updateSliderTrack(sid) {
+  const el  = document.getElementById(sid);
+  const min = +el.min, max = +el.max, val = +el.value;
+  const pct = ((val - min) / (max - min) * 100).toFixed(1);
+  el.style.setProperty('--pct', pct + '%');
+}
+function initSliders() {
+  ['s-views','s-v2l','s-extra','s-l2s','s-aov'].forEach(id => updateSliderTrack(id));
+}
+
+// ── Presets ──────────────────────────────────────────────────────────────────
+function setV2L(v) {
+  document.getElementById('n-v2l').value = v;
+  document.getElementById('s-v2l').value = v;
+  updateSliderTrack('s-v2l');
+  recalc();
+}
+function setExtra(v) {
+  document.getElementById('n-extra').value = v;
+  document.getElementById('s-extra').value = v;
+  updateSliderTrack('s-extra');
+  recalc();
+}
+function setL2S(v) {
+  document.getElementById('n-l2s').value = v;
+  document.getElementById('s-l2s').value = v;
+  updateSliderTrack('s-l2s');
+  recalc();
+}
+
+// ── Format helpers ────────────────────────────────────────────────────────────
+const fmt$  = n => '$' + (+n).toLocaleString('en-US',{maximumFractionDigits:0});
+const fmtK  = n => n >= 1000000 ? (n/1000000).toFixed(1)+'M' : n >= 1000 ? (n/1000).toFixed(0)+'K' : n;
+const fmtN  = n => (+n).toLocaleString('ru-RU');
+const fmtP  = n => (+n).toFixed(4) + '%';
+const fmtKd = n => n >= 1000 ? '$' + (n/1000).toFixed(0)+'K' : fmt$(n);
+
+// ── Main recalc ───────────────────────────────────────────────────────────────
+let chartInst = null;
+
+function recalc() {
+  const views    = +document.getElementById('n-views').value   || 50e6;
+  const v2l      = +document.getElementById('n-v2l').value     || 0.001;   // in %
+  const extra    = +document.getElementById('n-extra').value   || 3306;
+  const l2s      = +document.getElementById('n-l2s').value     || 3.6;     // in %
+  const aov      = +document.getElementById('n-aov').value     || 341;
+  const paidFixed= +document.getElementById('g-paid').value    || 667;
+  const orgPct   = +document.getElementById('g-orgpct').value  || 17;
+
+  // Core math
+  const vLeads    = views * v2l / 100;          // leads from video UTM
+  const totalLeads= vLeads + extra;
+  const sales     = totalLeads * l2s / 100;
+  const rev       = sales * aov;
+
+  // Total projection = fixed paid + dynamic organic
+  const totalProj  = Math.round(paidFixed + sales);
+  const orgSalesRnd= Math.round(sales);
+
+  // Goal derived from orgPct × total_ref (804)
+  const orgTarget  = Math.round((paidFixed + (paidFixed * orgPct / (100 - orgPct)))); // implied organic
+  // simpler: goal is just paidFixed / (1 - orgPct/100) * orgPct/100
+  const totalRef   = Math.round(paidFixed / (1 - orgPct / 100));
+  const orgGoal    = Math.round(totalRef * orgPct / 100);
+  const leadsNeed  = orgGoal / (l2s / 100);
+
+  // ── Banner: big total ──
+  const hitGoal = orgSalesRnd >= orgGoal;
+  const diff    = orgSalesRnd - orgGoal;
+  document.getElementById('r-total-proj').textContent = fmtN(totalProj);
+  document.getElementById('r-total-proj').style.color = totalProj >= totalRef
+    ? 'var(--green)' : totalProj >= totalRef * 0.9 ? 'var(--orange)' : 'var(--red)';
+  document.getElementById('r-paid-badge').textContent = fmtN(paidFixed) + ' платных';
+  document.getElementById('r-org-badge').textContent  = fmtN(orgSalesRnd) + ' органика';
+  document.getElementById('r-vs-badge').textContent   = hitGoal
+    ? (diff === 0 ? '= ' + fmtN(totalProj) + ' ✓' : '+' + diff + ' к цели ' + fmtN(totalRef) + ' ✓')
+    : '−' + Math.abs(diff) + ' до цели ' + fmtN(totalRef);
+  document.getElementById('r-vs-badge').style.background = hitGoal
+    ? 'rgba(34,197,94,.12)' : 'rgba(239,68,68,.12)';
+  document.getElementById('r-vs-badge').style.color = hitGoal ? 'var(--green)' : 'var(--red)';
+
+  // From-video vs from-extra sales split
+  const salesFromVideo = vLeads * l2s / 100;
+  const salesFromExtra = extra  * l2s / 100;
+
+  // ── Update goal banner ──
+  document.getElementById('r-org-target').textContent  = fmtN(orgTarget);
+  document.getElementById('r-leads-target').textContent= fmtN(Math.round(leadsNeed));
+  document.getElementById('r-leads-target-sub').textContent = 'при L2Sale ' + l2s + '%';
+  document.getElementById('r-rev-target').textContent  = fmtKd(orgTarget * aov);
+
+  // ── Update flow boxes ──
+  document.getElementById('f-views').textContent = fmtK(views);
+  document.getElementById('f-v2l').textContent   = v2l + '%';
+  document.getElementById('f-vleads').textContent= fmtN(Math.round(vLeads));
+  document.getElementById('f-extra').textContent = fmtN(extra);
+  document.getElementById('f-total-leads').textContent  = fmtN(Math.round(totalLeads));
+  document.getElementById('f-total-leads2').textContent = fmtN(Math.round(totalLeads));
+  document.getElementById('f-l2s').textContent  = l2s + '%';
+  document.getElementById('f-sales').textContent= fmtN(Math.round(sales));
+  document.getElementById('f-aov').textContent  = '$' + aov;
+  document.getElementById('f-rev').textContent  = fmtKd(rev);
+
+  // ── KPIs ──
+  const hit = Math.round(sales) >= orgTarget;
+  document.getElementById('kpi-leads').textContent     = fmtN(Math.round(totalLeads));
+  document.getElementById('kpi-leads-tag').textContent = 'из видео: ' + fmtN(Math.round(vLeads));
+  document.getElementById('kpi-sales').textContent     = fmtN(Math.round(sales));
+  document.getElementById('kpi-sales-target').textContent = fmtN(orgTarget);
+  document.getElementById('kpi-sales').style.color     = hit ? 'var(--green)' : 'var(--red)';
+  const gap = Math.round(sales) - orgTarget;
+  document.getElementById('kpi-sales-tag').textContent = hit
+    ? '+' + gap + ' СВЕРХ ЦЕЛИ ✓' : '−' + Math.abs(gap) + ' ДО ЦЕЛИ';
+  document.getElementById('kpi-sales-tag').style.color  = hit ? 'var(--green)' : 'var(--red)';
+  document.getElementById('kpi-sales-tag').style.background = hit
+    ? 'rgba(34,197,94,.12)' : 'rgba(239,68,68,.12)';
+  document.getElementById('kpi-rev').textContent     = fmtKd(rev);
+  document.getElementById('kpi-rev-tag').textContent = '$' + aov + ' AOV';
+
+  // ── Gap bar ──
+  const pctFill = Math.min(Math.round(sales) / orgTarget * 100, 120);
+  document.getElementById('gap-fill').style.width      = Math.min(pctFill, 100) + '%';
+  document.getElementById('gap-fill').style.background = hit ? 'var(--green)' : 'var(--red)';
+  document.getElementById('g-sales-now').textContent   = fmtN(Math.round(sales));
+  document.getElementById('g-sales-need').textContent  = fmtN(orgTarget);
+  document.getElementById('gap-status').textContent    = hit ? '✓ ДОСТИГНУТО' : '✗ НЕХВАТКА';
+  document.getElementById('gap-status').style.color    = hit ? 'var(--green)' : 'var(--red)';
+  document.getElementById('gap-status').style.background = hit
+    ? 'rgba(34,197,94,.15)' : 'rgba(239,68,68,.15)';
+  document.getElementById('gap-mid').textContent  = 'Цель ' + orgTarget;
+  document.getElementById('gap-right').textContent= 'Текущий: ' + fmtN(Math.round(sales));
+  document.getElementById('g-from-video').textContent = fmtN(Math.round(salesFromVideo)) + ' прод.';
+  document.getElementById('g-from-extra').textContent = fmtN(Math.round(salesFromExtra)) + ' прод.';
+  document.getElementById('g-total-vs').textContent   = fmtN(Math.round(sales)) + ' / ' + orgTarget;
+  document.getElementById('g-total-gap').textContent  = hit
+    ? '+' + gap + ' сверх ✓' : '−' + Math.abs(gap) + ' до цели';
+  document.getElementById('g-total-gap').style.color  = hit ? 'var(--green)' : 'var(--red)';
+
+  // ── Monthly breakdown ──
+  const months = ['Апр 2026','Май 2026','Июн 2026'];
+  const moHtml = months.map((m, i) => {
+    const moViews  = views / 3;
+    const moLeads  = totalLeads / 3;
+    const moSales  = Math.round(sales / 3) + (i === 2 ? Math.round(sales) - Math.round(sales/3)*3 : 0);
+    const moRev    = moSales * aov;
+    return `<div class="mo">
+      <div class="mo-name">${m}</div>
+      <div class="mo-leads">${fmtN(Math.round(moLeads))}</div>
+      <div style="font-size:9px;color:var(--muted);margin-top:2px">лидов</div>
+      <div class="mo-sales" style="color:${hit?'var(--green)':'var(--orange)'}">${fmtN(moSales)} прод.</div>
+      <div class="mo-views">${(moViews/1e6).toFixed(1)}M просм. · ${fmtKd(moRev)}</div>
+    </div>`;
+  }).join('');
+  document.getElementById('mo-row').innerHTML = moHtml;
+
+  // ── Scenarios table ──
+  const scenarios = [
+    { name:'Текущий курс',       v2l:0.001,  extra:3500, note:'как сейчас', color:'#64748b' },
+    { name:'Нужно для цели',     v2l:0.001,  extra:leadsNeed - 50e6*0.001/100, note:'больше прямых лидов', color:'var(--orange)' },
+    { name:'Текущее + цель v2l', v2l:0.005,  extra:3500, note:'v2l ×5, лиды те же', color:'var(--purple)' },
+    { name:'Q2 амбициозный',     v2l:0.005,  extra:6000, note:'+71% лидов', color:'var(--green)' },
+    { name:'Рынок EdTech топ',   v2l:0.02,   extra:3500, note:'v2l ×20', color:'var(--accent)' },
+  ];
+  let scHtml = `<thead><tr>
+    <th>Сценарий</th>
+    <th>views→lead</th>
+    <th>Прям. лиды</th>
+    <th>Итого лидов</th>
+    <th>Продаж Q2</th>
+    <th>vs цель ${orgTarget}</th>
+    <th>Выручка Q2</th>
+  </tr></thead><tbody>`;
+  scenarios.forEach(s => {
+    const eLeads = Math.max(0, s.extra);
+    const vL = views * s.v2l / 100;
+    const tL = vL + eLeads;
+    const sl = Math.round(tL * l2s / 100);
+    const rv = sl * aov;
+    const ok = sl >= orgTarget;
+    const isActive = Math.abs(s.v2l - v2l) < 0.0001 && Math.abs(eLeads - extra) < 50;
+    scHtml += `<tr${isActive?' class="sc-active"':''}>
+      <td style="color:${s.color}">${s.name} <span style="font-size:9px;color:var(--muted)">${s.note}</span></td>
+      <td style="color:var(--orange)">${fmtP(s.v2l)}</td>
+      <td>${fmtN(Math.round(eLeads))}</td>
+      <td>${fmtN(Math.round(tL))}</td>
+      <td style="color:${s.color};font-weight:800">${fmtN(sl)}</td>
+      <td>${ok
+        ? `<span style="color:var(--green);font-weight:700">✓ +${sl-orgTarget}</span>`
+        : `<span style="color:var(--red)">✗ −${orgTarget-sl}</span>`}</td>
+      <td style="color:var(--muted)">${fmtKd(rv)}</td>
+    </tr>`;
+  });
+  scHtml += '</tbody>';
+  document.getElementById('sc-table').innerHTML = scHtml;
+
+  // ── Chart update ──
+  const moSales = [Math.round(sales/3), Math.round(sales/3),
+                   Math.round(sales) - Math.round(sales/3)*2];
+  updateChart(orgTarget, moSales);
+}
+
+// ── Chart ─────────────────────────────────────────────────────────────────────
+function updateChart(target, moSales) {
+  const factData = [
+    { m:'Ноя 25', s:null },{ m:'Дек 25', s:null },
+    { m:'Янв 26', s:null },{ m:'Фев 26', s:11  },
+    { m:'Мар 26', s:13  },
+  ];
+  // ^ Feb/Mar are estimated organic (total * 17%). Full fact data TBD.
+  const labels = [...factData.map(f=>f.m), 'Апр 26','Май 26','Июн 26'];
+  const factVals = [...factData.map(f=>f.s), null, null, null];
+  const projVals = [...factData.map(_=>null), ...moSales];
+  const targetLine = labels.map(_=> Math.round(target/3));
+
+  if (chartInst) {
+    chartInst.data.labels = labels;
+    chartInst.data.datasets[0].data = factVals;
+    chartInst.data.datasets[1].data = projVals;
+    chartInst.data.datasets[2].data = targetLine;
+    chartInst.update('none');
+    return;
+  }
+  chartInst = new Chart(document.getElementById('chart').getContext('2d'), {
+    type:'line',
+    data:{ labels, datasets:[
+      { label:'Факт органика (оценка)', data:factVals,
+        borderColor:'#6c63ff', backgroundColor:'rgba(108,99,255,.07)',
+        borderWidth:2, fill:true, tension:.3, pointRadius:4 },
+      { label:'Прогноз Q2 (калькулятор)', data:projVals,
+        borderColor:'#f59e0b', backgroundColor:'rgba(245,158,11,.07)',
+        borderWidth:2.5, fill:true, tension:.3, pointRadius:5, borderDash:[6,3] },
+      { label:'Цель / мес', data:targetLine,
+        borderColor:'rgba(34,197,94,.5)', borderWidth:1.5,
+        pointRadius:0, fill:false, borderDash:[3,3] },
+    ]},
+    options:{
+      responsive:true,
+      plugins:{ legend:{ labels:{ color:'#94a3b8', font:{size:11} }} },
+      scales:{
+        x:{ ticks:{ color:'#64748b', font:{size:10} }, grid:{ color:'#1e2235' } },
+        y:{ ticks:{ color:'#64748b', font:{size:10} }, grid:{ color:'#1e2235' },
+            min:0 }
+      }
+    }
+  });
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+initSliders();
+recalc();
+</script>
+</body>
+</html>

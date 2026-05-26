@@ -48,36 +48,7 @@
     <input type="search" class="search-input" data-i18n-placeholder="search.placeholder.research" placeholder="Search research…" autocomplete="off">
   </div>
 
-  <main class="content">
-
-    <section class="bu-section">
-      <h2 class="bu-title"><span class="bu-flag">🇮🇩</span> <span data-i18n="bu.indonesia">Indonesia</span></h2>
-      <div class="grid">
-        <div class="card card-empty">
-          <span class="empty-text" data-i18n="empty.coming_soon">Coming soon</span>
-        </div>
-      </div>
-    </section>
-
-    <section class="bu-section">
-      <h2 class="bu-title"><span class="bu-flag">🇲🇾</span> <span data-i18n="bu.malaysia">Malaysia</span></h2>
-      <div class="grid">
-        <div class="card card-empty">
-          <span class="empty-text" data-i18n="empty.coming_soon">Coming soon</span>
-        </div>
-      </div>
-    </section>
-
-    <section class="bu-section">
-      <h2 class="bu-title"><span class="bu-flag">🌎</span> <span data-i18n="bu.latam">LatAm</span></h2>
-      <div class="grid">
-        <div class="card card-empty">
-          <span class="empty-text" data-i18n="empty.coming_soon">Coming soon</span>
-        </div>
-      </div>
-    </section>
-
-  </main>
+  <main class="content" data-render="research"></main>
 
   <div class="no-results" hidden data-i18n="search.no_results">Nothing found</div>
 
@@ -89,6 +60,8 @@
   <footer class="page-footer" data-i18n="footer.version">v4 · 2026</footer>
 
   <script src="https://cdn.jsdelivr.net/npm/@twemoji/api@latest/dist/twemoji.min.js" defer></script>
+  <script src="data.js" defer></script>
+  <script src="render.js" defer></script>
   <script src="i18n.js" defer></script>
   <script src="search.js" defer></script>
   <script src="scroll-top.js" defer></script>

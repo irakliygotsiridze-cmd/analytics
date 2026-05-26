@@ -661,11 +661,273 @@ window.Algonova = window.Algonova || {};
     }
   ];
 
+  // ── Research ─────────────────────────────────────────────────
+  const RESEARCH = {
+    indonesia: [
+      {
+        file: 'H2A_Decline_Analysis_Board_Report.html',
+        title: 'H2A Conversion Rate Decline Analysis — Board Report',
+        date: '2026-05',
+        tags: ['Indonesia', 'H2A', 'Conversion', 'Hypothesis-Testing', 'Jan–May 2026'],
+        summary: t(
+          'Board-level analytics report investigating the decline in Booking-to-Attendance (H2A) from Jan to May 2026 against 12 hypotheses across 50,510 booked leads. Concludes the decline is within-channel and systemic, not a channel mix problem.',
+          'Аналитический отчёт для борда по падению конверсии Booking → Attendance (H2A) с января по май 2026, 12 гипотез на выборке 50 510 лидов. Вывод: падение — внутриканальное и системное, а не из-за смены канального микса.',
+          'Reporte para el board sobre la caída de la conversión H2A entre enero y mayo de 2026; 12 hipótesis sobre 50 510 leads. Conclusión: la caída es sistémica dentro de cada canal, no un problema de mix.',
+          'Laporan analitik untuk board mengenai penurunan konversi H2A dari Jan ke Mei 2026; 12 hipotesis pada 50.510 lead. Kesimpulan: penurunannya sistemik di dalam tiap kanal, bukan masalah mix kanal.',
+          'Laporan analitik untuk board tentang penurunan penukaran H2A dari Jan ke Mei 2026; 12 hipotesis pada 50,510 lead. Kesimpulan: penurunan adalah sistemik dalam saluran, bukan masalah campuran saluran.'
+        ),
+        findings: [
+          t('H2A fell from 39.1% (Jan) to 35.5% (May) — a 3.6pp drop across 50,510 leads.',
+            'H2A упал с 39,1% (янв) до 35,5% (май) — −3,6 п.п. на выборке 50 510 лидов.',
+            'H2A bajó de 39,1% (ene) a 35,5% (may) — −3,6pp sobre 50 510 leads.',
+            'H2A turun dari 39,1% (Jan) ke 35,5% (Mei) — −3,6pp di 50.510 lead.',
+            'H2A jatuh daripada 39.1% (Jan) ke 35.5% (Mei) — −3.6pp pada 50,510 lead.'),
+          t('Autobooking surge hypothesis disproven: channel mix shift accounts for only 0.13pp; 97% of the decline is within-channel erosion.',
+            'Гипотеза о росте автобукинга опровергнута: смена канального микса даёт всего 0,13 п.п., 97% падения — внутриканальная эрозия.',
+            'Hipótesis del autobooking refutada: el cambio de mix da solo 0,13pp; 97% es erosión dentro del canal.',
+            'Hipotesis lonjakan autobooking dibantah: pergeseran mix kanal hanya 0,13pp; 97% adalah erosi di dalam kanal.',
+            'Hipotesis lonjakan autobooking disangkal: peralihan campuran saluran hanya 0.13pp; 97% adalah hakisan dalam saluran.'),
+          t('Confirmation Step 1 was abandoned (24% → 0%), costing ~1.0pp; XTC system contamination drags H2A by 1.1–1.7pp every month.',
+            'Confirmation Step 1 заброшен (24% → 0%), стоит ~1,0 п.п.; контаминация системы XTC отнимает 1,1–1,7 п.п. ежемесячно.',
+            'El Confirmation Step 1 fue abandonado (24% → 0%), cuesta ~1,0pp; contaminación XTC resta 1,1–1,7pp mensual.',
+            'Confirmation Step 1 ditinggalkan (24% → 0%), biaya ~1,0pp; kontaminasi XTC menarik H2A 1,1–1,7pp tiap bulan.',
+            'Confirmation Step 1 ditinggalkan (24% → 0%), kos ~1.0pp; kontaminasi XTC menarik H2A 1.1–1.7pp setiap bulan.'),
+          t('YoY gap widens from −3.2pp (Jan) to −6.8pp (May) while volume nearly doubled — a scaling vs. quality tradeoff.',
+            'YoY-разрыв расширяется с −3,2 п.п. (янв) до −6,8 п.п. (май) при почти удвоившемся объёме — конфликт масштабирования и качества.',
+            'La brecha YoY se amplía de −3,2pp (ene) a −6,8pp (may) mientras el volumen casi se duplicó — tradeoff escala vs. calidad.',
+            'Gap YoY melebar dari −3,2pp (Jan) ke −6,8pp (Mei) sementara volume hampir dua kali lipat — tradeoff skala vs. kualitas.',
+            'Jurang YoY melebar daripada −3.2pp (Jan) ke −6.8pp (Mei) sementara volum hampir dua kali ganda — tradeoff skala vs. kualiti.')
+        ]
+      },
+      {
+        file: 'H2A_Root_Cause_Board_Briefing.html',
+        title: 'H2A Decline — Root Cause Board Briefing (Product × Scale Problem)',
+        date: '2026-05',
+        tags: ['Indonesia', 'H2A', 'Root-Cause', 'Math Tutoring', 'Coding Knight', 'Oaxaca-Blinder'],
+        summary: t(
+          'Multidimensional root-cause briefing reframing the H2A decline as a product-and-scale issue (not a people/manager problem) using Oaxaca-Blinder decomposition across course, channel, age and absence.',
+          'Многомерный root-cause-брифинг: падение H2A — это продуктовая и масштабная проблема, а не вопрос людей/менеджеров. Декомпозиция Oaxaca-Blinder по курсам, каналам, возрасту и абсентеизму.',
+          'Briefing de causa raíz que replantea la caída de H2A como un problema de producto y escala (no de personas), con descomposición Oaxaca-Blinder por curso, canal, edad y ausencia.',
+          'Briefing root-cause multidimensi yang membingkai ulang penurunan H2A sebagai masalah produk × skala (bukan orang/manajer), dengan dekomposisi Oaxaca-Blinder per kursus, kanal, usia, dan absensi.',
+          'Taklimat root-cause multidimensi yang membingkai semula penurunan H2A sebagai masalah produk × skala (bukan orang/pengurus), dengan dekomposisi Oaxaca-Blinder mengikut kursus, saluran, umur, dan ketidakhadiran.'
+        ),
+        findings: [
+          t('Clean H2A (excl. XTC) fell 40.2% → 36.8% (−3.4pp); YoY gap to May 2025 is −6.8pp (42.3% → 35.5%).',
+            'Чистый H2A (без XTC) упал 40,2% → 36,8% (−3,4 п.п.); YoY-разрыв к маю 2025 — −6,8 п.п. (42,3% → 35,5%).',
+            'H2A limpio (sin XTC) cayó 40,2% → 36,8% (−3,4pp); brecha YoY a may 2025 = −6,8pp (42,3% → 35,5%).',
+            'H2A bersih (tanpa XTC) turun 40,2% → 36,8% (−3,4pp); gap YoY ke Mei 2025 = −6,8pp (42,3% → 35,5%).',
+            'H2A bersih (tanpa XTC) jatuh 40.2% → 36.8% (−3.4pp); jurang YoY ke Mei 2025 = −6.8pp (42.3% → 35.5%).'),
+          t('Math Tutoring is the dominant driver: H2A 53.5% → 41.3% while volume share tripled 16% → 48%, with a cliff in Week 13 (Mar 30).',
+            'Math Tutoring — главный драйвер: H2A 53,5% → 41,3% при росте доли по объёму с 16% до 48%, обрыв в неделе 13 (30 марта).',
+            'Math Tutoring es el motor dominante: H2A 53,5% → 41,3% mientras la cuota de volumen pasó de 16% a 48%, con cliff en la semana 13 (30 mar).',
+            'Math Tutoring adalah pendorong utama: H2A 53,5% → 41,3% sementara share volume naik 16% → 48%, dengan jurang di Minggu 13 (30 Mar).',
+            'Math Tutoring adalah pemacu utama: H2A 53.5% → 41.3% sementara bahagian volum tiga kali ganda 16% → 48%, dengan cliff pada Minggu 13 (30 Mac).'),
+          t('Coding Knight has wrong age targeting: ages 5–6 convert 28–34%, ages 7+ only 4–8%; share of 7+ grew from 27% to 45%.',
+            'У Coding Knight неверный возрастной таргет: 5–6 лет конвертят 28–34%, 7+ — только 4–8%; доля 7+ выросла с 27% до 45%.',
+            'Coding Knight tiene targeting de edad equivocado: 5–6 años convierte 28–34%, 7+ solo 4–8%; share de 7+ pasó de 27% a 45%.',
+            'Coding Knight salah target usia: usia 5–6 konversi 28–34%, usia 7+ hanya 4–8%; share 7+ naik dari 27% ke 45%.',
+            'Coding Knight mempunyai sasaran umur yang salah: umur 5–6 menukar 28–34%, umur 7+ hanya 4–8%; bahagian 7+ meningkat dari 27% ke 45%.'),
+          t('Formal Oaxaca-Blinder: channel mix shift = +0.13pp (~4%), within-channel rate change = −3.51pp (~96%).',
+            'Формально Oaxaca-Blinder: смена канального микса = +0,13 п.п. (~4%), изменение рейта внутри канала = −3,51 п.п. (~96%).',
+            'Oaxaca-Blinder formal: cambio de mix de canal = +0,13pp (~4%), cambio dentro del canal = −3,51pp (~96%).',
+            'Formal Oaxaca-Blinder: pergeseran mix kanal = +0,13pp (~4%), perubahan dalam-kanal = −3,51pp (~96%).',
+            'Formal Oaxaca-Blinder: peralihan campuran saluran = +0.13pp (~4%), perubahan kadar dalam-saluran = −3.51pp (~96%).')
+        ]
+      },
+      {
+        file: 'LQS_Slide.html',
+        title: 'Lead Quality Score (LQS) — Month-over-Month Quality Tracking',
+        date: '2026-04',
+        tags: ['Indonesia', 'LQS', 'Lead Quality', 'L2B', 'Methodology'],
+        summary: t(
+          'Introduces the Lead Quality Score (LQS = Actual L2B% ÷ Expected L2B% × 100) to separate channel-mix shifts from within-channel quality erosion. March 2026 is flagged as the first ever breach of the 90 alert threshold.',
+          'Метрика LQS = Actual L2B% / Expected L2B% × 100 — разделяет смену канального микса и эрозию качества внутри канала. Март 2026 — первый случай пробития порога 90.',
+          'Introduce el LQS = L2B Real / L2B Esperado × 100 para separar mix de canal y erosión interna. Marzo 2026 es la primera vez que cae bajo el umbral 90.',
+          'Memperkenalkan LQS = L2B Aktual / L2B Diharapkan × 100 untuk memisahkan pergeseran mix kanal dan erosi kualitas dalam-kanal. Maret 2026 adalah pelanggaran ambang 90 pertama kali.',
+          'Memperkenalkan LQS = L2B Sebenar / L2B Dijangka × 100 untuk memisahkan peralihan campuran saluran dan hakisan kualiti dalam-saluran. Mac 2026 adalah pelanggaran ambang 90 buat pertama kali.'
+        ),
+        findings: [
+          t('March 2026 LQS = 86.5 — first month ever in the alert zone (<90), 13.5pp below benchmark.',
+            'LQS марта 2026 = 86,5 — впервые в alert-зоне (<90), на 13,5 п.п. ниже бенчмарка.',
+            'LQS mar 2026 = 86,5 — primera vez en zona de alerta (<90), 13,5pp debajo del benchmark.',
+            'LQS Mar 2026 = 86,5 — pertama kali di zona alert (<90), 13,5pp di bawah benchmark.',
+            'LQS Mac 2026 = 86.5 — kali pertama dalam zon alert (<90), 13.5pp di bawah penanda aras.'),
+          t('Channel baselines: Facebook 65%, TikTok 60%, Other/SMM 40%, Google only 28% (Jan–Feb 2025 reference).',
+            'Бейзлайны каналов: Facebook 65%, TikTok 60%, Other/SMM 40%, Google всего 28% (референс янв–фев 2025).',
+            'Líneas base por canal: Facebook 65%, TikTok 60%, Otros/SMM 40%, Google solo 28% (ref. ene-feb 2025).',
+            'Baseline kanal: Facebook 65%, TikTok 60%, Other/SMM 40%, Google hanya 28% (referensi Jan–Feb 2025).',
+            'Garis dasar saluran: Facebook 65%, TikTok 60%, Lain/SMM 40%, Google hanya 28% (rujukan Jan–Feb 2025).'),
+          t('Mar 2026 mix: Facebook 48.8% / Google 36.3% / Other 14.8% / TikTok 0.1% → Expected L2B 47.86% vs Actual 41.40%.',
+            'Микс марта 2026: Facebook 48,8% / Google 36,3% / Other 14,8% / TikTok 0,1% → Expected L2B 47,86% vs Actual 41,40%.',
+            'Mix mar 2026: Facebook 48,8% / Google 36,3% / Otros 14,8% / TikTok 0,1% → L2B esperado 47,86% vs real 41,40%.',
+            'Mix Mar 2026: Facebook 48,8% / Google 36,3% / Other 14,8% / TikTok 0,1% → L2B Diharapkan 47,86% vs Aktual 41,40%.',
+            'Campuran Mac 2026: Facebook 48.8% / Google 36.3% / Lain 14.8% / TikTok 0.1% → L2B Dijangka 47.86% vs Sebenar 41.40%.'),
+          t('Residual LQC (within-channel quality loss) explains ~18% of total L2B drop — confirms the problem is not only Google mix shift.',
+            'Остаточный LQC (потеря качества внутри канала) объясняет ~18% общего падения L2B — подтверждает, что проблема не только в росте Google.',
+            'LQC residual (pérdida de calidad intra-canal) explica ~18% de la caída total de L2B — confirma que no es solo mix de Google.',
+            'LQC residual (kerugian kualitas dalam-kanal) menjelaskan ~18% dari total penurunan L2B — bukan hanya pergeseran Google.',
+            'LQC baki (kerugian kualiti dalam-saluran) menjelaskan ~18% daripada jumlah penurunan L2B — bukan hanya peralihan Google.')
+        ]
+      },
+      {
+        file: 'March_2026_Sales_Analysis.html',
+        title: 'March 2026 — What Happened to Sales? (Root Cause Analysis)',
+        date: '2026-04',
+        tags: ['Indonesia', 'Sales', 'Revenue Drop', 'March 2026', 'L2B'],
+        summary: t(
+          'Multi-slide sales intelligence deck for B2C Indonesia diagnosing the March 2026 revenue collapse as a structural pipeline issue, since A2S conversion stayed stable.',
+          'Многослайдовый sales-intelligence-доклад для B2C Indonesia: коллапс выручки марта 2026 — структурная проблема pipeline, A2S остался стабильным.',
+          'Deck de sales intelligence para B2C Indonesia que diagnostica el colapso de ingresos de marzo 2026 como problema estructural del pipeline; A2S se mantuvo estable.',
+          'Deck intelijen penjualan untuk B2C Indonesia: keruntuhan revenue Maret 2026 adalah masalah pipeline struktural, A2S tetap stabil.',
+          'Dek perisikan jualan untuk B2C Indonesia: keruntuhan hasil Mac 2026 adalah masalah pipeline berstruktur, A2S kekal stabil.'
+        ),
+        findings: [
+          t('Revenue Feb → Mar: −39% ($362,605 → $220,910); sales −31% (1,153 → 799).',
+            'Выручка фев → март: −39% ($362 605 → $220 910); продажи −31% (1 153 → 799).',
+            'Ingresos feb → mar: −39% ($362 605 → $220 910); ventas −31% (1 153 → 799).',
+            'Revenue Feb → Mar: −39% ($362.605 → $220.910); sales −31% (1.153 → 799).',
+            'Hasil Feb → Mac: −39% ($362,605 → $220,910); jualan −31% (1,153 → 799).'),
+          t('A2S held stable 31.8% → 32.3% (+0.5pp) — sales team did not fail; the pipeline collapsed.',
+            'A2S стабилен 31,8% → 32,3% (+0,5 п.п.) — сейлзы не подвели; обвалился pipeline.',
+            'A2S estable 31,8% → 32,3% (+0,5pp) — el equipo no falló; el pipeline se cayó.',
+            'A2S stabil 31,8% → 32,3% (+0,5pp) — tim sales tidak gagal; pipeline yang runtuh.',
+            'A2S stabil 31.8% → 32.3% (+0.5pp) — pasukan jualan tidak gagal; pipeline yang runtuh.'),
+          t('L2B% collapsed 67.5% (Jan) → 57.6% (Feb) → 41.4% (Mar) — a −16.2pp drop, the smoking gun.',
+            'L2B% обвалился 67,5% (янв) → 57,6% (фев) → 41,4% (март) — −16,2 п.п., главный виновник.',
+            'L2B% colapsó 67,5% (ene) → 57,6% (feb) → 41,4% (mar) — −16,2pp, el causante principal.',
+            'L2B% runtuh 67,5% (Jan) → 57,6% (Feb) → 41,4% (Mar) — −16,2pp, biang kerok.',
+            'L2B% runtuh 67.5% (Jan) → 57.6% (Feb) → 41.4% (Mac) — −16.2pp, punca utama.'),
+          t('Four structural causes: Google share 16% → 40%, spam/invalid leads ×3–5, 5 inactive BMs (~3,500 bookings/month lost), active TCMs −16% (169 → 144).',
+            'Четыре структурные причины: доля Google 16% → 40%, спам ×3–5, 5 неактивных BM (~3 500 bookings/мес потеряно), активных TCM −16% (169 → 144).',
+            'Cuatro causas estructurales: cuota de Google 16% → 40%, leads spam ×3–5, 5 BMs inactivos (~3 500 bookings/mes perdidos), TCMs activos −16% (169 → 144).',
+            'Empat penyebab struktural: share Google 16% → 40%, lead spam ×3–5, 5 BM nonaktif (~3.500 booking/bulan hilang), TCM aktif −16% (169 → 144).',
+            'Empat punca berstruktur: bahagian Google 16% → 40%, lead spam ×3–5, 5 BM tidak aktif (~3,500 tempahan/bulan hilang), TCM aktif −16% (169 → 144).')
+        ]
+      },
+      {
+        file: 'organic_calculator.html',
+        title: 'Organic vs Paid Traffic — Calculator & Reference Guide',
+        date: '2026-04',
+        tags: ['Indonesia', 'Organic', 'CPC', 'SMM', 'Funnel', 'Calculator'],
+        summary: t(
+          'Interactive analytics tool comparing organic (SMM) vs paid (CPC) traffic across a funnel — built on 267,413 leads (Dec 2024 – Apr 2026) with a calculator, channel comparison, funnel visualisation and a metrics reference.',
+          'Интерактивный инструмент сравнения органики (SMM) и платного (CPC) трафика по воронке — 267 413 лидов (дек 2024 – апр 2026): калькулятор, сравнение каналов, визуализация воронки и справочник метрик.',
+          'Herramienta interactiva que compara tráfico orgánico (SMM) vs pago (CPC) en el funnel — 267 413 leads (dic 2024 – abr 2026): calculadora, comparación de canales, visualización del funnel y referencia de métricas.',
+          'Alat interaktif yang membandingkan trafik organik (SMM) vs berbayar (CPC) di funnel — 267.413 lead (Des 2024 – Apr 2026): kalkulator, perbandingan kanal, visualisasi funnel, dan referensi metrik.',
+          'Alat interaktif yang membandingkan trafik organik (SMM) vs berbayar (CPC) merentas funnel — 267,413 lead (Dis 2024 – Apr 2026): kalkulator, perbandingan saluran, visualisasi funnel, dan rujukan metrik.'
+        ),
+        findings: [
+          t('Dataset spans 267,413 leads from Dec 2024 to Apr 2026 (orai.csv snapshot 2026-04-13).',
+            'Датасет — 267 413 лидов с дек 2024 по апр 2026 (orai.csv, снапшот 2026-04-13).',
+            'Dataset: 267 413 leads de dic 2024 a abr 2026 (orai.csv, snapshot 2026-04-13).',
+            'Dataset 267.413 lead dari Des 2024 hingga Apr 2026 (orai.csv snapshot 2026-04-13).',
+            'Dataset 267,413 lead dari Dis 2024 hingga Apr 2026 (orai.csv snapshot 2026-04-13).'),
+          t('Compares organic vs paid on KPIs, conversion rates and revenue-per-lead (RPL) across top-10 channels.',
+            'Сравнение органики и платного по KPI, конверсиям и revenue-per-lead (RPL) по топ-10 каналам.',
+            'Compara orgánico vs pago en KPIs, conversiones y revenue por lead (RPL) en los top-10 canales.',
+            'Membandingkan organik vs berbayar pada KPI, konversi, dan revenue-per-lead (RPL) di 10 kanal teratas.',
+            'Membandingkan organik vs berbayar pada KPI, penukaran, dan hasil-per-lead (RPL) merentas 10 saluran teratas.'),
+          t('Configurable funnel with views → leads chain, warm/direct split, and per-platform benchmark cards.',
+            'Конфигурируемая воронка views → leads, разделение warm/direct и карточки бенчмарков по платформам.',
+            'Funnel configurable views → leads, división warm/direct y tarjetas de benchmark por plataforma.',
+            'Funnel yang dapat dikonfigurasi views → lead, pemisahan warm/direct, dan kartu benchmark per platform.',
+            'Funnel yang boleh dikonfigurasi pandangan → lead, pemisahan warm/direct, dan kad penanda aras setiap platform.'),
+          t('Sortable reference of metric formulas (L2Sale, AOV, RPL, etc.) for analyst use.',
+            'Сортируемый справочник формул метрик (L2Sale, AOV, RPL и т.д.) для аналитиков.',
+            'Referencia ordenable de fórmulas (L2Sale, AOV, RPL, etc.) para uso del analista.',
+            'Referensi formula metrik (L2Sale, AOV, RPL, dll.) yang dapat diurutkan untuk analis.',
+            'Rujukan formula metrik (L2Sale, AOV, RPL, dll.) yang boleh diisih untuk penganalisis.')
+        ]
+      },
+      {
+        file: 'organic_goal.html',
+        title: 'Q2 — Organic Path to Sales Goal',
+        date: '2026-04',
+        tags: ['Indonesia', 'Q2 2026', 'Organic', 'Forecast', 'SMM', 'Goal-Setting'],
+        summary: t(
+          'Interactive Q2 planning calculator modelling how many organic sales are needed to hit the overall Q2 target, with sliders for video views, views→lead rate, additional SMM leads, L2Sale and AOV.',
+          'Интерактивный калькулятор планирования Q2: сколько органических продаж нужно для общего таргета Q2, со слайдерами по views, конверсии views→lead, доп. SMM-лидам, L2Sale и AOV.',
+          'Calculadora interactiva del plan Q2: cuántas ventas orgánicas se necesitan para el objetivo Q2, con sliders de views, views→lead, leads adicionales SMM, L2Sale y AOV.',
+          'Kalkulator perencanaan Q2 interaktif: berapa banyak sales organik yang dibutuhkan untuk target Q2, dengan slider views, views→lead, lead SMM tambahan, L2Sale, dan AOV.',
+          'Kalkulator perancangan Q2 interaktif: berapa banyak jualan organik yang diperlukan untuk sasaran Q2, dengan slider pandangan, pandangan→lead, lead SMM tambahan, L2Sale, dan AOV.'
+        ),
+        findings: [
+          t('Q2 target: 804 total sales = 667 paid (83%) + 137 organic (17% share goal).',
+            'Цель Q2: 804 продажи = 667 платных (83%) + 137 органики (17%).',
+            'Meta Q2: 804 ventas = 667 pagas (83%) + 137 orgánicas (17%).',
+            'Target Q2: 804 sales = 667 berbayar (83%) + 137 organik (17%).',
+            'Sasaran Q2: 804 jualan = 667 berbayar (83%) + 137 organik (17%).'),
+          t('Baseline: 50M video views, views→lead 0.001% (target 0.005%), 3,500 direct SMM leads (Q1 actual), L2Sale 3.6%, AOV $341.',
+            'База: 50 млн views, views→lead 0,001% (цель 0,005%), 3 500 прямых SMM-лидов (факт Q1), L2Sale 3,6%, AOV $341.',
+            'Línea base: 50M views, views→lead 0,001% (objetivo 0,005%), 3 500 leads SMM directos (Q1), L2Sale 3,6%, AOV $341.',
+            'Baseline: 50jt views, views→lead 0,001% (target 0,005%), 3.500 lead SMM langsung (Q1), L2Sale 3,6%, AOV $341.',
+            'Garis dasar: 50jt pandangan, pandangan→lead 0.001% (sasaran 0.005%), 3,500 lead SMM langsung (Q1), L2Sale 3.6%, AOV $341.'),
+          t('Channel benchmarks: Instagram L2Sale 13.23%, best-channel 15.92% vs general SMM 3.6%.',
+            'Бенчмарки каналов: Instagram L2Sale 13,23%, лучший канал 15,92% против общего SMM 3,6%.',
+            'Benchmarks: Instagram L2Sale 13,23%, mejor canal 15,92% vs SMM general 3,6%.',
+            'Benchmark kanal: Instagram L2Sale 13,23%, kanal terbaik 15,92% vs SMM umum 3,6%.',
+            'Penanda aras: Instagram L2Sale 13.23%, saluran terbaik 15.92% vs SMM umum 3.6%.'),
+          t('Default scenario yields 144 organic sales (+7 above the 137 goal) and ~$49K organic revenue.',
+            'Сценарий по умолчанию даёт 144 органических продажи (+7 над целью 137) и ~$49K выручки.',
+            'Escenario por defecto: 144 ventas orgánicas (+7 sobre 137) y ~$49K de revenue.',
+            'Skenario default menghasilkan 144 sales organik (+7 di atas 137) dan ~$49K revenue.',
+            'Senario lalai menghasilkan 144 jualan organik (+7 di atas 137) dan ~$49K hasil.')
+        ]
+      },
+      {
+        file: 'price_analytics_v2.html',
+        title: 'Price-per-Lesson Analytics — Secondary Sales by Cohort',
+        date: '2026-03',
+        tags: ['Indonesia', 'Pricing', 'Cohort', 'Retention', 'Repeat Sales', 'UZS'],
+        summary: t(
+          'Cohort-based analysis testing whether price-per-lesson holds across repeat (secondary) payments, grouped by first-payment month from Dec 2024 to Mar 2026, with package-level breakdowns and student-level transition stats. Prices in UZS.',
+          'Когортный анализ: держится ли цена за урок на повторных оплатах. Группировка по месяцу первой оплаты с дек 2024 по март 2026, разбивки по пакетам и переходам студентов. Цены в UZS.',
+          'Análisis por cohorte: ¿se mantiene el precio por clase en los pagos repetidos? Agrupado por mes del primer pago (dic 2024 – mar 2026), con desgloses por paquete y transiciones. Precios en UZS.',
+          'Analisis kohort: apakah harga per pelajaran bertahan di pembayaran berulang? Dikelompokkan per bulan pembayaran pertama (Des 2024 – Mar 2026), dengan rincian paket dan transisi siswa. Harga dalam UZS.',
+          'Analisis kohort: adakah harga setiap pelajaran kekal pada pembayaran berulang? Dikumpulkan mengikut bulan pembayaran pertama (Dis 2024 – Mac 2026), dengan pecahan pakej dan peralihan pelajar. Harga dalam UZS.'
+        ),
+        findings: [
+          t('Price does NOT hold: median price drops −5% at payment 1→2; transitions 2→3 and 3→4 stay roughly flat.',
+            'Цена НЕ держится: медиана падает −5% на переходе 1→2; 2→3 и 3→4 примерно ровные.',
+            'El precio NO se mantiene: la mediana cae −5% en 1→2; 2→3 y 3→4 se mantienen estables.',
+            'Harga TIDAK bertahan: median turun −5% di pembayaran 1→2; 2→3 dan 3→4 relatif datar.',
+            'Harga TIDAK kekal: median jatuh −5% pada pembayaran 1→2; 2→3 dan 3→4 kekal relatif rata.'),
+          t('55% of students get a price reduction on their second payment (1,655 down vs 627 up vs 754 same out of 3,036).',
+            '55% студентов получают снижение цены на второй оплате (1 655 вниз vs 627 вверх vs 754 без изменений из 3 036).',
+            '55% de los alumnos reciben una rebaja en el segundo pago (1 655 baja vs 627 sube vs 754 igual de 3 036).',
+            '55% siswa mendapat penurunan harga di pembayaran kedua (1.655 turun vs 627 naik vs 754 sama dari 3.036).',
+            '55% pelajar menerima pengurangan harga pada pembayaran kedua (1,655 turun vs 627 naik vs 754 sama daripada 3,036).'),
+          t('Cohort trend worsening: early cohorts (Jun–Aug 2025) ≈ 0% on 1→2; recent (Dec 2025 – Mar 2026) plunged to −13% to −16%.',
+            'Когортный тренд ухудшается: ранние когорты (июн–авг 2025) ~0% на 1→2; свежие (дек 2025 – март 2026) — от −13% до −16%.',
+            'Tendencia por cohorte empeorando: cohortes tempranas (jun–ago 2025) ≈ 0% en 1→2; recientes (dic 2025 – mar 2026) cayeron a −13% a −16%.',
+            'Tren kohort memburuk: kohort awal (Jun–Agu 2025) ≈ 0% pada 1→2; kohort terbaru (Des 2025 – Mar 2026) anjlok ke −13% hingga −16%.',
+            'Trend kohort semakin teruk: kohort awal (Jun–Ogo 2025) ≈ 0% pada 1→2; kohort terkini (Dis 2025 – Mac 2026) jatuh ke −13% hingga −16%.'),
+          t('Package patterns: 8-lesson packs drop hardest (−13.6%, 65% pay less); 32-lesson packs hold 1→2 but drop −13% on 2→3; base price rose ~50% (118K → 177K UZS).',
+            'Пакеты: 8-уроков падают сильнее всего (−13,6%, 65% платят меньше); 32-уроков держатся 1→2, но падают −13% на 2→3; базовая цена выросла ~50% (118K → 177K UZS).',
+            'Paquetes: los de 8 clases caen más (−13,6%, 65% pagan menos); los de 32 clases se mantienen 1→2 pero caen −13% en 2→3; precio base subió ~50% (118K → 177K UZS).',
+            'Pola paket: paket 8 pelajaran turun paling tajam (−13,6%, 65% bayar lebih sedikit); paket 32 pelajaran bertahan 1→2 tapi turun −13% di 2→3; harga dasar naik ~50% (118K → 177K UZS).',
+            'Corak pakej: pakej 8 pelajaran jatuh paling teruk (−13.6%, 65% bayar kurang); pakej 32 pelajaran kekal 1→2 tapi jatuh −13% pada 2→3; harga asas naik ~50% (118K → 177K UZS).')
+        ]
+      }
+    ],
+    malaysia: [],
+    latam: []
+  };
+
+  const RESEARCH_LABELS = {
+    summary:    t('Summary',       'Краткое содержание', 'Resumen',         'Ringkasan',        'Ringkasan'),
+    tags:       t('Tags',          'Теги',               'Etiquetas',       'Tag',              'Tag'),
+    findings:   t('Key findings',  'Ключевые выводы',    'Conclusiones',    'Temuan utama',     'Penemuan utama'),
+    open:       t('Open report',   'Открыть отчёт',      'Abrir informe',   'Buka laporan',     'Buka laporan')
+  };
+
   window.Algonova.data = {
     dashboards: DASHBOARDS,
     glossary: GLOSSARY,
     team: TEAM,
     faq: FAQ,
+    research: RESEARCH,
+    researchLabels: RESEARCH_LABELS,
     buLabels: BU_LABELS
   };
 })();

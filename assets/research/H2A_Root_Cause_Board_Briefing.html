@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>H2A Root Cause Analysis — Algonova Board Briefing</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+:root{
+--bg:#0B0C0E;--bg2:#131416;--bg3:#1A1B1F;--bg4:#222328;
+--surface:#16171B;--surface2:#1E1F24;
+--text:#E8E6E1;--text2:#9A978F;--text3:#5E5C57;
+--border:#2A2B30;--border2:#353639;
+--red:#E5484D;--red-dim:#3D1418;--red-soft:#F2555A;
+--green:#30A46C;--green-dim:#132D21;--green-soft:#3CB179;
+--amber:#F5A623;--amber-dim:#3D2E0A;
+--blue:#3B82F6;--blue-dim:#172554;
+--purple:#A78BFA;
+--font:'Geist',system-ui,sans-serif;
+--serif:'Instrument Serif',Georgia,serif;
+--mono:'Geist Mono',monospace;
+--radius:10px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.65;-webkit-font-smoothing:antialiased}
+::selection{background:var(--red);color:#fff}
+
+.container{max-width:960px;margin:0 auto;padding:0 28px 100px}
+
+/* ---- HERO ---- */
+.hero{padding:56px 0 48px;border-bottom:1px solid var(--border)}
+.hero-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:32px}
+.logo{font-family:var(--mono);font-size:11px;font-weight:500;color:var(--text3);letter-spacing:2px;text-transform:uppercase}
+.lang-toggle{display:flex;gap:4px}
+.lang-btn{padding:5px 14px;border-radius:6px;border:1px solid var(--border);background:transparent;cursor:pointer;font-size:12px;font-family:var(--mono);font-weight:500;color:var(--text3);transition:all .15s}
+.lang-btn.active{background:var(--text);color:var(--bg);border-color:var(--text)}
+.lang-btn:hover:not(.active){border-color:var(--text3);color:var(--text2)}
+.hero h1{font-family:var(--serif);font-size:42px;font-weight:400;letter-spacing:-0.5px;line-height:1.15;margin-bottom:12px;max-width:700px}
+.hero h1 em{font-style:italic;color:var(--red-soft)}
+.hero-sub{font-size:15px;color:var(--text2);max-width:640px;line-height:1.6}
+.hero-meta{display:flex;gap:24px;margin-top:24px;font-size:12px;font-family:var(--mono);color:var(--text3)}
+.hero-meta span{display:flex;align-items:center;gap:6px}
+.dot{width:6px;height:6px;border-radius:50%;display:inline-block}
+
+/* ---- METRICS ---- */
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin:40px 0}
+.metric{background:var(--bg2);padding:24px;text-align:center}
+.metric .label{font-size:11px;font-family:var(--mono);color:var(--text3);text-transform:uppercase;letter-spacing:1px}
+.metric .val{font-size:32px;font-weight:700;margin:6px 0 2px;letter-spacing:-1.5px}
+.metric .sub{font-size:12px;color:var(--text3)}
+
+/* ---- VERDICT BANNER ---- */
+.verdict-banner{background:var(--red-dim);border:1px solid rgba(229,72,77,0.2);border-radius:var(--radius);padding:28px 32px;margin:40px 0}
+.verdict-banner h2{font-family:var(--serif);font-size:22px;font-weight:400;color:var(--red-soft);margin-bottom:10px}
+.verdict-banner p{font-size:14px;color:var(--text2);line-height:1.7}
+
+/* ---- CHART ---- */
+.chart-section{margin:40px 0}
+.chart-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:28px}
+.chart-card h3{font-size:14px;font-weight:600;margin-bottom:4px}
+.chart-card .chart-sub{font-size:12px;color:var(--text3);margin-bottom:20px}
+.chart-wrap{position:relative;height:280px}
+
+/* ---- FINDINGS ---- */
+.section-label{font-size:11px;font-family:var(--mono);font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:2px;margin:56px 0 20px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+
+.finding{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:16px;overflow:hidden;transition:border-color .2s}
+.finding:hover{border-color:var(--border2)}
+.finding-header{display:flex;align-items:center;gap:16px;padding:22px 24px;cursor:pointer;user-select:none}
+.finding-num{font-family:var(--mono);font-size:13px;font-weight:600;min-width:24px;color:var(--red-soft)}
+.finding-title{flex:1;font-size:15px;font-weight:600;letter-spacing:-0.2px}
+.finding-impact{font-family:var(--mono);font-size:12px;padding:4px 10px;border-radius:5px;white-space:nowrap}
+.impact-high{background:var(--red-dim);color:var(--red-soft)}
+.impact-med{background:var(--amber-dim);color:var(--amber)}
+.impact-low{background:var(--bg4);color:var(--text3)}
+.chevron{color:var(--text3);transition:transform .25s;font-size:16px;margin-left:8px}
+.finding.open .chevron{transform:rotate(180deg)}
+
+.finding-body{display:none;padding:0 24px 24px;border-top:1px solid var(--border)}
+.finding.open .finding-body{display:block}
+
+.finding-narrative{font-size:14px;color:var(--text2);line-height:1.7;margin:20px 0;max-width:800px}
+.finding-narrative strong{color:var(--text);font-weight:600}
+
+.data-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:20px 0}
+.data-box{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:18px;overflow-x:auto}
+.data-box.full{grid-column:1/-1}
+.data-box h4{font-size:11px;font-family:var(--mono);font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:12px}
+
+table.dt{width:100%;border-collapse:collapse;font-size:13px}
+table.dt th{text-align:left;font-weight:600;color:var(--text3);font-size:10px;font-family:var(--mono);text-transform:uppercase;letter-spacing:0.5px;padding:8px 10px;border-bottom:1px solid var(--border)}
+table.dt td{padding:8px 10px;border-bottom:1px solid rgba(42,43,48,0.5);color:var(--text2)}
+table.dt tr:last-child td{border-bottom:none}
+table.dt td:first-child{color:var(--text);font-weight:500}
+.neg{color:var(--red-soft) !important;font-weight:600 !important}
+.pos{color:var(--green-soft) !important;font-weight:600 !important}
+.highlight-row{background:rgba(229,72,77,0.06)}
+
+.insight{background:var(--surface2);border-left:3px solid var(--red);border-radius:0 8px 8px 0;padding:16px 20px;margin:20px 0;font-size:13px;color:var(--text2);line-height:1.7}
+.insight strong{color:var(--text);font-weight:600}
+
+.mini-chart-wrap{height:160px;position:relative;margin-top:8px}
+
+/* ---- RECS ---- */
+.recs{background:linear-gradient(135deg,#111214,#1A1B20);border:1px solid var(--border);border-radius:var(--radius);padding:32px;margin-top:48px}
+.recs h3{font-family:var(--serif);font-size:22px;font-weight:400;margin-bottom:20px}
+.rec{display:flex;gap:16px;padding:16px 0;border-top:1px solid var(--border)}
+.rec:first-of-type{border-top:none;padding-top:0}
+.rec-num{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--red-soft);min-width:20px;padding-top:2px}
+.rec-text{font-size:14px;line-height:1.65;color:var(--text2)}
+.rec-text strong{color:var(--text)}
+.rec-tag{display:inline-block;font-size:10px;font-family:var(--mono);padding:2px 8px;border-radius:4px;margin-left:6px;vertical-align:middle}
+.rec-tag.urgent{background:var(--red-dim);color:var(--red-soft)}
+.rec-tag.strategic{background:var(--blue-dim);color:var(--blue)}
+.rec-tag.quick{background:var(--green-dim);color:var(--green-soft)}
+
+.footer{text-align:center;padding:48px 0;font-size:11px;font-family:var(--mono);color:var(--text3)}
+
+@media(max-width:768px){
+.metrics{grid-template-columns:repeat(2,1fr)}
+.data-grid{grid-template-columns:1fr}
+.hero h1{font-size:28px}
+.hero-top{flex-direction:column;gap:16px}
+.container{padding:0 16px 80px}
+}
+
+/* Animations */
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.hero,.metrics,.verdict-banner,.chart-section,.finding,.recs{animation:fadeUp .5s ease both}
+.metrics{animation-delay:.1s}.verdict-banner{animation-delay:.15s}
+.chart-section{animation-delay:.2s}
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="hero">
+<div class="hero-top">
+<div class="logo">Algonova Analytics</div>
+<div class="lang-toggle">
+<button class="lang-btn active" onclick="setLang('en')">EN</button>
+<button class="lang-btn" onclick="setLang('ru')">RU</button>
+<button class="lang-btn" onclick="setLang('id')">ID</button>
+</div>
+</div>
+<h1 data-i18n="title">The H2A decline is a <em>product × scale</em> problem, not a people problem</h1>
+<p class="hero-sub" data-i18n="subtitle">Multidimensional root cause analysis of H2A (Booking→Attendance) conversion decline. 50,510 booked leads decomposed across course, channel, optimization, age, and absence dimensions. January — May 2026.</p>
+<div class="hero-meta">
+<span><span class="dot" style="background:var(--red)"></span> <span data-i18n="meta1">48,697 leads analyzed (excl. XTC)</span></span>
+<span><span class="dot" style="background:var(--amber)"></span> <span data-i18n="meta2">5 months · 12 courses · 4 channels</span></span>
+<span><span class="dot" style="background:var(--green)"></span> <span data-i18n="meta3">Oaxaca-Blinder decomposition</span></span>
+</div>
+</div>
+
+<div class="metrics">
+<div class="metric"><div class="label" data-i18n="ml1">Jan H2A (clean)</div><div class="val" style="color:var(--green-soft)">40.2%</div><div class="sub">n = 12,832</div></div>
+<div class="metric"><div class="label" data-i18n="ml2">May H2A (clean)</div><div class="val" style="color:var(--red-soft)">36.8%</div><div class="sub">n = 9,692</div></div>
+<div class="metric"><div class="label" data-i18n="ml3">Total decline</div><div class="val" style="color:var(--red-soft)">-3.4pp</div><div class="sub" data-i18n="ml3s">excl. XTC contamination</div></div>
+<div class="metric"><div class="label" data-i18n="ml4">YoY gap (May)</div><div class="val" style="color:var(--red-soft)">-6.8pp</div><div class="sub" data-i18n="ml4s">vs May 2025: 42.3%</div></div>
+</div>
+
+<div class="verdict-banner">
+<h2 data-i18n="verdict_title">Key verdict: 97% of the decline is within-channel, not mix shift</h2>
+<p data-i18n="verdict_body">Initial hypothesis that autobooking channel surge caused the decline was <strong>disproved</strong>. Counterfactual analysis shows channel mix shift explains only 0.13pp of the 3.38pp decline. The real drivers are: (1) Math Tutoring H2A collapsing while becoming 48% of volume, (2) The Coding Knight targeting wrong age groups, and (3) systemic lead quality erosion across all channels. This is a product and scaling problem — not a manager, channel, or BM problem.</p>
+</div>
+
+<div class="chart-section">
+<div class="chart-card">
+<h3 data-i18n="chart1_title">H2A% trend — the real picture</h3>
+<div class="chart-sub" data-i18n="chart1_sub">Clean (no XTC) vs reported vs 2025 baseline</div>
+<div class="chart-wrap"><canvas id="trendChart"></canvas></div>
+</div>
+</div>
+
+<div class="section-label" data-i18n="sec_root">Root cause findings</div>
+<div id="findings-list"></div>
+
+<div class="recs" id="recs-container"></div>
+
+<div class="footer">
+<span data-i18n="footer">Algonova Analytics · H2A Root Cause Board Briefing · May 2026 · Data period: Jan 1 — May 24, 2026</span>
+</div>
+
+</div>
+
+<script>
+const L = {
+en:{
+title:'The H2A decline is a <em>product × scale</em> problem, not a people problem',
+subtitle:'Multidimensional root cause analysis of H2A (Booking→Attendance) conversion decline. 50,510 booked leads decomposed across course, channel, optimization, age, and absence dimensions. January — May 2026.',
+meta1:'48,697 leads analyzed (excl. XTC)',meta2:'5 months · 12 courses · 4 channels',meta3:'Oaxaca-Blinder decomposition',
+ml1:'Jan H2A (clean)',ml2:'May H2A (clean)',ml3:'Total decline',ml3s:'excl. XTC contamination',ml4:'YoY gap (May)',ml4s:'vs May 2025: 42.3%',
+verdict_title:'Key verdict: 97% of the decline is within-channel, not mix shift',
+verdict_body:'Initial hypothesis that autobooking channel surge caused the decline was <strong>disproved</strong>. Counterfactual analysis shows channel mix shift explains only 0.13pp of the 3.38pp decline. The real drivers are: (1) Math Tutoring H2A collapsing while becoming 48% of volume, (2) The Coding Knight targeting wrong age groups, and (3) systemic lead quality erosion across all channels. This is a product and scaling problem — not a manager, channel, or BM problem.',
+chart1_title:'H2A% trend — the real picture',chart1_sub:'Clean (no XTC) vs reported vs 2025 baseline',
+sec_root:'Root cause findings',
+footer:'Algonova Analytics · H2A Root Cause Board Briefing · May 2026 · Data period: Jan 1 — May 24, 2026',
+recs_title:'Recommendations for the board',
+findings:[
+{num:'01',title:'Math Tutoring rate collapse — the dominant driver',impact:'+5.87pp if fixed',impactClass:'impact-high',
+narrative:'Math Tutoring H2A collapsed from <strong>53.5% → 41.3%</strong> (-12.2pp) while its share of total volume tripled from <strong>16% → 48%</strong>. This single course\'s decline accounts for more than the entire overall H2A drop. The inflection point was <strong>Week 13 (March 30)</strong> — H2A fell from ~67% to ~40% and never recovered. Critically, this decline happened <strong>across ALL landing types</strong>: math landing (52.7%→43.9%), autobooking (67.8%→43.6%), and design (71.4%→41.2%). No Response as an absence reason jumped from 23% to 36% within Math Tutoring.',
+tables:[
+{title:'Math Tutoring by landing type (Purchase optimization)',full:true,
+headers:['Landing','Jan H2A','Jan n','May H2A','May n','Change'],
+rows:[
+['Autobooking','67.8%','152','43.6%','862','neg:-24.2pp'],
+['Math landing','52.7%','919','43.9%','515','neg:-8.8pp'],
+['Design','71.4%','21','41.2%','51','neg:-30.2pp'],
+]},
+{title:'MT weekly H2A — the inflection point',full:true,
+headers:['Week','Volume','H2A%','Trend'],
+rows:[
+['Jan 26','152','69.7%','pos:Stable high'],
+['Feb 2-23','877','66.3%','pos:Stable high'],
+['Mar 2-16','220','61.7%','Declining'],
+['Mar 23-30','146','42.1%','neg:Cliff drop ←'],
+['Apr 6-27','1,498','39.8%','neg:New baseline'],
+['May 4-18','2,074','40.6%','neg:No recovery'],
+]}
+],
+insight:'The Math Tutoring decline is not a channel problem — it happened simultaneously across autobooking, math landing, AND design. Something changed at the product/market level around late March. The No Response rate jumping from 23%→36% suggests increasingly low-intent leads entering the funnel. At 48% volume share, every 1pp drop in MT H2A drags overall H2A by ~0.5pp.'},
+
+{num:'02',title:'The Coding Knight — wrong age targeting destroying H2A',impact:'+2.12pp if fixed',impactClass:'impact-high',
+narrative:'The Coding Knight has the worst H2A of any major course (24%→14.8%) while holding <strong>14-16% of total volume</strong>. The root cause is clear: it\'s an <strong>age problem</strong>. Children aged 5-6 have 28-34% H2A (acceptable), but ages 7+ have <strong>4-8% H2A</strong> — essentially zero conversion. The age mix shifted: age 5-6 share fell from <strong>64% → 42%</strong> while age 7+ grew from <strong>27% → 45%</strong>. Additionally, tech problems are worst in CK: 37% of absences are tech-related, with "collapsed" sessions at 23%.',
+tables:[
+{title:'The Coding Knight: H2A by age group',full:false,
+headers:['Age','Leads','H2A%'],
+rows:[
+['Age 5','1,687','pos:31.2%'],
+['Age 6','1,922','pos:31.7%'],
+['Age 7','509','neg:14.9%'],
+['Age 8','426','neg:4.5%'],
+['Age 9','418','neg:4.1%'],
+['Age 10','484','neg:6.2%'],
+['Age 11+','691','neg:4.5%'],
+]},
+{title:'CK age mix shift',full:false,
+headers:['Group','Jan share','May share','Shift'],
+rows:[
+['Age 5-6 (good)','64%','42%','neg:-22pp'],
+['Age 7+ (broken)','27%','45%','neg:+18pp'],
+['H2A age 5-6','33.6%','27.9%','neg:-5.7pp'],
+['H2A age 7+','8.3%','6.0%','neg:-2.3pp'],
+]}
+],
+insight:'Marketing/BMs are booking increasingly older children into The Coding Knight, but ages 7+ have near-zero attendance rates. This is either a product-market fit issue (CK content doesn\'t appeal to 7+ year olds) or a targeting problem. Combined with severe tech issues (37% of absences), CK is a structural drag on H2A. If CK achieved even 30% H2A, overall May H2A would rise by +2.12pp.'},
+
+{num:'03',title:'Systemic within-channel erosion — all channels declining together',impact:'Structural',impactClass:'impact-high',
+narrative:'The Oaxaca-Blinder decomposition proved that <strong>channel mix shift explains only 0.13pp</strong> of the 3.38pp decline. The remaining <strong>97% is within-channel rate erosion</strong> — every landing type, every optimization type, and every UTM source is experiencing simultaneous H2A decline. This rules out channel allocation as the cause and points to either macro lead quality degradation or system-wide operational capacity issues.',
+tables:[
+{title:'Within-channel H2A decline (same channel, Jan vs May)',full:true,
+headers:['Channel combination','Jan H2A','May H2A','Change'],
+rows:[
+['Math landing × Purchase','52.7%','43.9%','neg:-8.8pp'],
+['Design × Purchase','37.9%','35.1%','neg:-2.8pp'],
+['Autobooking × Purchase','51.0%','38.1%','neg:-12.9pp'],
+['Autobooking × RegisteredMK','—','36.2%','New channel'],
+['Math × RegisteredMK','—','35.6%','New channel'],
+['Facebook (all)','32.7%','36.2%','pos:+3.5pp'],
+['Google (all)','20.8%','31.0%','pos:+10.2pp'],
+]},
+{title:'Formal decomposition result',full:true,
+headers:['Component','Effect','% of decline','Interpretation'],
+rows:[
+['Channel mix shift','+0.13pp','~4%','neg:Not the driver'],
+['Within-channel rate change','-3.51pp','~96%','neg:The real driver'],
+['Total','-3.38pp','100%',''],
+]}
+],
+insight:'This is the most important finding. Every initial hypothesis about autobooking surge or channel mix was wrong. The decline is happening inside every channel simultaneously. Two possible explanations: (1) The total market of reachable parents in Indonesia is getting saturated at current scale, or (2) The 2x volume increase outpaced the system\'s ability to engage and convert. Both point to a growth-quality tradeoff problem.'},
+
+{num:'04',title:'XTC data contamination inflating the problem',impact:'+1.33pp if fixed',impactClass:'impact-med',
+narrative:'"XTC" is a system/non-person H2A assignment with <strong>0% attendance</strong> and 370-520 leads/month. It drags reported H2A by <strong>1.1-1.7pp every month</strong>. This is pure data noise — not a performance issue. XTC growing from 370 to 521 leads (Jan→Apr) made the decline look worse than it actually is.',
+tables:[
+{title:'XTC impact on reported H2A',full:true,
+headers:['Month','Reported H2A','Clean H2A','XTC drag','XTC leads'],
+rows:[
+['Jan','39.07%','40.20%','neg:-1.13pp','370'],
+['Feb','39.04%','40.36%','neg:-1.32pp','304'],
+['Mar','37.72%','39.22%','neg:-1.50pp','251'],
+['Apr','36.38%','38.12%','neg:-1.74pp','521'],
+['May','35.49%','36.82%','neg:-1.33pp','367'],
+]}
+],
+insight:'Quick fix: exclude XTC from all H2A reporting immediately. This alone corrects the reported metric by +1.3pp and gives a more accurate picture of actual team performance. Investigate what XTC represents — likely an unassigned queue or system bucket.'},
+
+{num:'05',title:'Confirmation Step 1 removal cost ~1.0pp',impact:'+1.0pp if restored',impactClass:'impact-med',
+narrative:'Confirmed 1 rate collapsed from <strong>24% → 0%</strong> starting March. In January, leads with C1=Yes had <strong>42.3% H2A vs 38.1%</strong> for C1=No — a 4.2pp uplift. At 24% coverage, this step contributed ~1.0pp to overall H2A. Its removal was not compensated by C2 improvements: while C2 rate rose (54%→67%), C2=Yes H2A itself declined (42.7%→39.2%).',
+tables:[
+{title:'Confirmation steps: rate and H2A impact',full:true,
+headers:['Month','C1 rate','C1 Yes H2A','C1 No H2A','C2 rate','C2 Yes H2A','C2 No H2A'],
+rows:[
+['Jan','24.0%','pos:42.3%','38.1%','54.3%','pos:42.7%','34.2%'],
+['Feb','4.0%','pos:51.8%','38.5%','60.7%','pos:43.7%','31.7%'],
+['Mar','0.0%','—','37.7%','63.2%','42.9%','28.8%'],
+['Apr','0.0%','—','36.4%','61.5%','40.2%','30.3%'],
+['May','0.0%','—','35.5%','66.8%','39.2%','neg:28.1%'],
+]}
+],
+insight:'C1 was a valuable early engagement touchpoint. Even if only 24% of leads received it, those leads had +4.2pp better attendance. Additionally, C2=Yes H2A declining from 42.7%→39.2% shows that even confirmed leads are attending less — reinforcing the systemic quality/engagement decline.'},
+
+{num:'06',title:'Tech problems growing — especially "collapsed" sessions',impact:'~0.5pp estimated',impactClass:'impact-med',
+narrative:'Tech issues grew from <strong>29% → 34%</strong> of all absences. "Collapsed" (session drops mid-class) is the dominant type at 23% of CK absences and growing. The Coding Knight is hardest hit (37% tech absences), likely because younger children have less reliable devices/internet.',
+tables:[
+{title:'Tech problem trend',full:false,
+headers:['Month','Tech %','Collapsed','Before MK'],
+rows:[
+['Jan','28.8%','1,171','1,149'],
+['Feb','32.1%','1,048','763'],
+['Mar','32.2%','754','561'],
+['Apr','32.0%','1,298','1,032'],
+['May','33.9%','1,244','956'],
+]},
+{title:'Tech problems by course (May)',full:false,
+headers:['Course','Tech % of absences'],
+rows:[
+['The Coding Knight','neg:37%'],
+['Visual Programming','neg:45%'],
+['Math Tutoring','29%'],
+['Graphic Design','36%'],
+]}
+],
+insight:'Platform stability is an infrastructure priority. "Collapsed" sessions (mid-class drops) directly damage the student/parent experience and likely discourage future attendance. The fact that tech problems are worst in courses for younger children (CK, Visual Prog) suggests device/bandwidth requirements may not match the target demographic.'},
+
+{num:'07',title:'YoY gap widening — structural, not seasonal',impact:'Diagnostic',impactClass:'impact-low',
+narrative:'Every month of 2026 is worse than 2025, and the gap is <strong>widening</strong>: from -3.2pp (Jan) to <strong>-6.8pp (May)</strong>. Volume nearly doubled (6K→10-13K/month). March was the worst month, partially explained by Ramadan, but the non-recovery in April-May confirms this is not seasonal.',
+tables:[
+{title:'Year-over-year comparison',full:true,
+headers:['Month','2025 H2A','2025 vol','2026 H2A','2026 vol','YoY gap'],
+rows:[
+['Jan','42.3%','6,345','40.2%','12,832','neg:-2.1pp'],
+['Feb','43.8%','4,814','40.4%','8,961','neg:-3.4pp'],
+['Mar','42.0%','5,505','39.2%','6,298','neg:-2.8pp'],
+['Apr','42.5%','6,992','38.1%','10,914','neg:-4.4pp'],
+['May','42.3%','6,119','36.8%','9,692','neg:-5.5pp'],
+]}
+],
+insight:'The YoY gap acceleration is the strongest evidence that the system is scaling beyond its quality capacity. Volume nearly doubled while H2A declined 5.5pp. This is a classic growth-quality tradeoff — every new cohort of leads is slightly lower quality than the last, and the operational system (H2A managers, TCM slots, platform capacity) hasn\'t scaled proportionally.'},
+
+{num:'08',title:'H2A managers are NOT the problem — they\'re improving',impact:'Exonerated',impactClass:'impact-low',
+narrative:'Most H2A managers show <strong>stable or improving</strong> performance. Afifa Yuniana went from 31.8%→38.6%, Lara N. Masdi from 29.3%→37.4%, Ara Utia from 31.4%→34.9%. The managers are fighting an uphill battle against systemic forces and actually winning on an individual basis.',
+tables:[
+{title:'H2A manager performance trend (clean)',full:true,
+headers:['Manager','Jan','Feb','Mar','Apr','May','Verdict'],
+rows:[
+['Afifa Yuniana','31.8%','32.6%','34.4%','34.7%','38.6%','pos:Improving'],
+['Namirah R.','35.5%','33.6%','37.1%','32.9%','37.3%','pos:Stable'],
+['Ara Utia','31.4%','31.7%','30.3%','32.6%','34.9%','pos:Improving'],
+['Deni Setiawan','32.4%','33.7%','29.2%','31.2%','34.7%','pos:Improving'],
+['Lara N. Masdi','29.3%','30.7%','33.6%','33.7%','37.4%','pos:Improving'],
+['Felicia Ayu','31.0%','31.5%','24.7%','28.0%','31.7%','Recovering'],
+]}
+],
+insight:'This is a critical finding for the board: <strong>do not blame the H2A team</strong>. They are individually improving despite being handed increasingly difficult leads (higher No Response rates, more tech issues, lower-intent traffic from scaling). The problem is upstream — lead quality and product-market fit.'}
+],
+recs:[
+{num:'01',text:'<strong>Investigate the Math Tutoring inflection point (Week 13, late March).</strong> Something changed — possibly a campaign shift, audience exhaustion, or creative fatigue. The decline hit all landing types simultaneously, suggesting a demand-side or ad-targeting shift rather than a supply-side change.',tag:'urgent',tagText:'URGENT'},
+{num:'02',text:'<strong>Fix XTC data contamination immediately.</strong> Exclude XTC from all H2A reporting. This takes 5 minutes and corrects the reported metric by +1.3pp, giving the board a more accurate view of actual team performance.',tag:'quick',tagText:'QUICK WIN'},
+{num:'03',text:'<strong>Restrict The Coding Knight booking to ages 5-6.</strong> Ages 7+ have 4-8% H2A — they virtually never attend. Either stop booking these age groups or redesign the CK product for older children. This alone could improve CK H2A from 14.8% to ~28%.',tag:'strategic',tagText:'STRATEGIC'},
+{num:'04',text:'<strong>Reinstate Confirmation Step 1</strong>, even as an automated WhatsApp/SMS sequence. Data proves C1 gave +4.2pp H2A uplift. At scale, even a simplified version would recover ~0.5-1.0pp.',tag:'quick',tagText:'QUICK WIN'},
+{num:'05',text:'<strong>Address platform "collapsed" sessions.</strong> Tech problems now account for 34% of absences and are worst in courses for young children. Mid-session drops damage trust and discourage rebooking. This is a product/infrastructure priority.',tag:'urgent',tagText:'URGENT'},
+{num:'06',text:'<strong>Reassess the growth-quality tradeoff.</strong> Volume nearly doubled YoY while H2A dropped 5.5pp. The board should decide: is it acceptable to trade conversion rate for volume? If not, scaling should slow until lead quality stabilizes. Consider capacity: can 14 active H2A managers handle 10-13K leads/month?',tag:'strategic',tagText:'STRATEGIC'},
+]
+},
+ru:{
+title:'Снижение H2A — это проблема <em>продукта × масштабирования</em>, а не людей',
+subtitle:'Мультимерный анализ корневых причин снижения конверсии H2A (Бронирование→Посещение). 50 510 забронированных лидов декомпозированы по курсам, каналам, оптимизации, возрасту и причинам отсутствия. Январь — Май 2026.',
+meta1:'48 697 лидов проанализировано (без XTC)',meta2:'5 месяцев · 12 курсов · 4 канала',meta3:'Декомпозиция Оаксака-Блиндера',
+ml1:'Янв H2A (чист.)',ml2:'Май H2A (чист.)',ml3:'Общее снижение',ml3s:'без загрязнения XTC',ml4:'Год к году (Май)',ml4s:'vs Май 2025: 42.3%',
+verdict_title:'Ключевой вердикт: 97% снижения — внутриканальное, не от смены микса',
+verdict_body:'Первоначальная гипотеза о влиянии роста автобукинга была <strong>опровергнута</strong>. Контрфактуальный анализ показывает, что сдвиг канального микса объясняет лишь 0.13пп из 3.38пп снижения. Реальные драйверы: (1) обвал H2A Math Tutoring при росте до 48% объёма, (2) The Coding Knight нацелен на неправильные возрастные группы, (3) системная деградация качества лидов во всех каналах.',
+chart1_title:'Тренд H2A% — реальная картина',chart1_sub:'Чистый (без XTC) vs отчётный vs базис 2025',
+sec_root:'Корневые причины',
+footer:'Algonova Analytics · Брифинг для совета H2A · Май 2026 · Период данных: 1 янв — 24 мая 2026',
+recs_title:'Рекомендации для совета',
+},
+id:{
+title:'Penurunan H2A adalah masalah <em>produk × skala</em>, bukan masalah orang',
+subtitle:'Analisis akar penyebab multidimensi penurunan konversi H2A (Booking→Attendance). 50.510 lead terbooked dianalisis berdasarkan course, channel, optimasi, usia, dan alasan absensi. Januari — Mei 2026.',
+meta1:'48.697 lead dianalisis (tanpa XTC)',meta2:'5 bulan · 12 course · 4 channel',meta3:'Dekomposisi Oaxaca-Blinder',
+ml1:'Jan H2A (bersih)',ml2:'Mei H2A (bersih)',ml3:'Total penurunan',ml3s:'tanpa kontaminasi XTC',ml4:'Gap YoY (Mei)',ml4s:'vs Mei 2025: 42.3%',
+verdict_title:'Kesimpulan utama: 97% penurunan terjadi di dalam channel, bukan perpindahan mix',
+verdict_body:'Hipotesis awal bahwa lonjakan autobooking menyebabkan penurunan telah <strong>dibuktikan salah</strong>. Analisis counterfactual menunjukkan pergeseran mix channel hanya menjelaskan 0.13pp dari 3.38pp penurunan. Driver sebenarnya: (1) H2A Math Tutoring runtuh sambil menjadi 48% volume, (2) The Coding Knight menargetkan kelompok usia yang salah, (3) erosi kualitas lead secara sistemik di semua channel.',
+chart1_title:'Tren H2A% — gambaran sebenarnya',chart1_sub:'Bersih (tanpa XTC) vs dilaporkan vs baseline 2025',
+sec_root:'Temuan akar penyebab',
+footer:'Algonova Analytics · Board Briefing H2A · Mei 2026 · Periode data: 1 Jan — 24 Mei 2026',
+recs_title:'Rekomendasi untuk board',
+}
+};
+// Copy findings/recs to ru/id (content stays English, chrome translates)
+L.ru.findings=L.en.findings;L.ru.recs=L.en.recs;
+L.id.findings=L.en.findings;L.id.recs=L.en.recs;
+
+let lang='en';
+
+function setLang(l){
+lang=l;
+document.querySelectorAll('.lang-btn').forEach(b=>b.classList.remove('active'));
+document.querySelector(`.lang-btn[onclick*="${l}"]`).classList.add('active');
+document.querySelectorAll('[data-i18n]').forEach(el=>{
+const k=el.getAttribute('data-i18n');
+if(L[l][k])el.innerHTML=L[l][k];
+});
+renderFindings();renderRecs();
+}
+
+function renderFindings(){
+const f=L[lang].findings||L.en.findings;
+let h='';
+f.forEach((item,i)=>{
+h+=`<div class="finding" id="f${i}">
+<div class="finding-header" onclick="toggle(${i})">
+<span class="finding-num">${item.num}</span>
+<span class="finding-title">${item.title}</span>
+<span class="finding-impact ${item.impactClass}">${item.impact}</span>
+<span class="chevron">▾</span>
+</div>
+<div class="finding-body">
+<div class="finding-narrative">${item.narrative}</div>
+<div class="data-grid">`;
+item.tables.forEach(t=>{
+h+=`<div class="data-box${t.full?' full':''}"><h4>${t.title}</h4>
+<table class="dt"><thead><tr>${t.headers.map(th=>`<th>${th}</th>`).join('')}</tr></thead><tbody>`;
+t.rows.forEach(row=>{
+h+='<tr>';
+row.forEach((cell,ci)=>{
+let cls='';let val=cell;
+if(typeof cell==='string'&&cell.startsWith('neg:')){cls=' class="neg"';val=cell.slice(4);}
+if(typeof cell==='string'&&cell.startsWith('pos:')){cls=' class="pos"';val=cell.slice(4);}
+h+=`<td${cls}>${val}</td>`;
+});
+h+='</tr>';
+});
+h+='</tbody></table></div>';
+});
+h+=`</div><div class="insight">${item.insight}</div></div></div>`;
+});
+document.getElementById('findings-list').innerHTML=h;
+}
+
+function renderRecs(){
+const r=L[lang].recs||L.en.recs;
+const title=L[lang].recs_title||L.en.recs_title;
+let h=`<h3>${title}</h3>`;
+r.forEach(item=>{
+h+=`<div class="rec"><span class="rec-num">${item.num}</span><div class="rec-text">${item.text} <span class="rec-tag ${item.tag}">${item.tagText}</span></div></div>`;
+});
+document.getElementById('recs-container').innerHTML=h;
+}
+
+function toggle(i){document.getElementById('f'+i).classList.toggle('open')}
+
+// Chart
+const ctx=document.getElementById('trendChart').getContext('2d');
+new Chart(ctx,{
+type:'line',
+data:{
+labels:['Jan','Feb','Mar','Apr','May'],
+datasets:[
+{label:'Reported H2A (with XTC)',data:[39.07,39.04,37.72,36.38,35.49],borderColor:'#5E5C57',backgroundColor:'transparent',tension:.35,pointRadius:4,pointBackgroundColor:'#5E5C57',borderWidth:1.5,borderDash:[4,4]},
+{label:'Clean H2A (no XTC)',data:[40.20,40.36,39.22,38.12,36.82],borderColor:'#E5484D',backgroundColor:'rgba(229,72,77,0.06)',fill:true,tension:.35,pointRadius:5,pointBackgroundColor:'#E5484D',borderWidth:2.5},
+{label:'2025 baseline',data:[42.3,43.8,42.0,42.5,42.3],borderColor:'#30A46C',backgroundColor:'transparent',tension:.35,pointRadius:4,pointBackgroundColor:'#30A46C',borderWidth:1.5,borderDash:[6,3]}
+]
+},
+options:{
+responsive:true,maintainAspectRatio:false,
+plugins:{legend:{position:'bottom',labels:{usePointStyle:true,padding:16,color:'#9A978F',font:{family:'Geist',size:11}}}},
+scales:{
+y:{min:33,max:46,ticks:{callback:v=>v+'%',color:'#5E5C57',font:{family:'Geist Mono',size:11}},grid:{color:'rgba(42,43,48,0.5)'},border:{color:'transparent'}},
+x:{grid:{display:false},ticks:{color:'#5E5C57',font:{family:'Geist Mono',size:11}},border:{color:'rgba(42,43,48,0.5)'}}
+}
+}
+});
+
+renderFindings();renderRecs();
+</script>
+</body>
+</html>

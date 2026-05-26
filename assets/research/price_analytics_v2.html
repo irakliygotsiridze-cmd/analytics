@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Аналитика цены за урок — Вторичные продажи (по когортам)</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg: #0c1222;
+  --bg2: #131b2e;
+  --card: #182036;
+  --card-hover: #1e2a48;
+  --border: #243052;
+  --text: #e4e9f2;
+  --text-dim: #8896b3;
+  --accent: #3ecfff;
+  --accent-glow: rgba(62,207,255,.12);
+  --p1: #4e8cff;
+  --p2: #ffb347;
+  --p3: #3ddba0;
+  --p4: #ff6b7a;
+  --up: #ff6b7a;
+  --down: #3ddba0;
+  --same: #5e6e8f;
+  --radius: 14px;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  min-height: 100vh;
+  line-height: 1.5;
+}
+.wrap { max-width: 1020px; margin: 0 auto; padding: 28px 20px 60px; }
+.header { margin-bottom: 28px; position: relative; }
+.header::after {
+  content:''; position:absolute; bottom:-14px; left:0;
+  width:80px; height:3px;
+  background:linear-gradient(90deg,var(--accent),transparent);
+  border-radius:3px;
+}
+.header h1 {
+  font-size:24px; font-weight:800; letter-spacing:-.02em;
+  background:linear-gradient(135deg,var(--text) 60%,var(--accent));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+}
+.header p { font-size:13px; color:var(--text-dim); margin-top:6px; }
+.tabs { display:flex; gap:4px; margin-bottom:28px; overflow-x:auto; padding-bottom:4px; }
+.tabs button {
+  padding:9px 22px; border-radius:10px; border:1px solid transparent;
+  cursor:pointer; font:600 13px 'Outfit',sans-serif; white-space:nowrap;
+  background:transparent; color:var(--text-dim); transition:all .25s;
+}
+.tabs button:hover { background:var(--card); color:var(--text); }
+.tabs button.active {
+  background:var(--accent); color:var(--bg); border-color:var(--accent);
+  box-shadow:0 0 18px rgba(62,207,255,.25);
+}
+.card {
+  background:var(--card); border-radius:var(--radius);
+  padding:22px 20px; margin-bottom:20px;
+  border:1px solid var(--border); transition:border-color .2s;
+}
+.card:hover { border-color:rgba(62,207,255,.2); }
+.card h3 { font-size:15px; font-weight:700; margin-bottom:4px; }
+.card .sub { font-size:12px; color:var(--text-dim); margin-bottom:16px; }
+.toggle-row { display:flex; gap:8px; align-items:center; margin-bottom:20px; }
+.toggle-row span { font-size:13px; color:var(--text-dim); }
+.toggle-btn {
+  padding:5px 16px; border-radius:7px; border:1px solid var(--border);
+  cursor:pointer; font:500 12px 'Outfit',sans-serif;
+  background:transparent; color:var(--text-dim); transition:all .2s;
+}
+.toggle-btn:hover { border-color:var(--accent); color:var(--text); }
+.toggle-btn.on { background:var(--accent); color:var(--bg); border-color:var(--accent); }
+.chart-box { position:relative; height:340px; margin-bottom:8px; }
+.tbl-wrap { overflow-x:auto; margin-top:8px; }
+table { width:100%; border-collapse:collapse; font-size:12px; font-family:'JetBrains Mono',monospace; }
+thead th {
+  padding:8px 8px; text-align:center; font-weight:600; color:var(--text-dim);
+  border-bottom:2px solid var(--border); font-family:'Outfit',sans-serif;
+  position:sticky; top:0; background:var(--card);
+}
+thead th.left { text-align:left; }
+thead th.p1 { color:var(--p1); } thead th.p2 { color:var(--p2); }
+thead th.p3 { color:var(--p3); } thead th.p4 { color:var(--p4); }
+thead th.accent { color:var(--accent); }
+tbody td { padding:7px 8px; text-align:center; border-bottom:1px solid rgba(36,48,82,.4); color:var(--text); }
+tbody td.left { text-align:left; font-family:'Outfit',sans-serif; font-weight:600; }
+tbody td.dim { color:var(--text-dim); }
+tbody tr:hover { background:rgba(62,207,255,.04); }
+.stats-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:24px; }
+.stat-card { background:var(--card); border-radius:var(--radius); padding:18px; border:1px solid var(--border); }
+.stat-card .label { font-size:20px; font-weight:800; color:var(--accent); }
+.stat-card .n { font-size:11px; color:var(--text-dim); margin-bottom:10px; }
+.stat-bar { display:flex; gap:3px; height:8px; border-radius:4px; overflow:hidden; margin-bottom:10px; }
+.stat-bar .seg { border-radius:4px; }
+.stat-legend { display:flex; justify-content:space-between; font-size:11px; }
+.finding {
+  background:var(--card); border-radius:var(--radius); padding:20px;
+  margin-bottom:14px; border:1px solid var(--border);
+  border-left:4px solid var(--accent); transition:transform .2s;
+}
+.finding:hover { transform:translateX(4px); }
+.finding .fh { display:flex; align-items:center; gap:10px; margin-bottom:8px; }
+.finding .fh .icon { font-size:22px; }
+.finding .fh h3 { font-size:15px; font-weight:700; }
+.finding p { font-size:13px; color:var(--text-dim); line-height:1.65; }
+.summary-box {
+  background:var(--card); border-radius:var(--radius); padding:22px;
+  margin-top:20px; border:1px solid var(--accent);
+  box-shadow:0 0 30px rgba(62,207,255,.08);
+}
+.summary-box h3 { color:var(--accent); font-size:16px; margin-bottom:14px; }
+.summary-box p { font-size:13px; line-height:1.75; margin-bottom:6px; }
+.summary-box strong { color:var(--text); }
+.summary-box .indent { padding-left:14px; }
+.tab-content { display:none; animation:fadeUp .35s ease; }
+.tab-content.active { display:block; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+.note-box { background:rgba(62,207,255,.06); border:1px solid rgba(62,207,255,.15); border-radius:10px; padding:14px 16px; margin-bottom:20px; font-size:12px; color:var(--text-dim); line-height:1.6; }
+.note-box strong { color:var(--accent); }
+@media(max-width:640px) {
+  .stats-grid { grid-template-columns:1fr; }
+  .chart-box { height:260px; }
+  .header h1 { font-size:19px; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <h1>Аналитика цены за урок — Вторичные продажи</h1>
+    <p>Группировка по месяцу первой оплаты (когорта) · Цена = amount / credits_package · Дек 2024 — Мар 2026</p>
+  </div>
+
+  <div class="tabs">
+    <button class="active" onclick="showTab(0)">Когорты по месяцам</button>
+    <button onclick="showTab(1)">По пакетам</button>
+    <button onclick="showTab(2)">Динамика изменений</button>
+    <button onclick="showTab(3)">Выводы</button>
+  </div>
+
+  <!-- TAB 0 -->
+  <div class="tab-content active" id="tab0">
+    <div class="note-box">
+      <strong>Когорта</strong> = все студенты, чья первая оплата (payment_no=1) пришлась на данный месяц.
+      Для каждой когорты показаны цены их 1-й, 2-й, 3-й, 4-й оплат — независимо от того, когда фактически произошли последующие оплаты.
+    </div>
+    <div class="toggle-row">
+      <span>Метрика:</span>
+      <button class="toggle-btn on" id="btn-med" onclick="setMetric('med')">Медиана</button>
+      <button class="toggle-btn" id="btn-avg" onclick="setMetric('avg')">Среднее</button>
+    </div>
+    <div class="card">
+      <h3>Цена за урок по номеру оплаты (когорты)</h3>
+      <div class="sub">UZS за урок</div>
+      <div class="chart-box"><canvas id="monthlyChart"></canvas></div>
+    </div>
+    <div class="card">
+      <h3>Таблица когорт</h3>
+      <div class="tbl-wrap" id="monthlyTable"></div>
+    </div>
+  </div>
+
+  <!-- TAB 1 -->
+  <div class="tab-content" id="tab1">
+    <div class="note-box">
+      Пакет = <strong>credits_received_package при первой оплате</strong> студента. Все последующие оплаты студента привязаны к его первичному пакету.
+    </div>
+    <div class="card">
+      <h3>Медианная цена за урок по первичному пакету</h3>
+      <div class="sub">Основные пакеты (8, 10, 16, 20, 32, 40 уроков)</div>
+      <div class="chart-box"><canvas id="pkgChart"></canvas></div>
+    </div>
+    <div class="card">
+      <h3>Изменение медианной цены vs Оплата 1</h3>
+      <div class="sub">% отклонения от первичной цены</div>
+      <div class="chart-box" style="height:280px"><canvas id="pkgDeltaChart"></canvas></div>
+    </div>
+    <div class="card">
+      <h3>Полная таблица по пакетам</h3>
+      <div class="tbl-wrap" id="pkgTable"></div>
+    </div>
+  </div>
+
+  <!-- TAB 2 -->
+  <div class="tab-content" id="tab2">
+    <div class="note-box">
+      Переходы рассчитаны <strong>на уровне студента</strong>: сравнивается медианная цена за урок при оплате N vs оплате N+1 для каждого студента. Затем считается доля тех, у кого цена выросла / упала / не изменилась (±1%).
+    </div>
+    <div class="stats-grid" id="statsGrid"></div>
+    <div class="card">
+      <h3>Доля студентов: рост / без изменений / падение</h3>
+      <div class="sub">% студентов в каждой категории перехода (все когорты)</div>
+      <div class="chart-box" style="height:240px"><canvas id="dirChart"></canvas></div>
+    </div>
+    <div class="card">
+      <h3>Медиана изменения цены (%) по когортам — переход 1→2</h3>
+      <div class="sub">Как менялась глубина скидки на 2-й оплате для разных когорт</div>
+      <div class="chart-box"><canvas id="cohortTransChart"></canvas></div>
+    </div>
+    <div class="card">
+      <h3>Медианное изменение цены (%) по пакетам</h3>
+      <div class="sub">Для основных пакетов по переходам 1→2, 2→3, 3→4</div>
+      <div class="chart-box" style="height:300px"><canvas id="pkgTransChart"></canvas></div>
+    </div>
+    <div class="card">
+      <h3>Детализация по пакетам (студент-уровень)</h3>
+      <div class="tbl-wrap" id="transTable"></div>
+    </div>
+  </div>
+
+  <!-- TAB 3 -->
+  <div class="tab-content" id="tab3">
+    <div id="findings"></div>
+    <div class="summary-box">
+      <h3>Резюме</h3>
+      <p><strong>Сохраняется ли цена во вторичных продажах?</strong> — Нет. Основное снижение (медиана −5%) происходит при второй оплате. 55% студентов получают снижение цены за урок.</p>
+      <p><strong>На каком шаге?</strong> — Падение сконцентрировано на переходе 1→2. Шаги 2→3 и 3→4 в целом стабильны (медиана ~0%).</p>
+      <p><strong>Когортная динамика:</strong> — Ранние когорты (Июн–Авг 2025) показывали медиану ~0% на шаге 1→2. Поздние когорты (Дек 25 — Мар 26) — резкое падение до −13..−16%. Тренд ухудшается.</p>
+      <p><strong>Паттерны по пакетам:</strong></p>
+      <p class="indent">• <strong>Малые пакеты (8 ур.)</strong> — сильнейшее падение (−13.6%). 65% студентов платят меньше при 2-й оплате.</p>
+      <p class="indent">• <strong>Средние пакеты (10, 20 ур.)</strong> — умеренное падение (−3..−5%). Наиболее сбалансированы.</p>
+      <p class="indent">• <strong>Крупные пакеты (32, 40 ур.)</strong> — минимальное падение на 1→2 (0..−2%), но пакет 32 проседает на 2→3 (−13%).</p>
+      <p class="indent">• <strong>Общий тренд:</strong> базовая цена выросла на ~50% (118K → 177K). Вторичные цены растут параллельно, но с отставанием.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+// ========== DATA (corrected: grouped by cohort = month of 1st payment) ==========
+const COHORTS = [
+  {p:"Дек 24", a1:134436,m1:118000,c1:1081, a2:122102,m2:113000,c2:370, a3:133433,m3:118000,c3:146, a4:128430,m4:118000,c4:59},
+  {p:"Янв 25", a1:135197,m1:122000,c1:1021, a2:128689,m2:121000,c2:285, a3:134840,m3:122000,c3:134, a4:130968,m4:122000,c4:56},
+  {p:"Фев 25", a1:144218,m1:124000,c1:812,  a2:134939,m2:124000,c2:219, a3:152164,m3:128000,c3:73,  a4:149215,m4:124500,c4:38},
+  {p:"Мар 25", a1:150300,m1:125000,c1:871,  a2:144061,m2:124000,c2:238, a3:137561,m3:124000,c3:82,  a4:140409,m4:124000,c4:39},
+  {p:"Апр 25", a1:162629,m1:141000,c1:929,  a2:149830,m2:129600,c2:245, a3:162500,m3:141000,c3:92,  a4:165991,m4:141000,c4:37},
+  {p:"Май 25", a1:157352,m1:139000,c1:929,  a2:155248,m2:132000,c2:193, a3:165638,m3:137750,c3:78,  a4:157186,m4:147500,c4:40},
+  {p:"Июн 25", a1:157119,m1:141000,c1:1385, a2:154386,m2:139000,c2:238, a3:159092,m3:136500,c3:90,  a4:148440,m4:138000,c4:31},
+  {p:"Июл 25", a1:164685,m1:150000,c1:1464, a2:162832,m2:143000,c2:227, a3:161818,m3:150000,c3:94,  a4:161414,m4:152500,c4:28},
+  {p:"Авг 25", a1:160793,m1:149400,c1:1131, a2:150182,m2:131000,c2:164, a3:148132,m3:131000,c3:54,  a4:138357,m4:127000,c4:14},
+  {p:"Сен 25", a1:163761,m1:150000,c1:1084, a2:169746,m2:150000,c2:161, a3:171094,m3:150000,c3:32,  a4:299500,m4:272500,c4:4},
+  {p:"Окт 25", a1:175669,m1:154000,c1:1250, a2:164423,m2:147000,c2:174, a3:163396,m3:144500,c3:28,  a4:212800,m4:166000,c4:3},
+  {p:"Ноя 25", a1:172801,m1:154000,c1:1367, a2:162284,m2:144000,c2:163, a3:168340,m3:153800,c3:26,  a4:176812,m4:166000,c4:3},
+  {p:"Дек 25", a1:165600,m1:147000,c1:1212, a2:152141,m2:146000,c2:123, a3:158323,m3:156688,c3:12,  a4:255000,m4:255000,c4:2},
+  {p:"Янв 26", a1:175539,m1:159000,c1:1575, a2:166162,m2:147000,c2:133, a3:181356,m3:171000,c3:9,   a4:null,m4:null,c4:0},
+  {p:"Фев 26", a1:196053,m1:177000,c1:1094, a2:158867,m2:152500,c2:76,  a3:209714,m3:189000,c3:7,   a4:null,m4:null,c4:0},
+  {p:"Мар 26", a1:192059,m1:177000,c1:710,  a2:181037,m2:169000,c2:27,  a3:344000,m3:344000,c3:1,   a4:null,m4:null,c4:0},
+];
+
+// Package data (grouped by P1 package, all their subsequent payments)
+const PKGS = [
+  {pk:4,   m1:251000,c1:106,  m2:141000,c2:27,   m3:135000,c3:14,  m4:106200,c4:2},
+  {pk:8,   m1:125000,c1:2250, m2:121000,c2:786,  m3:124000,c3:349, m4:124000,c4:176},
+  {pk:10,  m1:154000,c1:6858, m2:145000,c2:962,  m3:138000,c3:339, m4:138500,c4:114},
+  {pk:16,  m1:127000,c1:752,  m2:116000,c2:257,  m3:131000,c3:97,  m4:127500,c4:40},
+  {pk:20,  m1:155000,c1:2239, m2:135000,c2:483,  m3:145000,c3:82,  m4:131000,c4:10},
+  {pk:32,  m1:135000,c1:1290, m2:130000,c2:283,  m3:124344,c3:47,  m4:143750,c4:8},
+  {pk:36,  m1:123556,c1:50,   m2:139281,c2:12,   m3:null,c3:0,     m4:null,c4:0},
+  {pk:40,  m1:147000,c1:3443, m2:139000,c2:184,  m3:165500,c3:24,  m4:150000,c4:3},
+  {pk:64,  m1:127000,c1:246,  m2:165300,c2:15,   m3:173615,c3:4,   m4:null,c4:0},
+  {pk:80,  m1:147000,c1:355,  m2:112500,c2:17,   m3:94000,c3:1,    m4:null,c4:0},
+  {pk:120, m1:129450,c1:216,  m2:99000,c2:1,     m3:null,c3:0,     m4:null,c4:0},
+  {pk:128, m1:128000,c1:53,   m2:204000,c2:1,    m3:null,c3:0,     m4:null,c4:0},
+];
+
+// Overall transitions (student-level, all cohorts)
+const TRANS = [
+  {label:"1→2", up:627, down:1655, same:754, total:3036, med:-5.0},
+  {label:"2→3", up:289, down:204, same:190, total:683, med:0.0},
+  {label:"3→4", up:62, down:90, same:120, total:272, med:0.0},
+];
+
+// Cohort-level transitions (1→2 only, for the trend chart)
+const COHORT_TRANS_12 = [
+  {p:"Дек 24", up:64,dn:220,sm:86, med:-7.5},
+  {p:"Янв 25", up:63,dn:144,sm:78, med:-1.4},
+  {p:"Фев 25", up:52,dn:128,sm:39, med:-5.0},
+  {p:"Мар 25", up:47,dn:140,sm:51, med:-5.6},
+  {p:"Апр 25", up:42,dn:144,sm:59, med:-7.3},
+  {p:"Май 25", up:43,dn:99,sm:51,  med:-3.2},
+  {p:"Июн 25", up:67,dn:106,sm:65, med:0.0},
+  {p:"Июл 25", up:58,dn:101,sm:68, med:0.0},
+  {p:"Авг 25", up:38,dn:65,sm:61,  med:0.0},
+  {p:"Сен 25", up:34,dn:81,sm:46,  med:-2.2},
+  {p:"Окт 25", up:40,dn:93,sm:41,  med:-5.1},
+  {p:"Ноя 25", up:22,dn:96,sm:45,  med:-6.3},
+  {p:"Дек 25", up:20,dn:71,sm:32,  med:-12.7},
+  {p:"Янв 26", up:21,dn:84,sm:28,  med:-14.0},
+  {p:"Фев 26", up:11,dn:61,sm:4,   med:-15.7},
+  {p:"Мар 26", up:5,dn:22,sm:0,    med:-15.7},
+];
+
+// Package transitions (student-level)
+const PKG_TRANS = [
+  {pk:8,  t12:{up:101,dn:511,sm:174,n:786,med:-13.6}, t23:{up:133,dn:64,sm:88,n:285,med:0}, t34:{up:29,dn:43,sm:78,n:150,med:0}},
+  {pk:10, t12:{up:168,dn:489,sm:305,n:962,med:-2.9},  t23:{up:75,dn:70,sm:61,n:206,med:0}, t34:{up:17,dn:21,sm:34,n:72,med:0}},
+  {pk:16, t12:{up:40,dn:144,sm:73,n:257,med:-5.0},    t23:{up:42,dn:18,sm:21,n:81,med:1.7}, t34:{up:12,dn:15,sm:6,n:33,med:0}},
+  {pk:20, t12:{up:112,dn:252,sm:119,n:483,med:-4.9},  t23:{up:20,dn:20,sm:13,n:53,med:0}, t34:{up:1,dn:6,sm:0,n:7,med:-14.2}},
+  {pk:32, t12:{up:113,dn:122,sm:48,n:283,med:0},      t23:{up:13,dn:24,sm:1,n:38,med:-13.2}, t34:{up:2,dn:3,sm:1,n:6,med:-11.3}},
+  {pk:40, t12:{up:64,dn:93,sm:27,n:184,med:-1.9},     t23:{up:3,dn:6,sm:3,n:12,med:-3.4}, t34:{up:1,dn:2,sm:0,n:3,med:-5.1}},
+];
+
+const FINDINGS = [
+  {icon:"📉",title:"Цена НЕ сохраняется при второй продаже",
+   text:"При переходе с 1-й на 2-ю оплату медианная цена за урок падает на 5%. 55% студентов получают снижение, лишь 21% платят больше. Это основной шаг потери выручки на урок.",
+   color:"var(--down)"},
+  {icon:"⚖️",title:"На 3-й и 4-й оплате цена стабилизируется",
+   text:"Переходы 2→3 и 3→4 показывают медианное изменение ~0%. Основное снижение — только на шаге 1→2, дальше цена держится.",
+   color:"var(--p2)"},
+  {icon:"🚨",title:"Тренд ухудшается: поздние когорты теряют больше",
+   text:"Когорты Июн–Авг 2025 показывали медиану 0% на шаге 1→2 (цена сохранялась). Но начиная с Окт 2025 падение нарастает: −5%, −6%, −13%, −14%, −16%. Последние когорты (Янв–Мар 2026) теряют −14..−16% при второй оплате.",
+   color:"var(--up)"},
+  {icon:"🔻",title:"Пакет 8 уроков — максимальное падение",
+   text:"Медианное снижение на шаге 1→2: −13.6%. 65% студентов с пакетом 8 получают снижение при второй оплате. Самый «уязвимый» пакет по удержанию цены.",
+   color:"var(--p4)"},
+  {icon:"🏢",title:"Крупные пакеты (32, 40) устойчивы на 1→2, но 32 проседает дальше",
+   text:"Пакеты 32 и 40 — медиана 0..−2% на 1→2. Но пакет 32 теряет −13% на шаге 2→3 и −11% на 3→4. Пакет 40 тоже проседает на дальних шагах (−3..−5%).",
+   color:"var(--accent)"},
+  {icon:"📊",title:"Пакет 10 — самый массовый и сбалансированный",
+   text:"6858 первичных продаж, 962 вторичных. Медиана на 1→2 всего −2.9%, далее стабилизация. Лучший баланс объёма и удержания цены.",
+   color:"var(--p1)"},
+];
+
+// ========== UTILS ==========
+const fmt = v => v == null ? '—' : Math.round(v/1000).toLocaleString('ru') + 'K';
+const fmtN = v => v == null ? '—' : Math.round(v).toLocaleString('ru');
+const pct = v => v == null ? '—' : (v > 0 ? '+' : '') + v.toFixed(1) + '%';
+
+Chart.defaults.color = '#8896b3';
+Chart.defaults.borderColor = 'rgba(36,48,82,.5)';
+Chart.defaults.font.family = "'Outfit', sans-serif";
+Chart.defaults.font.size = 11;
+Chart.defaults.plugins.tooltip.backgroundColor = '#182036';
+Chart.defaults.plugins.tooltip.borderColor = '#243052';
+Chart.defaults.plugins.tooltip.borderWidth = 1;
+Chart.defaults.plugins.tooltip.cornerRadius = 10;
+Chart.defaults.plugins.tooltip.titleFont = {weight:'600'};
+Chart.defaults.plugins.legend.labels.usePointStyle = true;
+Chart.defaults.plugins.legend.labels.pointStyleWidth = 10;
+
+let charts = {};
+let currentMetric = 'med';
+
+function showTab(i) {
+  document.querySelectorAll('.tab-content').forEach((el,j) => el.classList.toggle('active', j===i));
+  document.querySelectorAll('.tabs button').forEach((el,j) => el.classList.toggle('active', j===i));
+  setTimeout(() => Object.values(charts).forEach(c => c.resize()), 50);
+}
+
+// ========== TAB 0 ==========
+function buildMonthlyChart() {
+  const labels = COHORTS.map(m => m.p);
+  const pref = currentMetric === 'med' ? 'm' : 'a';
+  const ds = (n, key, color) => ({
+    label: 'Оплата '+n, data: COHORTS.map(m => m[key]),
+    borderColor: color, backgroundColor: color+'18',
+    borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 5,
+    tension: .3, spanGaps: true,
+  });
+  if (charts.monthly) charts.monthly.destroy();
+  charts.monthly = new Chart(document.getElementById('monthlyChart'), {
+    type: 'line',
+    data: { labels, datasets: [ds(1,pref+'1','#4e8cff'),ds(2,pref+'2','#ffb347'),ds(3,pref+'3','#3ddba0'),ds(4,pref+'4','#ff6b7a')] },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      interaction:{mode:'index',intersect:false},
+      scales: {
+        y:{ticks:{callback:v=>fmt(v)},grid:{color:'rgba(36,48,82,.4)'}},
+        x:{ticks:{maxRotation:45},grid:{display:false}}
+      },
+      plugins: { tooltip:{callbacks:{label:ctx=>ctx.dataset.label+': '+fmtN(ctx.parsed.y)+' UZS'}} }
+    }
+  });
+}
+
+function buildMonthlyTable() {
+  let h = '<table><thead><tr><th class="left">Когорта</th>';
+  [1,2,3,4].forEach(n => h += `<th class="p${n}" colspan="2">Оплата ${n}</th>`);
+  h += '</tr><tr><th></th>';
+  for(let i=0;i<4;i++) h += '<th>Медиана</th><th>N</th>';
+  h += '</tr></thead><tbody>';
+  COHORTS.forEach(m => {
+    h += `<tr><td class="left">${m.p}</td>`;
+    [1,2,3,4].forEach(n => {
+      const mv = m['m'+n], cv = m['c'+n];
+      h += `<td>${fmt(mv)}</td><td class="dim">${cv||'—'}</td>`;
+    });
+    h += '</tr>';
+  });
+  h += '</tbody></table>';
+  document.getElementById('monthlyTable').innerHTML = h;
+}
+
+function setMetric(m) {
+  currentMetric = m;
+  document.getElementById('btn-med').classList.toggle('on', m==='med');
+  document.getElementById('btn-avg').classList.toggle('on', m==='avg');
+  buildMonthlyChart();
+}
+
+// ========== TAB 1 ==========
+const TOP_PKGS = [8,10,16,20,32,40];
+
+function buildPkgChart() {
+  const data = PKGS.filter(p => TOP_PKGS.includes(p.pk));
+  const labels = data.map(p => p.pk+' ур.');
+  const ds = (n, color) => ({
+    label:'Оплата '+n, data:data.map(p=>p['m'+n]),
+    backgroundColor:color+'cc', borderColor:color, borderWidth:1, borderRadius:6,
+  });
+  if (charts.pkg) charts.pkg.destroy();
+  charts.pkg = new Chart(document.getElementById('pkgChart'), {
+    type:'bar',
+    data:{labels, datasets:[ds(1,'#4e8cff'),ds(2,'#ffb347'),ds(3,'#3ddba0'),ds(4,'#ff6b7a')]},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      scales:{y:{ticks:{callback:v=>fmt(v)},grid:{color:'rgba(36,48,82,.4)'}},x:{grid:{display:false}}},
+      plugins:{tooltip:{callbacks:{label:ctx=>ctx.dataset.label+': '+fmtN(ctx.parsed.y)+' UZS'}}}
+    }
+  });
+}
+
+function buildPkgDeltaChart() {
+  const data = PKGS.filter(p => TOP_PKGS.includes(p.pk) && p.m1);
+  const labels = data.map(p => p.pk+' ур.');
+  const delta = (p, key) => p.m1 && p[key] ? Math.round((p[key]-p.m1)/p.m1*100) : null;
+  if (charts.pkgDelta) charts.pkgDelta.destroy();
+  charts.pkgDelta = new Chart(document.getElementById('pkgDeltaChart'), {
+    type:'bar',
+    data:{labels, datasets:[
+      {label:'Опл 2 vs 1',data:data.map(p=>delta(p,'m2')),backgroundColor:'#ffb347cc',borderRadius:6},
+      {label:'Опл 3 vs 1',data:data.map(p=>delta(p,'m3')),backgroundColor:'#3ddba0cc',borderRadius:6},
+      {label:'Опл 4 vs 1',data:data.map(p=>delta(p,'m4')),backgroundColor:'#ff6b7acc',borderRadius:6},
+    ]},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      scales:{y:{ticks:{callback:v=>v+'%'},grid:{color:'rgba(36,48,82,.4)'}},x:{grid:{display:false}}},
+      plugins:{tooltip:{callbacks:{label:ctx=>ctx.dataset.label+': '+ctx.parsed.y+'%'}}}
+    }
+  });
+}
+
+function buildPkgTable() {
+  let h = '<table><thead><tr><th class="left">Пакет</th>';
+  [1,2,3,4].forEach(n => h += `<th class="p${n}" colspan="2">Оплата ${n}</th>`);
+  h += '</tr><tr><th></th>';
+  for(let i=0;i<4;i++) h += '<th>Медиана</th><th>N</th>';
+  h += '</tr></thead><tbody>';
+  PKGS.forEach(p => {
+    const hl = TOP_PKGS.includes(p.pk) ? ' style="background:rgba(62,207,255,.04)"' : '';
+    h += `<tr${hl}><td class="left">${p.pk} ур.</td>`;
+    [1,2,3,4].forEach(n => {
+      h += `<td>${fmt(p['m'+n])}</td><td class="dim">${p['c'+n]||'—'}</td>`;
+    });
+    h += '</tr>';
+  });
+  h += '</tbody></table>';
+  document.getElementById('pkgTable').innerHTML = h;
+}
+
+// ========== TAB 2 ==========
+function buildStatsGrid() {
+  let h = '';
+  TRANS.forEach(t => {
+    const pD=Math.round(t.down/t.total*100), pS=Math.round(t.same/t.total*100), pU=Math.round(t.up/t.total*100);
+    h += `<div class="stat-card">
+      <div class="label">${t.label}</div>
+      <div class="n">n = ${t.total.toLocaleString('ru')} студентов</div>
+      <div class="stat-bar">
+        <div class="seg" style="flex:${t.down};background:var(--down)"></div>
+        <div class="seg" style="flex:${t.same};background:var(--same)"></div>
+        <div class="seg" style="flex:${t.up};background:var(--up)"></div>
+      </div>
+      <div class="stat-legend">
+        <span style="color:var(--down)">↓ ${pD}%</span>
+        <span style="color:var(--same)">= ${pS}%</span>
+        <span style="color:var(--up)">↑ ${pU}%</span>
+      </div>
+      <div style="margin-top:10px;text-align:center;font-size:13px">Медиана: <strong>${pct(t.med)}</strong></div>
+    </div>`;
+  });
+  document.getElementById('statsGrid').innerHTML = h;
+}
+
+function buildDirChart() {
+  if (charts.dir) charts.dir.destroy();
+  charts.dir = new Chart(document.getElementById('dirChart'), {
+    type:'bar',
+    data:{
+      labels:TRANS.map(t=>t.label),
+      datasets:[
+        {label:'Цена упала',data:TRANS.map(t=>Math.round(t.down/t.total*100)),backgroundColor:'#3ddba0cc',borderRadius:4},
+        {label:'Не изменилась',data:TRANS.map(t=>Math.round(t.same/t.total*100)),backgroundColor:'#5e6e8fcc',borderRadius:4},
+        {label:'Цена выросла',data:TRANS.map(t=>Math.round(t.up/t.total*100)),backgroundColor:'#ff6b7acc',borderRadius:4},
+      ]
+    },
+    options:{
+      indexAxis:'y', responsive:true, maintainAspectRatio:false,
+      scales:{
+        x:{stacked:true,max:100,ticks:{callback:v=>v+'%'},grid:{color:'rgba(36,48,82,.4)'}},
+        y:{stacked:true,grid:{display:false},ticks:{font:{size:14,weight:'700'}}}
+      },
+      plugins:{tooltip:{callbacks:{label:ctx=>ctx.dataset.label+': '+ctx.parsed.x+'%'}}}
+    }
+  });
+}
+
+function buildCohortTransChart() {
+  const labels = COHORT_TRANS_12.map(c => c.p);
+  const meds = COHORT_TRANS_12.map(c => c.med);
+  const colors = meds.map(v => v < -10 ? '#ff6b7a' : v < -3 ? '#ffb347' : '#3ddba0');
+  if (charts.cohortTrans) charts.cohortTrans.destroy();
+  charts.cohortTrans = new Chart(document.getElementById('cohortTransChart'), {
+    type:'bar',
+    data:{
+      labels,
+      datasets:[{
+        label:'Медиана изменения 1→2 (%)',
+        data: meds,
+        backgroundColor: colors.map(c => c+'cc'),
+        borderColor: colors,
+        borderWidth: 1,
+        borderRadius: 6,
+      }]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      scales:{
+        y:{ticks:{callback:v=>v+'%'},grid:{color:'rgba(36,48,82,.4)'}},
+        x:{ticks:{maxRotation:45},grid:{display:false}}
+      },
+      plugins:{
+        tooltip:{callbacks:{label:ctx=>ctx.parsed.y+'%'}},
+        legend:{display:false}
+      }
+    }
+  });
+}
+
+function buildPkgTransChart() {
+  const labels = PKG_TRANS.map(p => p.pk+' ур.');
+  if (charts.pkgTrans) charts.pkgTrans.destroy();
+  charts.pkgTrans = new Chart(document.getElementById('pkgTransChart'), {
+    type:'bar',
+    data:{labels, datasets:[
+      {label:'1→2 мед %',data:PKG_TRANS.map(p=>p.t12.med),backgroundColor:'#ffb347cc',borderRadius:6},
+      {label:'2→3 мед %',data:PKG_TRANS.map(p=>p.t23.med),backgroundColor:'#3ddba0cc',borderRadius:6},
+      {label:'3→4 мед %',data:PKG_TRANS.map(p=>p.t34.med),backgroundColor:'#ff6b7acc',borderRadius:6},
+    ]},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      scales:{y:{ticks:{callback:v=>v+'%'},grid:{color:'rgba(36,48,82,.4)'}},x:{grid:{display:false}}},
+      plugins:{tooltip:{callbacks:{label:ctx=>ctx.dataset.label+': '+ctx.parsed.y+'%'}}}
+    }
+  });
+}
+
+function buildTransTable() {
+  let h = '<table><thead><tr><th class="left">Пакет</th>';
+  ['1→2','2→3','3→4'].forEach(t => h += `<th class="accent" colspan="4">${t}</th>`);
+  h += '</tr><tr><th></th>';
+  for(let i=0;i<3;i++) h += '<th style="color:var(--up)">↑</th><th style="color:var(--down)">↓</th><th style="color:var(--same)">=</th><th>Med%</th>';
+  h += '</tr></thead><tbody>';
+  PKG_TRANS.forEach(p => {
+    h += `<tr><td class="left">${p.pk} ур.</td>`;
+    [p.t12,p.t23,p.t34].forEach(t => {
+      const mc = t.med<-1?'color:var(--down)':t.med>1?'color:var(--up)':'';
+      h += `<td style="color:var(--up)">${t.up}</td><td style="color:var(--down)">${t.dn}</td><td style="color:var(--same)">${t.sm}</td><td style="font-weight:700;${mc}">${pct(t.med)}</td>`;
+    });
+    h += '</tr>';
+  });
+  h += '</tbody></table>';
+  document.getElementById('transTable').innerHTML = h;
+}
+
+function buildFindings() {
+  let h = '';
+  FINDINGS.forEach(f => {
+    h += `<div class="finding" style="border-left-color:${f.color}">
+      <div class="fh"><span class="icon">${f.icon}</span><h3>${f.title}</h3></div>
+      <p>${f.text}</p>
+    </div>`;
+  });
+  document.getElementById('findings').innerHTML = h;
+}
+
+// ========== INIT ==========
+buildMonthlyChart(); buildMonthlyTable();
+buildPkgChart(); buildPkgDeltaChart(); buildPkgTable();
+buildStatsGrid(); buildDirChart(); buildCohortTransChart(); buildPkgTransChart(); buildTransTable();
+buildFindings();
+</script>
+</body>
+</html>

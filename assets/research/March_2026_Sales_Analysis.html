@@ -1,0 +1,2031 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>March 2026 — Sales Analysis | Algonova Indonesia</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --navy:   #1E2761;
+    --navy2:  #161D4A;
+    --red:    #F96167;
+    --green:  #02C39A;
+    --amber:  #FFC107;
+    --white:  #FFFFFF;
+    --lgray:  #F0F4F8;
+    --mgray:  #94A3B8;
+    --dtext:  #1E293B;
+    --lblue:  #4169CC;
+    --card:   #FFFFFF;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #EEF2F7;
+    color: var(--dtext);
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── STAGE ───────────────────────────────────────────── */
+  #stage {
+    width: 100vw;
+    flex: 1;
+    min-height: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .slide-wrap {
+    width: min(calc(177.78vh - 85px), 100vw);
+    height: min(56.25vw, calc(100vh - 48px));
+    position: relative;
+    overflow: hidden;
+  }
+  .slide {
+    position: absolute; inset: 0;
+    display: none;
+    font-size: calc(min(calc(177.78vh - 85px), 100vw) / 80);
+  }
+  .slide.active { display: block; }
+
+  /* ── NAV ─────────────────────────────────────────────── */
+  #nav {
+    position: relative;
+    flex-shrink: 0;
+    height: 48px;
+    display: flex; align-items: center; justify-content: center;
+    gap: 12px; padding: 0 16px; background: rgba(255,255,255,.97);
+    z-index: 100; backdrop-filter: blur(4px);
+    border-top: 1px solid #E2E8F0;
+  }
+  #nav button {
+    background: rgba(0,0,0,.05); border: 1px solid #D1D5DB;
+    color: var(--dtext); padding: 5px 16px; border-radius: 4px; cursor: pointer;
+    font-size: 12px; transition: background .2s;
+  }
+  #nav button:hover { background: rgba(0,0,0,.1); }
+  #counter { color: var(--mgray); font-size: 12px; min-width: 60px; text-align: center; }
+  .dot-nav { display: flex; gap: 6px; align-items: center; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: #CBD5E1;
+         cursor: pointer; transition: all .2s; }
+  .dot.active { background: var(--red); width: 22px; border-radius: 4px; }
+
+  /* ── COMMON HELPERS ──────────────────────────────────── */
+  .fill { position: absolute; inset: 0; }
+  .bg-navy2 { background: var(--navy2); }
+  .bg-navy  { background: var(--navy); }
+  .bg-lgray { background: var(--lgray); }
+  .bg-dark  { background: #0D1117; }
+
+  .accent-bar-left {
+    position: absolute; left: 0; top: 0; bottom: 0;
+    width: 1.2%; background: var(--red);
+  }
+  .accent-bar-left.green { background: var(--green); }
+  .accent-bar-left.amber { background: var(--amber); }
+
+  .top-bar {
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 12.8%;
+    display: flex; align-items: center; padding: 0 2.4%;
+  }
+  .top-bar h2 {
+    font-size: 1.95em; font-weight: 700; color: #fff;
+    letter-spacing: .04em; text-transform: uppercase;
+  }
+  .top-bar .tag {
+    font-size: 1.1em; font-weight: 700; color: var(--red);
+    text-transform: uppercase; letter-spacing: .15em;
+    padding: 2px 10px; border: 1.5px solid var(--red); border-radius: 3px;
+    margin-right: 14px;
+  }
+  .body-area { position: absolute; left: 2.4%; right: 2.4%; }
+
+  /* ── KPI CARD ────────────────────────────────────────── */
+  .kpi-card {
+    background: var(--card); border-radius: 6px;
+    padding: 4% 5%;
+  }
+  .kpi-card .label { font-size: 1em; color: var(--mgray); margin-bottom: 4%; }
+  .kpi-card .value { font-size: 3.6em; font-weight: 700; line-height: 1; }
+  .kpi-card .sub   { font-size: .9em; margin-top: 4%; }
+  .kpi-card.red .value  { color: var(--red); }
+  .kpi-card.green .value { color: var(--green); }
+  .kpi-card.amber .value { color: var(--amber); }
+
+  /* ── LIGHT SLIDE TEXT ───────────────────────────────── */
+  .bg-lgray { color: var(--dtext); }
+
+  /* ── TABLE ───────────────────────────────────────────── */
+  table { border-collapse: collapse; width: 100%; }
+  th { background: var(--navy); color: #fff; padding: 2% 2.5%;
+       font-size: 1em; text-align: left; font-weight: 600; }
+  td { padding: 1.6% 2.5%; font-size: 1em; border-bottom: 1px solid #e2e8f0;
+       color: var(--dtext); }
+  tr:nth-child(even) td { background: #f8fafc; }
+  tr:hover td { background: #eef4ff; }
+  td.bad  { color: var(--red); font-weight: 700; }
+  td.good { color: var(--green); font-weight: 700; }
+  td.warn { color: #d97706; font-weight: 700; }
+  td.bold { font-weight: 700; color: var(--navy); }
+
+  /* ── VERDICT BOX ─────────────────────────────────────── */
+  .verdict {
+    background: #25357530; border-left: 4px solid var(--amber);
+    padding: 2.5% 3%; border-radius: 0 6px 6px 0; margin-top: 2%;
+  }
+  .verdict strong { color: var(--amber); }
+
+  /* ── CAUSE PILL ──────────────────────────────────────── */
+  .cause-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1.5%; }
+  .cause-pill {
+    border-radius: 6px; overflow: hidden;
+    border: 1.5px solid var(--red);
+  }
+  .cause-pill .pill-head {
+    background: var(--red); padding: 3% 5%;
+    font-size: .85em; font-weight: 700; color: #fff;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .cause-pill .pill-head .num {
+    background: rgba(0,0,0,.2); width: 1.8em; height: 1.8em;
+    border-radius: 50%; display: flex; align-items: center;
+    justify-content: center; font-size: 1.1em; flex-shrink: 0;
+  }
+  .cause-pill .pill-body { background: #fff; padding: 4% 5%; }
+  .cause-pill .pill-body .title { font-weight: 700; color: var(--navy); font-size: .9em; }
+  .cause-pill .pill-body .desc  { color: var(--mgray); font-size: .82em; margin-top: 2%; }
+  .cause-pill.amber { border-color: var(--amber); }
+  .cause-pill.amber .pill-head { background: var(--amber); color: var(--navy2); }
+
+  /* ── SIGNAL CARD ─────────────────────────────────────── */
+  .signal-card {
+    background: #fff; border-radius: 8px; overflow: hidden;
+    border: 2px solid var(--red); flex: 1;
+  }
+  .signal-card .sh { background: var(--red); padding: 4% 5%; color: #fff;
+                     font-weight: 700; font-size: 1.1em; }
+  .signal-card .sb { padding: 6% 5%; }
+  .signal-card .mult { font-size: 4em; font-weight: 700; color: var(--red); line-height: 1; }
+  .signal-card .row  { display: flex; justify-content: space-between;
+                        font-size: .9em; margin-top: 4%; }
+  .signal-card .row .val-red { color: var(--red); font-weight: 700; }
+
+  /* ── VERDICT 2-COL ───────────────────────────────────── */
+  .two-col-verdict { display: grid; grid-template-columns: 1fr 1fr; gap: 2%; }
+  .vcol { border-radius: 6px; overflow: hidden; }
+  .vcol .vhead { padding: 3.5% 4%; font-weight: 700; font-size: .95em; color: #fff; }
+  .vcol.red .vhead  { background: var(--red); }
+  .vcol.green .vhead { background: var(--green); }
+  .vcol .vbody { padding: 4% 5%; }
+  .vcol.red .vbody  { background: #fff8f8; }
+  .vcol.green .vbody { background: #edfcf5; }
+  .vcol .vrow { display: flex; gap: 8%; align-items: flex-start;
+                padding: 2.5% 0; border-bottom: 1px solid rgba(0,0,0,.06); font-size: .9em; }
+  .vcol .vrow:last-child { border-bottom: none; }
+  .vcol.red   .vrow .sym { color: var(--red); font-size: 1.3em; font-weight: 700; }
+  .vcol.green .vrow .sym { color: var(--green); font-size: 1.3em; font-weight: 700; }
+  .vcol .vrow .txt { color: var(--dtext); }
+
+  /* ── REC ROWS ────────────────────────────────────────── */
+  .rec-row {
+    background: var(--card); border-radius: 6px;
+    display: flex; align-items: stretch; overflow: hidden;
+    margin-bottom: 1.5%;
+  }
+  .rec-row .accent { width: .7%; flex-shrink: 0; }
+  .rec-row .badge {
+    padding: 0 2.5%; display: flex; align-items: center; justify-content: center;
+    font-size: .7em; font-weight: 700; letter-spacing: .1em;
+    min-width: 9%; text-align: center;
+  }
+  .rec-row.urgent .badge { background: var(--red); color: #fff; }
+  .rec-row.medium .badge { background: var(--amber); color: var(--navy2); }
+  .rec-row.monitor .badge { background: var(--green); color: var(--navy2); }
+  .rec-row .content { padding: 2.5% 3%; flex: 1; }
+  .rec-row .content .title { font-weight: 700; font-size: 1em; color: var(--dtext); }
+  .rec-row .content .desc  { font-size: .85em; color: var(--lblue); margin-top: 1%; }
+
+  /* ── CHART WRAPPERS ──────────────────────────────────── */
+  .chart-box { position: relative; }
+
+  /* animations */
+  .slide.active .kpi-card,
+  .slide.active .cause-pill,
+  .slide.active .signal-card,
+  .slide.active .rec-row {
+    animation: fadeUp .4s ease both;
+  }
+  @keyframes fadeUp {
+    from { opacity:0; transform: translateY(12px); }
+    to   { opacity:1; transform: translateY(0); }
+  }
+  .slide.active .kpi-card:nth-child(2) { animation-delay: .08s; }
+  .slide.active .kpi-card:nth-child(3) { animation-delay: .16s; }
+  .slide.active .cause-pill:nth-child(2) { animation-delay: .1s; }
+  .slide.active .cause-pill:nth-child(3) { animation-delay: .2s; }
+  .slide.active .cause-pill:nth-child(4) { animation-delay: .3s; }
+  .slide.active .rec-row:nth-child(2) { animation-delay: .06s; }
+  .slide.active .rec-row:nth-child(3) { animation-delay: .12s; }
+  .slide.active .rec-row:nth-child(4) { animation-delay: .18s; }
+  .slide.active .rec-row:nth-child(5) { animation-delay: .24s; }
+
+  /* -- LIGHT THEME OVERRIDES -------------------------------- */
+  .kpi-card { box-shadow: 0 1px 6px rgba(0,0,0,.08); border: 1px solid #E2E8F0; }
+  .rec-row { background: #F8FAFC !important; border: 1px solid #E2E8F0 !important; }
+  .rec-row .content .desc { color: #475569 !important; }
+
+  /* Slide backgrounds */
+  #s5  .fill { background: #ECFDF5 !important; }
+  #s10 .fill { background: #F0F7FF !important; }
+  #s13 .fill, #s14 .fill, #s15 .fill, #s16 .fill,
+  #s17 .fill, #s18 .fill, #s19 .fill, #s20 .fill,
+  #s21 .fill, #s22 .fill { background: #FFFFFF !important; }
+
+  /* s5: fix chart area transparent bg */
+  #s5 [style*="rgba(255,255,255,.05)"] { background: rgba(0,0,0,.04) !important; }
+  #s5 [style*="rgba(255,255,255,.05)"] > * { color: var(--dtext) !important; }
+
+  /* White text -> dark on now-light slides */
+  #s13 [style*="color:#fff"], #s14 [style*="color:#fff"],
+  #s15 [style*="color:#fff"], #s16 [style*="color:#fff"],
+  #s18 [style*="color:#fff"], #s19 [style*="color:#fff"],
+  #s20 [style*="color:#fff"], #s21 [style*="color:#fff"],
+  #s22 [style*="color:#fff"] { color: #1E293B !important; }
+
+  /* Preserve white/colored text in dark accent boxes */
+  #s5  [style*="background:#0a4a38"] [style*="color:#fff"],
+  #s5  [style*="background:#0a4a38"] strong,
+  #s10 [style*="background:#0a3d2a"] [style*="color:#fff"],
+  #s10 [style*="background:#0a3d2a"] strong { color: #fff !important; }
+  #s5  [style*="background:#0a4a38"] [style*="color:#a7f3d0"],
+  #s10 [style*="background:#0a3d2a"] [style*="color:#a7f3d0"] { color: #a7f3d0 !important; }
+
+  /* Decorative top strip on closing slide */
+  #s22 [style*="background:#2D3C8A"] { background: #E2E8F0 !important; }
+</style>
+</head>
+<body>
+
+<div id="stage"><div class="slide-wrap" id="slides-container">
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 1 — TITLE
+══════════════════════════════════════════════════ -->
+<div class="slide active" id="s1">
+  <div class="fill bg-navy2"></div>
+  <div class="accent-bar-left"></div>
+  <!-- top decorative strip -->
+  <div style="position:absolute;top:0;left:1.2%;right:0;height:.8%;background:#2D3C8A;"></div>
+
+  <div style="position:absolute;left:10%;top:9%;right:8%;">
+    <div style="font-size:1.1em;font-weight:700;color:var(--red);text-transform:uppercase;
+                letter-spacing:.2em;margin-bottom:3%;">Sales Intelligence Report</div>
+    <div style="font-size:5.5em;font-weight:700;line-height:1.1;margin-bottom:5%;">
+      March 2026:<br>What Happened<br>to Sales?
+    </div>
+    <div style="font-size:1.3em;color:var(--lblue);font-style:italic;">
+      Root Cause Analysis · Algonova B2C Indonesia
+    </div>
+  </div>
+
+  <!-- 3 teaser KPIs -->
+  <div style="position:absolute;bottom:14%;left:10%;right:3%;display:flex;gap:2%;">
+    <div style="flex:1;background:#2D3C8A;border-radius:6px;padding:3% 4%;">
+      <div style="font-size:2.8em;font-weight:700;color:var(--red);">−39%</div>
+      <div style="font-size:.9em;color:var(--lblue);margin-top:4%;">Revenue Feb→Mar</div>
+    </div>
+    <div style="flex:1;background:#2D3C8A;border-radius:6px;padding:3% 4%;">
+      <div style="font-size:2.8em;font-weight:700;color:var(--red);">−31%</div>
+      <div style="font-size:.9em;color:var(--lblue);margin-top:4%;">Paid Leads Feb→Mar</div>
+    </div>
+    <div style="flex:1;background:#2D3C8A;border-radius:6px;padding:3% 4%;">
+      <div style="font-size:2.8em;font-weight:700;color:var(--green);">STABLE</div>
+      <div style="font-size:.9em;color:var(--lblue);margin-top:4%;">A2S Conversion Rate</div>
+    </div>
+    <div style="flex:1;background:#2D3C8A;border-radius:6px;padding:3% 4%;">
+      <div style="font-size:2.8em;font-weight:700;color:var(--amber);">4 Causes</div>
+      <div style="font-size:.9em;color:var(--lblue);margin-top:4%;">Structural, not seasonal</div>
+    </div>
+  </div>
+  <div style="position:absolute;bottom:5%;left:10%;font-size:.85em;color:#4A5B8A;">
+    April 2026 · Confidential
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 2 — EXECUTIVE SUMMARY
+══════════════════════════════════════════════════ -->
+<div class="slide" id="s2">
+  <div class="fill bg-lgray"></div>
+  <div class="accent-bar-left"></div>
+  <div class="top-bar bg-navy">
+    <span class="tag">Summary</span>
+    <h2>Executive Summary</h2>
+  </div>
+
+  <!-- 3 KPI cards -->
+  <div class="body-area" style="top:15%;display:flex;gap:1.5%;">
+    <div class="kpi-card red" style="flex:1;">
+      <div class="label">Revenue Feb → Mar 2026</div>
+      <div class="value">−39%</div>
+      <div class="sub" style="color:var(--red);">$362,605 → $220,910</div>
+    </div>
+    <div class="kpi-card red" style="flex:1;">
+      <div class="label">Paid Leads Feb → Mar 2026</div>
+      <div class="value">−31%</div>
+      <div class="sub" style="color:var(--red);">1,153 → 799 sales</div>
+    </div>
+    <div class="kpi-card green" style="flex:1;">
+      <div class="label">A2S Conversion Rate</div>
+      <div class="value">+0.5pp</div>
+      <div class="sub" style="color:var(--green);">31.8% → 32.3% — STABLE</div>
+    </div>
+  </div>
+
+  <!-- Verdict box -->
+  <div class="body-area" style="top:52%;">
+    <div class="verdict" style="background:#25357550;border-left:4px solid var(--amber);">
+      <strong>VERDICT:</strong>
+      <span style="color:#e2e8f0;font-size:.95em;"> The sales team did not fail — A2S held steady.
+      The pipeline feeding it collapsed. The drop is <strong style="color:var(--amber);">structural</strong>:
+      a channel mix shift to low-quality Google traffic, BM attrition, and TCM capacity reduction.</span>
+    </div>
+  </div>
+
+  <!-- 4 cause pills -->
+  <div class="body-area cause-grid" style="top:68%;">
+    <div class="cause-pill">
+      <div class="pill-head"><div class="num">1</div>Channel Mix Shift</div>
+      <div class="pill-body"><div class="title">Google 16% → 40%</div>
+        <div class="desc">of all leads — but Google converts far worse</div></div>
+    </div>
+    <div class="cause-pill">
+      <div class="pill-head"><div class="num">2</div>Lead Quality Collapse</div>
+      <div class="pill-body"><div class="title">Spam & invalids 3–5×</div>
+        <div class="desc">Invalid numbers, spam, missclicks surged</div></div>
+    </div>
+    <div class="cause-pill amber">
+      <div class="pill-head"><div class="num">3</div>BM Attrition</div>
+      <div class="pill-body"><div class="title">5 BMs went inactive</div>
+        <div class="desc">~3,500 bookings/month lost from January peak</div></div>
+    </div>
+    <div class="cause-pill amber">
+      <div class="pill-head"><div class="num">4</div>TCM Capacity −16%</div>
+      <div class="pill-body"><div class="title">169 → 144 active TCMs</div>
+        <div class="desc">Fewer trial classes = fewer sales opportunities</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 3 — FULL FUNNEL TABLE
+══════════════════════════════════════════════════ -->
+<div class="slide" id="s3">
+  <div class="fill bg-lgray"></div>
+  <div class="accent-bar-left"></div>
+  <div class="top-bar bg-navy">
+    <span class="tag">Funnel</span>
+    <h2>Full Funnel — Jan / Feb / Mar 2026</h2>
+  </div>
+
+  <div class="body-area" style="top:15%;font-size:.95em;">
+    <table>
+      <thead>
+        <tr>
+          <th style="width:28%">Metric</th>
+          <th>Jan 2026</th><th>Feb 2026</th><th>Mar 2026</th>
+          <th>Δ Feb → Mar</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td class="bold">Leads (created)</td><td>18,688</td><td>15,808</td><td>16,496</td>
+            <td class="good">+4.4%</td></tr>
+        <tr><td class="bold">Bookings</td><td>12,622</td><td>9,100</td><td>6,827</td>
+            <td class="bad">▼ 25.0%</td></tr>
+        <tr style="background:#fff0f0"><td class="bold" style="color:var(--red)">L2B%</td>
+            <td>67.5%</td><td>57.6%</td><td style="color:var(--red);font-weight:700">41.4%</td>
+            <td class="bad">▼ 16.2pp ← KEY</td></tr>
+        <tr><td class="bold">Attended Trial</td><td>5,154</td><td>3,628</td><td>2,470</td>
+            <td class="bad">▼ 31.9%</td></tr>
+        <tr><td class="bold">B2A%</td><td>40.8%</td><td>39.9%</td><td>36.2%</td>
+            <td class="warn">▼ 3.7pp</td></tr>
+        <tr><td class="bold">Paid Sales</td><td>1,590</td><td>1,153</td><td>799</td>
+            <td class="bad">▼ 30.7%</td></tr>
+        <tr style="background:#edfcf5"><td class="bold" style="color:var(--green)">A2S%</td>
+            <td>30.8%</td><td>31.8%</td><td style="color:var(--green);font-weight:700">32.3%</td>
+            <td class="good">→ +0.5pp STABLE</td></tr>
+        <tr><td class="bold">Revenue (USD)</td><td>$480K</td><td>$363K</td><td>$221K</td>
+            <td class="bad">▼ 39.1%</td></tr>
+        <tr><td class="bold">AOV (USD)</td><td>$302</td><td>$314</td><td>$276</td>
+            <td class="warn">▼ 12.1%</td></tr>
+      </tbody>
+    </table>
+    <div style="margin-top:2%;font-size:.85em;color:var(--mgray);font-style:italic;">
+      Lead volume recovered in March (16.5K vs 15.8K in Feb) — confirming the drop is NOT demand-driven.
+      The break is between leads and bookings (L2B), making it a supply/quality issue.
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 4 — L2B COLLAPSE
+══════════════════════════════════════════════════ -->
+<div class="slide" id="s4">
+  <div class="fill bg-lgray"></div>
+  <div class="accent-bar-left"></div>
+  <div class="top-bar bg-navy">
+    <span class="tag">Smoking Gun</span>
+    <h2>L2B Conversion Collapsed — The Drop Point</h2>
+  </div>
+
+  <div class="body-area" style="top:15%;display:flex;gap:2%;align-items:flex-start;">
+    <!-- Chart -->
+    <div style="flex:1.4;background:#fff;border-radius:8px;padding:3%;box-shadow:0 1px 6px rgba(0,0,0,.08);">
+      <div style="font-weight:700;color:var(--navy);font-size:.95em;margin-bottom:2%;">L2B% by Month</div>
+      <div class="chart-box" style="height:52vh;max-height:260px;">
+        <canvas id="chartL2B"></canvas>
+      </div>
+      <div style="margin-top:2%;font-size:.82em;color:var(--mgray);">
+        Lead volume: Jan 18.7K → Feb 15.8K → Mar <strong>16.5K</strong> (recovered!)
+      </div>
+    </div>
+
+    <!-- Insight panel -->
+    <div style="flex:1;display:flex;flex-direction:column;gap:3%;">
+      <div style="background:var(--navy);border-radius:8px;padding:4% 5%;color:#fff;">
+        <div style="font-size:.85em;color:var(--lblue);margin-bottom:2%;">The core equation</div>
+        <div style="font-size:.95em;line-height:1.6;">
+          Leads <span style="color:var(--mgray)">stayed flat</span> ↔
+          Bookings <span style="color:var(--red);font-weight:700">fell 25%</span><br>
+          ∴ BMs are receiving leads<br>they <strong style="color:var(--red)">cannot convert</strong>
+        </div>
+      </div>
+      <div style="background:#fff;border-radius:8px;padding:4% 5%;border-left:4px solid var(--red);">
+        <div style="font-weight:700;color:var(--navy);margin-bottom:3%;font-size:.9em;">What moved L2B down</div>
+        <div style="font-size:.85em;color:var(--dtext);line-height:1.7;">
+          ✗ Invalid/unreachable numbers (×3)<br>
+          ✗ Spam leads clogging BM queues<br>
+          ✗ 5 key BMs went inactive<br>
+          ✗ Google traffic with lower intent<br>
+          ✗ More leads per active BM = slower response
+        </div>
+      </div>
+      <div style="background:#fff8f8;border-radius:8px;padding:4% 5%;border:2px solid var(--red);">
+        <div style="font-size:2.5em;font-weight:700;color:var(--red);">−16.2pp</div>
+        <div style="font-size:.85em;color:var(--dtext);margin-top:2%;">
+          drop in L2B in a single month.<br>
+          <strong>Largest one-month swing in the dataset.</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 5 — A2S STABLE
+══════════════════════════════════════════════════ -->
+<div class="slide" id="s5">
+  <div class="fill" style="background:#051f17;"></div>
+  <div class="accent-bar-left green"></div>
+  <div class="top-bar" style="background:#057A5A;">
+    <span class="tag" style="border-color:var(--green);color:var(--green);">Good News</span>
+    <h2>The Sales Team is NOT the Problem</h2>
+  </div>
+
+  <div class="body-area" style="top:15%;display:flex;gap:2%;align-items:flex-start;">
+    <!-- 3 A2S cards -->
+    <div style="flex:1;display:flex;flex-direction:column;gap:3%;">
+      <div style="background:var(--card);border-radius:8px;overflow:hidden;border:2px solid var(--green);">
+        <div style="background:#057A5A;padding:3% 5%;font-size:.85em;font-weight:700;color:#fff;">January 2026</div>
+        <div style="padding:4% 5%;">
+          <div style="font-size:3.5em;font-weight:700;color:var(--green);">30.8%</div>
+          <div style="font-size:.8em;color:var(--mgray);margin-top:2%;">1,590 sales / 5,154 attended</div>
+        </div>
+      </div>
+      <div style="background:var(--card);border-radius:8px;overflow:hidden;border:2px solid var(--green);">
+        <div style="background:#057A5A;padding:3% 5%;font-size:.85em;font-weight:700;color:#fff;">February 2026</div>
+        <div style="padding:4% 5%;">
+          <div style="font-size:3.5em;font-weight:700;color:var(--green);">31.8%</div>
+          <div style="font-size:.8em;color:var(--mgray);margin-top:2%;">1,153 sales / 3,628 attended</div>
+        </div>
+      </div>
+      <div style="background:var(--card);border-radius:8px;overflow:hidden;border:2px solid var(--green);">
+        <div style="background:#057A5A;padding:3% 5%;font-size:.85em;font-weight:700;color:#fff;">March 2026</div>
+        <div style="padding:4% 5%;">
+          <div style="font-size:3.5em;font-weight:700;color:var(--green);">32.3%</div>
+          <div style="font-size:.8em;color:var(--mgray);margin-top:2%;">799 sales / 2,470 attended</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chart + conclusion -->
+    <div style="flex:2;display:flex;flex-direction:column;gap:3%;">
+      <div style="background:rgba(255,255,255,.05);border-radius:8px;padding:3%;flex:1;">
+        <div style="font-weight:700;color:#fff;font-size:.95em;margin-bottom:2%;">A2S% Trend</div>
+        <div class="chart-box" style="height:42vh;max-height:210px;">
+          <canvas id="chartA2S"></canvas>
+        </div>
+      </div>
+      <div style="background:#0a4a38;border-radius:8px;padding:4% 5%;border:2px solid var(--green);">
+        <div style="font-size:1.3em;font-weight:700;color:var(--green);margin-bottom:2%;">
+          ✓ A2S is perfectly stable — and even <em>improving</em>
+        </div>
+        <div style="font-size:.9em;color:#a7f3d0;line-height:1.7;">
+          When leads <em>do</em> attend a trial class, TCMs convert them at the same rate as always.
+          The problem is upstream: fewer quality leads are reaching the trial class in the first place.
+          <br><br>
+          <strong style="color:#fff;">Do not change the sales playbook. Fix the pipeline inputs.</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 6 — CHANNEL MIX
+══════════════════════════════════════════════════ -->
+<div class="slide" id="s6">
+  <div class="fill bg-lgray"></div>
+  <div class="accent-bar-left"></div>
+  <div class="top-bar bg-navy">
+    <span class="tag">Cause 1 / 4</span>
+    <h2>Channel Mix Shift — Google Nearly Tripled</h2>
+  </div>
+
+  <div class="body-area" style="top:15%;display:flex;gap:2%;align-items:flex-start;">
+    <!-- Chart -->
+    <div style="flex:1.4;background:#fff;border-radius:8px;padding:3%;box-shadow:0 1px 6px rgba(0,0,0,.08);">
+      <div style="font-weight:700;color:var(--navy);font-size:.95em;margin-bottom:2%;">Lead Source Mix by Month</div>
+      <div class="chart-box" style="height:55vh;max-height:280px;">
+        <canvas id="chartChannel"></canvas>
+      </div>
+    </div>
+
+    <!-- Insight -->
+    <div style="flex:1;display:flex;flex-direction:column;gap:3%;">
+      <div style="background:var(--navy);border-radius:8px;padding:4% 5%;color:#fff;">
+        <div style="font-size:.85em;color:var(--lblue);">Google Ads Lead Count</div>
+        <div style="display:flex;justify-content:space-between;margin-top:4%;align-items:baseline;">
+          <div><div style="font-size:.8em;color:var(--mgray);">January</div>
+               <div style="font-size:2em;font-weight:700;">2,873</div></div>
+          <div style="font-size:2em;color:var(--mgray);">→</div>
+          <div><div style="font-size:.8em;color:var(--mgray);">March</div>
+               <div style="font-size:2em;font-weight:700;color:var(--red);">5,985</div></div>
+        </div>
+        <div style="font-size:.8em;color:var(--red);margin-top:2%;font-weight:700;">+108% in 2 months</div>
+      </div>
+      <div style="background:#fff0f0;border-radius:8px;padding:4% 5%;border-left:4px solid var(--red);">
+        <div style="font-weight:700;color:var(--navy);margin-bottom:3%;font-size:.9em;">Why this matters</div>
+        <div style="font-size:.85em;color:var(--dtext);line-height:1.7;">
+          Facebook L2B: ~65–70%<br>
+          Google L2B: ~25–30%<br>
+          <br>
+          Shifting 23% of leads from<br>
+          Facebook to Google at half<br>
+          the conversion rate directly<br>
+          <strong>explains the L2B drop.</strong>
+        </div>
+      </div>
+      <div style="background:var(--navy);border-radius:8px;padding:4% 5%;">
+        <div style="font-size:.82em;color:var(--lblue);">Share of leads from Google</div>
+        <div style="display:flex;justify-content:space-between;margin-top:3%;">
+          <div style="text-align:center;"><div style="font-size:.75em;color:var(--mgray);">Jan</div>
+            <div style="font-size:1.6em;font-weight:700;">16.5%</div></div>
+          <div style="text-align:center;"><div style="font-size:.75em;color:var(--mgray);">Feb</div>
+            <div style="font-size:1.6em;font-weight:700;">22%</div></div>
+          <div style="text-align:center;"><div style="font-size:.75em;color:var(--mgray);">Mar</div>
+            <div style="font-size:1.6em;font-weight:700;color:var(--red);">39.5%</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 7 — LEAD QUALITY
+══════════════════════════════════════════════════ -->
+<div class="slide" id="s7">
+  <div class="fill bg-lgray"></div>
+  <div class="accent-bar-left"></div>
+  <div class="top-bar bg-navy">
+    <span class="tag">Cause 2 / 4</span>
+    <h2>Lead Quality Collapse — Spam &amp; Invalids Surged</h2>
+  </div>
+
+  <div class="body-area" style="top:15%;">
+    <div style="font-size:.92em;color:var(--dtext);margin-bottom:3%;">
+      BMs spent time calling leads that were spam, invalid numbers, or accidental clicks.
+      These inflate lead volume but destroy L2B — each wasted call is a real booking not made.
+    </div>
+
+    <!-- 3 signal cards -->
+    <div style="display:flex;gap:2%;margin-bottom:3%;">
+      <div class="signal-card">
+        <div class="sh">Invalid Number</div>
+        <div class="sb">
+          <div class="mult">×3.2</div>
+          <div class="row">
+            <span>February</span><span>1.9%</span>
+          </div>
+          <div class="row">
+            <span style="font-weight:700">March</span><span class="val-red">6.1%</span>
+          </div>
+        </div>
+      </div>
+      <div class="signal-card">
+        <div class="sh">Spam</div>
+        <div class="sb">
+          <div class="mult">×3.4</div>
+          <div class="row">
+            <span>February</span><span>1.7%</span>
+          </div>
+          <div class="row">
+            <span style="font-weight:700">March</span><span class="val-red">5.7%</span>
+          </div>
+        </div>
+      </div>
+      <div class="signal-card">
+        <div class="sh">Missclicked Ad</div>
+        <div class="sb">
+          <div class="mult">×5.3</div>
+          <div class="row">
+            <span>February</span><span>0.4%</span>
+          </div>
+          <div class="row">
+            <span style="font-weight:700">March</span><span class="val-red">2.1%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Waste estimate -->
+    <div style="background:#fff0f0;border-radius:8px;padding:3% 4%;
+                border-left:4px solid var(--red);margin-bottom:2%;">
+      <div style="font-weight:700;color:var(--navy);margin-bottom:1.5%;font-size:.9em;">
+        Estimated waste in March 2026
+      </div>
+      <div style="display:flex;gap:4%;font-size:.9em;color:var(--dtext);">
+        <div><span style="font-size:1.8em;font-weight:700;color:var(--red);">~2,200</span><br>dead leads</div>
+        <div style="font-size:2em;color:var(--mgray);display:flex;align-items:center;">→</div>
+        <div><span style="font-size:1.8em;font-weight:700;color:var(--red);">~160hrs</span><br>BM time wasted</div>
+        <div style="font-size:2em;color:var(--mgray);display:flex;align-items:center;">→</div>
+        <div><span style="font-size:1.8em;font-weight:700;color:var(--red);">~290</span><br>bookings not made</div>
+      </div>
+    </div>
+    <div style="font-size:.8em;color:var(--mgray);font-style:italic;">
+      Source: Drop_reason_before_MK field in AMO CRM (pipeline 5521720). This is a direct consequence of Google traffic — lower-intent broad targeting produces non-qualified form fills.
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 8 — BM ATTRITION
+══════════════════════════════════════════════════ -->
+<div class="slide" id="s8">
+  <div class="fill bg-lgray"></div>
+  <div class="accent-bar-left amber"></div>
+  <div class="top-bar bg-navy">
+    <span class="tag" style="border-color:var(--amber);color:var(--amber);">Cause 3 / 4</span>
+    <h2>Booking Manager Attrition — 5 BMs Went Dark</h2>
+  </div>
+
+  <div class="body-area" style="top:15%;display:flex;gap:2%;">
+    <!-- Table -->
+    <div style="flex:1.4;">
+      <div style="font-size:.92em;color:var(--dtext);margin-bottom:2%;">
+        Five high-volume BMs had zero or near-zero bookings in March.
+        Their combined January output was <strong>~3,735 bookings</strong>.
+      </div>
+      <table style="font-size:.9em;">
+        <thead>
+          <tr>
+            <th>BM Name</th><th>Jan Bookings</th><th>Feb Bookings</th>
+            <th>Mar Bookings</th><th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="bold">Vania</td><td>826</td><td>731</td>
+              <td class="bad">0</td><td class="bad">INACTIVE</td></tr>
+          <tr><td class="bold">Vina</td><td>653</td><td>550</td>
+              <td class="bad">0</td><td class="bad">INACTIVE</td></tr>
+          <tr><td class="bold">Dila</td><td>729</td><td>610</td>
+              <td class="bad">0</td><td class="bad">INACTIVE</td></tr>
+          <tr><td class="bold">Valent</td><td>580</td><td>492</td>
+              <td class="bad">0</td><td class="bad">INACTIVE</td></tr>
+          <tr><td class="bold">Siti</td><td>947</td><td>810</td>
+              <td class="bad">4</td><td class="bad">INACTIVE</td></tr>
+          <tr style="background:#fffbeb;">
+            <td class="bold" style="color:#d97706">New hires (partial)</td>
+            <td>—</td><td>~400</td><td style="color:#d97706;font-weight:700">~800</td>
+            <td style="color:#d97706;font-weight:700">Ramping up</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Active BM trend -->
+    <div style="flex:1;display:flex;flex-direction:column;gap:3%;">
+      <div style="background:var(--navy);border-radius:8px;padding:4% 5%;color:#fff;">
+        <div style="font-size:.85em;color:var(--lblue);margin-bottom:3%;">Active BMs per month</div>
+        <div style="display:flex;justify-content:space-between;">
+          <div style="text-align:center;">
+            <div style="font-size:.8em;color:var(--mgray);">January</div>
+            <div style="font-size:3em;font-weight:700;color:var(--amber);">31</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-size:.8em;color:var(--mgray);">February</div>
+            <div style="font-size:3em;font-weight:700;color:var(--amber);">27</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-size:.8em;color:var(--mgray);">March</div>
+            <div style="font-size:3em;font-weight:700;color:var(--red);">25</div>
+          </div>
+        </div>
+        <div style="font-size:.8em;color:var(--red);margin-top:3%;font-weight:700;">
+          −19% active capacity from January peak
+        </div>
+      </div>
+      <div style="background:#fffbeb;border-radius:8px;padding:4% 5%;border-left:4px solid var(--amber);">
+        <div style="font-weight:700;color:var(--navy);margin-bottom:3%;font-size:.9em;">Impact</div>
+        <div style="font-size:.85em;color:var(--dtext);line-height:1.7;">
+          Each inactive senior BM removes ~700–950 bookings/month from capacity.
+          5 inactive BMs = approximately <strong>3,500 lost bookings</strong> vs January run-rate —
+          equivalent to <strong>~490 fewer sales</strong> at A2S 14%.
+        </div>
+      </div>
+      <div style="background:#fff0f0;border-radius:8px;padding:3% 5%;border-left:4px solid var(--red);font-size:.82em;color:var(--dtext);">
+        Team headcount reference: <strong>45 BMs total</strong> in the unit.<br>
+        20 of 45 (~44%) contributed near-zero bookings in March.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 9 — TCM CAPACITY
+══════════════════════════════════════════════════ -->
+<div class="slide" id="s9">
+  <div class="fill bg-lgray"></div>
+  <div class="accent-bar-left amber"></div>
+  <div class="top-bar bg-navy">
+    <span class="tag" style="border-color:var(--amber);color:var(--amber);">Cause 4 / 4</span>
+    <h2>TCM Capacity −16% — Fewer Trials Run</h2>
+  </div>
+
+  <div class="body-area" style="top:15%;display:flex;gap:2%;">
+    <!-- 3 metric blocks -->
+    <div style="flex:1;display:flex;flex-direction:column;gap:3%;">
+      <div style="background:#fff;border-radius:8px;padding:4% 5%;border:1.5px solid var(--amber);box-shadow:0 1px 6px rgba(0,0,0,.06);">
+        <div style="font-size:.85em;color:var(--mgray);margin-bottom:3%;">Active TCMs</div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;">
+          <div><div style="font-size:.75em;color:var(--mgray);">Jan</div>
+               <div style="font-size:2.2em;font-weight:700;color:var(--navy);">169</div></div>
+          <div><div style="font-size:.75em;color:var(--mgray);">Feb</div>
+               <div style="font-size:2.2em;font-weight:700;color:var(--navy);">152</div></div>
+          <div><div style="font-size:.75em;color:var(--mgray);">Mar</div>
+               <div style="font-size:2.2em;font-weight:700;color:var(--red);">144</div></div>
+        </div>
+        <div style="background:#fff0f0;border-radius:4px;padding:2% 3%;margin-top:4%;
+                    font-size:.82em;color:var(--red);font-weight:700;">−16% vs January</div>
+      </div>
+      <div style="background:#fff;border-radius:8px;padding:4% 5%;border:1.5px solid var(--amber);box-shadow:0 1px 6px rgba(0,0,0,.06);">
+        <div style="font-size:.85em;color:var(--mgray);margin-bottom:3%;">Trial Classes Conducted</div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;">
+          <div><div style="font-size:.75em;color:var(--mgray);">Jan</div>
+               <div style="font-size:2.2em;font-weight:700;color:var(--navy);">5,154</div></div>
+          <div><div style="font-size:.75em;color:var(--mgray);">Feb</div>
+               <div style="font-size:2.2em;font-weight:700;color:var(--navy);">3,628</div></div>
+          <div><div style="font-size:.75em;color:var(--mgray);">Mar</div>
+               <div style="font-size:2.2em;font-weight:700;color:var(--red);">2,470</div></div>
+        </div>
+        <div style="background:#fff0f0;border-radius:4px;padding:2% 3%;margin-top:4%;
+                    font-size:.82em;color:var(--red);font-weight:700;">−52% vs January</div>
+      </div>
+    </div>
+
+    <!-- Chart + context -->
+    <div style="flex:2;display:flex;flex-direction:column;gap:3%;">
+      <div style="background:#fff;border-radius:8px;padding:3%;box-shadow:0 1px 6px rgba(0,0,0,.08);flex:1;">
+        <div style="font-weight:700;color:var(--navy);font-size:.95em;margin-bottom:2%;">MKs per TCM (avg) — showing TCM utilisation collapse</div>
+        <div class="chart-box" style="height:42vh;max-height:210px;">
+          <canvas id="chartTCM"></canvas>
+        </div>
+      </div>
+      <div style="background:var(--navy);border-radius:8px;padding:4% 5%;color:#fff;font-size:.88em;">
+        <strong>Note:</strong> Total TCM headcount is <strong>150</strong>.
+        Only 144 were active in March. The A2S rate held steady — each TCM who ran a class
+        performed equally well. The issue is <em>how many classes were run</em>, not <em>how well</em>.
+        <br><br>
+        25 fewer TCMs × ~17 MKs each = <strong style="color:var(--amber);">~425 fewer trial classes</strong> in March.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 10 — RAMADAN vs STRUCTURAL
+══════════════════════════════════════════════════ -->
+<div class="slide" id="s10">
+  <div class="fill" style="background:#0a1628;"></div>
+  <div class="accent-bar-left green"></div>
+  <div class="top-bar" style="background:#0a2a1e;">
+    <span class="tag" style="border-color:var(--green);color:var(--green);">Verdict</span>
+    <h2>Ramadan or Structural? — The Answer</h2>
+  </div>
+
+  <div class="body-area" style="top:15%;">
+    <div style="font-size:.92em;color:var(--lblue);margin-bottom:3%;">
+      Ramadan 2026 began ~1 March. Some decline is expected. But is it the <em>primary</em> driver?
+    </div>
+
+    <div class="two-col-verdict" style="margin-bottom:3%;">
+      <div class="vcol red">
+        <div class="vhead">If Ramadan were primary driver, we'd expect…</div>
+        <div class="vbody">
+          <div class="vrow"><span class="sym">✗</span><span class="txt">Lead volume to drop — people less active</span></div>
+          <div class="vrow"><span class="sym">✗</span><span class="txt">A2S to fall — lower purchase intent</span></div>
+          <div class="vrow"><span class="sym">✗</span><span class="txt">B2A to fall sharply — less willingness to attend</span></div>
+          <div class="vrow"><span class="sym">✗</span><span class="txt">Drop uniform across all channels</span></div>
+          <div class="vrow"><span class="sym">✗</span><span class="txt">Automatic recovery in April (Shawwal)</span></div>
+        </div>
+      </div>
+      <div class="vcol green">
+        <div class="vhead">What the data actually shows…</div>
+        <div class="vbody">
+          <div class="vrow"><span class="sym">✓</span><span class="txt">Leads <strong>STABLE</strong>: 15.8K → 16.5K (March UP)</span></div>
+          <div class="vrow"><span class="sym">✓</span><span class="txt">A2S <strong>STABLE</strong>: 31.8% → 32.3% (slightly UP)</span></div>
+          <div class="vrow"><span class="sym">✓</span><span class="txt">B2A mild drop: 39.9% → 36.2% — modest</span></div>
+          <div class="vrow"><span class="sym">✓</span><span class="txt">Drop concentrated in Google channel specifically</span></div>
+          <div class="vrow"><span class="sym">✓</span><span class="txt">BM attrition visible in individual CRM records</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="background:#0a3d2a;border-radius:8px;padding:3.5% 4%;border:2px solid var(--green);">
+      <div style="font-size:1.1em;font-weight:700;color:var(--green);margin-bottom:2%;">
+        Verdict: ~80% Structural · ~20% Seasonal
+      </div>
+      <div style="font-size:.9em;color:#a7f3d0;line-height:1.7;">
+        Ramadan may explain a mild B2A dip (families less responsive to scheduling) and possibly
+        some BM absenteeism. But lead demand held up, purchase intent held up, and TCM performance held up.
+        <strong style="color:#fff;">Fixing the structural issues will recover the majority of lost revenue
+        regardless of whether Ramadan is over.</strong>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 11 — 2025 vs 2026 RAMADAN COMPARISON
+══════════════════════════════════════════════════ -->
+<div class="slide" id="s11">
+  <div class="fill bg-lgray"></div>
+  <div class="accent-bar-left green"></div>
+  <div class="top-bar bg-navy">
+    <span class="tag" style="border-color:var(--green);color:var(--green);">Year-over-Year</span>
+    <h2>Ramadan 2025 Had Zero Impact — 2026 Is Different</h2>
+  </div>
+
+  <div class="body-area" style="top:15%;display:flex;gap:2%;align-items:flex-start;">
+
+    <!-- Left: headline verdict cards + mini table -->
+    <div style="flex:1;display:flex;flex-direction:column;gap:2.5%;">
+
+      <!-- 2 big verdict cards -->
+      <div style="display:flex;gap:2%;">
+        <div style="flex:1;background:#edfcf5;border-radius:8px;padding:4% 5%;border:2px solid var(--green);">
+          <div style="font-size:.78em;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:.1em;margin-bottom:3%;">Ramadan 2025</div>
+          <div style="font-size:2.6em;font-weight:700;color:var(--green);">+2.7%</div>
+          <div style="font-size:.82em;color:var(--dtext);margin-top:2%;">Revenue Feb→Mar 2025<br><strong>Ramadan had no effect</strong></div>
+        </div>
+        <div style="flex:1;background:#fff0f0;border-radius:8px;padding:4% 5%;border:2px solid var(--red);">
+          <div style="font-size:.78em;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:.1em;margin-bottom:3%;">Ramadan 2026</div>
+          <div style="font-size:2.6em;font-weight:700;color:var(--red);">−34.9%</div>
+          <div style="font-size:.82em;color:var(--dtext);margin-top:2%;">Revenue Feb→Mar 2026<br><strong>Structural collapse</strong></div>
+        </div>
+      </div>
+
+      <!-- Monthly comparison table -->
+      <div style="background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 1px 6px rgba(0,0,0,.07);">
+        <table style="font-size:.82em;">
+          <thead>
+            <tr>
+              <th style="width:18%">Month</th>
+              <th>Leads</th><th>L2B%</th><th>Paid Sales</th><th>Revenue</th><th>Δ Revenue</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="background:#f0fdf4"><td class="bold" style="color:#057A5A;">Jan 2025</td><td>15,587</td><td>53.9%</td><td>1,157</td><td>$275K</td><td>—</td></tr>
+            <tr style="background:#f0fdf4"><td class="bold" style="color:#057A5A;">Feb 2025</td><td>10,762</td><td>60.6%</td><td>850</td><td>$189K</td><td class="warn">−31%</td></tr>
+            <tr style="background:#dcfce7"><td class="bold" style="color:#057A5A;">Mar 2025 ☪</td><td>12,606</td><td style="color:var(--green);font-weight:700">61.2%</td><td>898</td><td>$194K</td><td class="good">+2.7%</td></tr>
+            <tr style="background:#f0fdf4"><td class="bold" style="color:#057A5A;">Apr 2025</td><td>16,019</td><td>54.9%</td><td>1,124</td><td>$261K</td><td class="good">+34%</td></tr>
+            <tr><td colspan="6" style="padding:0;border:none;height:4px;background:var(--lgray)"></td></tr>
+            <tr><td class="bold" style="color:var(--navy);">Jan 2026</td><td>18,688</td><td>67.5%</td><td>1,590</td><td>$471K</td><td>—</td></tr>
+            <tr><td class="bold" style="color:var(--navy);">Feb 2026</td><td>15,808</td><td>57.6%</td><td>1,153</td><td>$363K</td><td class="warn">−23%</td></tr>
+            <tr style="background:#fff0f0"><td class="bold" style="color:var(--red);">Mar 2026 ☪</td><td>16,496</td><td style="color:var(--red);font-weight:700">41.4%</td><td>799</td><td>$231K</td><td class="bad">−34.9%</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Right: L2B chart + channel shift insight -->
+    <div style="flex:1.2;display:flex;flex-direction:column;gap:2.5%;">
+      <div style="background:#fff;border-radius:8px;padding:3%;box-shadow:0 1px 6px rgba(0,0,0,.07);">
+        <div style="font-weight:700;color:var(--navy);font-size:.9em;margin-bottom:2%;">L2B% during Ramadan — 2025 vs 2026</div>
+        <div class="chart-box" style="height:34vh;max-height:175px;">
+          <canvas id="chartYoY"></canvas>
+        </div>
+      </div>
+      <!-- Channel insight box -->
+      <div style="background:var(--navy);border-radius:8px;padding:3.5% 4%;color:#fff;">
+        <div style="font-size:.85em;font-weight:700;color:var(--amber);margin-bottom:3%;">Why was 2025 immune?</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:2%;font-size:.8em;">
+          <div style="background:#253580;border-radius:6px;padding:3% 4%;">
+            <div style="color:var(--lblue);margin-bottom:2%;">Google share (Mar)</div>
+            <div style="display:flex;justify-content:space-between;align-items:baseline;">
+              <div><div style="font-size:.75em;color:var(--mgray);">2025</div><div style="font-size:1.8em;font-weight:700;color:var(--green);">6.4%</div></div>
+              <div style="color:var(--mgray);">→</div>
+              <div><div style="font-size:.75em;color:var(--mgray);">2026</div><div style="font-size:1.8em;font-weight:700;color:var(--red);">36.3%</div></div>
+            </div>
+          </div>
+          <div style="background:#253580;border-radius:6px;padding:3% 4%;">
+            <div style="color:var(--lblue);margin-bottom:2%;">TikTok share (Mar)</div>
+            <div style="display:flex;justify-content:space-between;align-items:baseline;">
+              <div><div style="font-size:.75em;color:var(--mgray);">2025</div><div style="font-size:1.8em;font-weight:700;color:var(--green);">12.7%</div></div>
+              <div style="color:var(--mgray);">→</div>
+              <div><div style="font-size:.75em;color:var(--mgray);">2026</div><div style="font-size:1.8em;font-weight:700;color:var(--red);">~0%</div></div>
+            </div>
+          </div>
+        </div>
+        <div style="font-size:.8em;color:#a7f3d0;margin-top:3%;line-height:1.6;">
+          In 2025 the channel mix was healthy: 70% Facebook + 13% TikTok during Ramadan — both high-intent channels. In 2026 TikTok disappeared and Google exploded to 36%. The L2B crash follows the channel mix shift, not the calendar.
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 12 — LEAD QUALITY SCORE
+══════════════════════════════════════════════════ -->
+<div class="slide" id="s12">
+  <div class="fill bg-lgray"></div>
+  <div class="accent-bar-left" style="background:#7C3AED;"></div>
+  <div class="top-bar bg-navy">
+    <span class="tag" style="border-color:#A78BFA;color:#A78BFA;">Proposed Metric</span>
+    <h2>Lead Quality Score — One Number for Month-over-Month Tracking</h2>
+  </div>
+
+  <div class="body-area" style="top:15%;display:flex;gap:2%;align-items:flex-start;">
+
+    <!-- LEFT col: problem + formula + baselines -->
+    <div style="flex:1;display:flex;flex-direction:column;gap:2%;">
+
+      <!-- Problem -->
+      <div style="background:#fff;border-radius:8px;padding:3.5% 4%;border-left:4px solid #7C3AED;">
+        <div style="font-size:.82em;font-weight:700;color:#7C3AED;margin-bottom:2%;">The Problem with Raw L2B%</div>
+        <div style="font-size:.8em;color:var(--dtext);line-height:1.6;">
+          L2B is falling — but why? Because the <strong>channel mix shifted</strong> (Google replacing Facebook),
+          or because <strong>leads within channels got worse</strong> (spam, low-intent)?
+          Raw L2B cannot tell you. You need a metric that separates these two effects.
+        </div>
+      </div>
+
+      <!-- Formula box -->
+      <div style="background:var(--navy);border-radius:8px;padding:4% 4.5%;color:#fff;">
+        <div style="font-size:.85em;font-weight:700;color:#A78BFA;margin-bottom:3%;">Formula — Lead Quality Score (LQS)</div>
+        <div style="background:#0d1a3a;border-radius:6px;padding:3% 4%;margin-bottom:3%;font-family:monospace;font-size:.85em;line-height:1.8;">
+          <span style="color:#A78BFA;font-weight:700;">LQS</span> = Actual L2B% ÷ Expected L2B% × 100<br><br>
+          <span style="color:var(--lblue);">Expected L2B%</span> =<br>
+          &nbsp;&nbsp;Σ ( channel<sub>i</sub>_share × channel<sub>i</sub>_baseline )
+        </div>
+        <div style="font-size:.78em;color:var(--lblue);line-height:1.6;">
+          <strong style="color:#fff;">LQS = 100</strong> → leads convert exactly as expected for the current channel mix<br>
+          <strong style="color:var(--green);">LQS &gt; 100</strong> → leads outperform expectations (strong in-channel targeting)<br>
+          <strong style="color:var(--red);">LQS &lt; 100</strong> → leads underperform expectations — spam, low-intent, broad targeting
+        </div>
+      </div>
+
+      <!-- Baselines table -->
+      <div style="background:#fff;border-radius:8px;overflow:hidden;">
+        <div style="background:#253580;color:#fff;padding:2.5% 4%;font-size:.8em;font-weight:700;">Channel Baseline L2B% (historical benchmark)</div>
+        <table style="font-size:.8em;">
+          <thead><tr><th>Channel</th><th>Baseline L2B%</th><th>Source</th></tr></thead>
+          <tbody>
+            <tr><td class="bold">Facebook</td><td class="good">65%</td><td style="color:var(--mgray);">Avg. Jan–Feb 2025</td></tr>
+            <tr><td class="bold">TikTok</td><td class="good">60%</td><td style="color:var(--mgray);">Avg. Jan–Feb 2025</td></tr>
+            <tr><td class="bold">Google</td><td class="warn">28%</td><td style="color:var(--mgray);">Avg. Jan–Feb 2025</td></tr>
+            <tr><td class="bold">Other / SMM</td><td>40%</td><td style="color:var(--mgray);">Avg. Jan–Feb 2025</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- RIGHT col: chart + calculation example + alert threshold -->
+    <div style="flex:1.3;display:flex;flex-direction:column;gap:2%;">
+
+      <!-- Chart -->
+      <div style="background:#fff;border-radius:8px;padding:3%;box-shadow:0 1px 6px rgba(0,0,0,.07);">
+        <div style="font-weight:700;color:var(--navy);font-size:.88em;margin-bottom:1.5%;">LQS by Month — Historical Trend</div>
+        <div class="chart-box" style="height:32vh;max-height:160px;">
+          <canvas id="chartLQS"></canvas>
+        </div>
+        <div style="font-size:.74em;color:var(--mgray);margin-top:1.5%;">
+          Red dashed line = alert threshold (90). March 2026 is the first month to fall below 90.
+        </div>
+      </div>
+
+      <!-- Calculation walkthrough -->
+      <div style="background:#fff;border-radius:8px;padding:3% 4%;border:1.5px solid #7C3AED;">
+        <div style="font-size:.82em;font-weight:700;color:#7C3AED;margin-bottom:2%;">Calculation Walkthrough — March 2026</div>
+        <div style="font-size:.78em;color:var(--dtext);line-height:1.9;font-family:monospace;background:#faf8ff;border-radius:4px;padding:2.5% 3%;">
+          FB &nbsp;&nbsp;48.8% × 65% = <strong>31.72%</strong><br>
+          Google 36.3% × 28% = <strong>10.16%</strong><br>
+          TikTok &nbsp;0.1% × 60% = <strong>&nbsp;0.06%</strong><br>
+          Other &nbsp;14.8% × 40% = <strong>&nbsp;5.92%</strong><br>
+          <span style="border-top:1px solid #ccc;display:block;margin-top:3px;padding-top:3px;">
+          Expected L2B = <strong>47.86%</strong><br>
+          Actual L2B &nbsp;= <strong>41.40%</strong><br>
+          <span style="color:var(--red);font-weight:700;">LQS = 41.40 ÷ 47.86 × 100 = <strong>86.5 ⚠</strong></span>
+          </span>
+        </div>
+        <div style="font-size:.77em;color:var(--dtext);margin-top:2%;line-height:1.5;">
+          <strong>Interpretation:</strong> even after accounting for the Google channel mix shift,
+          leads converted 13.5% below benchmark — indicating spam and low-intent traffic within channels.
+        </div>
+      </div>
+
+      <!-- Alert thresholds -->
+      <div style="display:flex;gap:2%;">
+        <div style="flex:1;background:#edfcf5;border-radius:6px;padding:3% 4%;border:1.5px solid var(--green);text-align:center;">
+          <div style="font-size:1.5em;font-weight:700;color:var(--green);">≥ 100</div>
+          <div style="font-size:.75em;color:var(--dtext);margin-top:2%;">Healthy zone<br>no action needed</div>
+        </div>
+        <div style="flex:1;background:#fffbeb;border-radius:6px;padding:3% 4%;border:1.5px solid var(--amber);text-align:center;">
+          <div style="font-size:1.5em;font-weight:700;color:#d97706;">90–99</div>
+          <div style="font-size:.75em;color:var(--dtext);margin-top:2%;">Watch zone<br>investigate</div>
+        </div>
+        <div style="flex:1;background:#fff0f0;border-radius:6px;padding:3% 4%;border:1.5px solid var(--red);text-align:center;">
+          <div style="font-size:1.5em;font-weight:700;color:var(--red);">&lt; 90</div>
+          <div style="font-size:.75em;color:var(--dtext);margin-top:2%;">Alert zone<br>immediate audit</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 13 — CONCLUSION 1: A2S DID NOT MOVE
+══════════════════════════════════════════════════ -->
+<div class="slide" id="s13">
+  <div class="fill" style="background:#0D1117;"></div>
+  <div style="position:absolute;left:0;top:0;bottom:0;width:.5%;background:var(--green);"></div>
+
+  <!-- top label -->
+  <div style="position:absolute;top:7%;left:6%;font-size:.85em;font-weight:700;color:var(--green);
+              text-transform:uppercase;letter-spacing:.22em;">Conclusion 1 / 5</div>
+
+  <!-- main statement -->
+  <div style="position:absolute;left:6%;right:6%;top:17%;">
+    <div style="font-size:4.2em;font-weight:700;line-height:1.15;color:#fff;margin-bottom:5%;">
+      Revenue fell 39%.<br>
+      <span style="color:var(--green);">The sales team<br>didn't move.</span>
+    </div>
+    <div style="font-size:1.05em;color:#94A3B8;line-height:1.7;max-width:72%;">
+      A2S held at 32.3% in March — the same as February, slightly above January.
+      Every TCM who ran a trial class converted at the same rate as always.
+      The pipeline feeding them collapsed. The salespeople did not fail.
+    </div>
+  </div>
+
+  <!-- 2 big numbers at bottom -->
+  <div style="position:absolute;bottom:8%;left:6%;right:6%;display:flex;gap:3%;">
+    <div style="flex:1;border-top:2px solid var(--red);padding-top:3%;">
+      <div style="font-size:4em;font-weight:700;color:var(--red);">−39%</div>
+      <div style="font-size:.85em;color:#64748B;margin-top:1%;">Revenue Feb → Mar 2026</div>
+    </div>
+    <div style="flex:1;border-top:2px solid var(--green);padding-top:3%;">
+      <div style="font-size:4em;font-weight:700;color:var(--green);">+0.5pp</div>
+      <div style="font-size:.85em;color:#64748B;margin-top:1%;">A2S change Feb → Mar 2026</div>
+    </div>
+    <div style="flex:1;border-top:2px solid #475569;padding-top:3%;">
+      <div style="font-size:4em;font-weight:700;color:#fff;">−52%</div>
+      <div style="font-size:.85em;color:#64748B;margin-top:1%;">Trial classes conducted (Jan → Mar)</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 14 — CONCLUSION 2: L2B COLLAPSED
+══════════════════════════════════════════════════ -->
+<div class="slide" id="s14">
+  <div class="fill" style="background:#0D1117;"></div>
+  <div style="position:absolute;left:0;top:0;bottom:0;width:.5%;background:var(--red);"></div>
+
+  <div style="position:absolute;top:7%;left:6%;font-size:.85em;font-weight:700;color:var(--red);
+              text-transform:uppercase;letter-spacing:.22em;">Conclusion 2 / 5</div>
+
+  <div style="position:absolute;left:6%;right:6%;top:17%;">
+    <div style="font-size:4.2em;font-weight:700;line-height:1.15;color:#fff;margin-bottom:5%;">
+      L2B lost <span style="color:var(--red);">16 percentage<br>points</span> in one month.
+    </div>
+    <div style="font-size:1.05em;color:#94A3B8;line-height:1.7;max-width:72%;">
+      The largest single-month drop in the dataset. Leads were arriving — 16,500 in March,
+      more than February — but Booking Managers could not convert them.
+      Invalid numbers, spam, and low-intent Google traffic clogged the queue.
+    </div>
+  </div>
+
+  <div style="position:absolute;bottom:8%;left:6%;right:6%;display:flex;gap:3%;">
+    <div style="flex:1;border-top:2px solid #475569;padding-top:3%;">
+      <div style="font-size:4em;font-weight:700;color:#fff;">67.5%</div>
+      <div style="font-size:.85em;color:#64748B;margin-top:1%;">L2B in January 2026</div>
+    </div>
+    <div style="flex:1;border-top:2px solid #475569;padding-top:3%;">
+      <div style="font-size:4em;font-weight:700;color:#FFC107;">57.6%</div>
+      <div style="font-size:.85em;color:#64748B;margin-top:1%;">L2B in February 2026</div>
+    </div>
+    <div style="flex:1;border-top:2px solid var(--red);padding-top:3%;">
+      <div style="font-size:4em;font-weight:700;color:var(--red);">41.4%</div>
+      <div style="font-size:.85em;color:#64748B;margin-top:1%;">L2B in March 2026 ← collapse</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 15 — CONCLUSION 3: GOOGLE BROKE THE FUNNEL
+══════════════════════════════════════════════════ -->
+<div class="slide" id="s15">
+  <div class="fill" style="background:#0D1117;"></div>
+  <div style="position:absolute;left:0;top:0;bottom:0;width:.5%;background:var(--red);"></div>
+
+  <div style="position:absolute;top:7%;left:6%;font-size:.85em;font-weight:700;color:var(--red);
+              text-transform:uppercase;letter-spacing:.22em;">Conclusion 3 / 5</div>
+
+  <div style="position:absolute;left:6%;right:6%;top:17%;">
+    <div style="font-size:4.2em;font-weight:700;line-height:1.15;color:#fff;margin-bottom:5%;">
+      Google went from <span style="color:#4A6CC0;">6%</span> to
+      <span style="color:var(--red);">36%</span> of leads.<br>
+      Conversion rate halved.
+    </div>
+    <div style="font-size:1.05em;color:#94A3B8;line-height:1.7;max-width:72%;">
+      Facebook leads book at ~65%. Google leads book at ~28%.
+      Tripling the Google share while slashing TikTok from 13% to near-zero
+      mathematically guarantees an L2B collapse — independent of any operational issue.
+    </div>
+  </div>
+
+  <div style="position:absolute;bottom:8%;left:6%;right:6%;display:flex;gap:3%;">
+    <div style="flex:1;border-top:2px solid #4A6CC0;padding-top:3%;">
+      <div style="font-size:4em;font-weight:700;color:#4A6CC0;">6.4%</div>
+      <div style="font-size:.85em;color:#64748B;margin-top:1%;">Google share — March 2025</div>
+    </div>
+    <div style="flex:1;border-top:2px solid var(--red);padding-top:3%;">
+      <div style="font-size:4em;font-weight:700;color:var(--red);">36.3%</div>
+      <div style="font-size:.85em;color:#64748B;margin-top:1%;">Google share — March 2026</div>
+    </div>
+    <div style="flex:1;border-top:2px solid #475569;padding-top:3%;">
+      <div style="font-size:4em;font-weight:700;color:#fff;">~0%</div>
+      <div style="font-size:.85em;color:#64748B;margin-top:1%;">TikTok share — March 2026 (was 13%)</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 16 — CONCLUSION 4: NOT RAMADAN
+══════════════════════════════════════════════════ -->
+<div class="slide" id="s16">
+  <div class="fill" style="background:#0D1117;"></div>
+  <div style="position:absolute;left:0;top:0;bottom:0;width:.5%;background:var(--amber);"></div>
+
+  <div style="position:absolute;top:7%;left:6%;font-size:.85em;font-weight:700;color:var(--amber);
+              text-transform:uppercase;letter-spacing:.22em;">Conclusion 4 / 5</div>
+
+  <div style="position:absolute;left:6%;right:6%;top:17%;">
+    <div style="font-size:4.2em;font-weight:700;line-height:1.15;color:#fff;margin-bottom:5%;">
+      Ramadan 2025:<br>
+      <span style="color:var(--green);">revenue grew +2.7%.</span><br>
+      <span style="color:var(--red);">Ramadan 2026: −34.9%.</span>
+    </div>
+    <div style="font-size:1.05em;color:#94A3B8;line-height:1.7;max-width:72%;">
+      The same holiday. The same market. Completely different outcome.
+      In 2025 the channel mix was healthy: 70% Facebook, 13% TikTok, L2B at 61%.
+      The calendar is not to blame. The channel mix is.
+    </div>
+  </div>
+
+  <div style="position:absolute;bottom:8%;left:6%;right:6%;display:flex;gap:3%;">
+    <div style="flex:1;border-top:2px solid var(--green);padding-top:3%;">
+      <div style="font-size:3.2em;font-weight:700;color:var(--green);">61.2%</div>
+      <div style="font-size:.85em;color:#64748B;margin-top:1%;">L2B during Ramadan 2025</div>
+    </div>
+    <div style="flex:1;border-top:2px solid var(--red);padding-top:3%;">
+      <div style="font-size:3.2em;font-weight:700;color:var(--red);">41.4%</div>
+      <div style="font-size:.85em;color:#64748B;margin-top:1%;">L2B during Ramadan 2026</div>
+    </div>
+    <div style="flex:1;border-top:2px solid var(--amber);padding-top:3%;">
+      <div style="font-size:3.2em;font-weight:700;color:var(--amber);">80 / 20</div>
+      <div style="font-size:.85em;color:#64748B;margin-top:1%;">Structural vs seasonal split</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 17 — RECOMMENDATIONS
+══════════════════════════════════════════════════ -->
+<div class="slide" id="s17">
+  <div class="fill bg-navy2"></div>
+  <div class="accent-bar-left green"></div>
+  <div class="top-bar" style="background:#102040;">
+    <span class="tag" style="border-color:var(--green);color:var(--green);">Action Plan</span>
+    <h2>What To Fix — Prioritised Actions</h2>
+  </div>
+
+  <div class="body-area" style="top:15%;">
+    <div class="rec-row urgent">
+      <div class="accent" style="background:var(--red);"></div>
+      <div class="badge">URGENT</div>
+      <div class="content">
+        <div class="title">Rebalance channel mix — reduce Google Ads budget immediately</div>
+        <div class="desc">Set Google CPL hard cap. Shift incremental budget back to Facebook.
+        Only run Google with purchase-optimized conversion objectives — not broad traffic.</div>
+      </div>
+    </div>
+    <div class="rec-row urgent">
+      <div class="accent" style="background:var(--red);"></div>
+      <div class="badge">URGENT</div>
+      <div class="content">
+        <div class="title">Rebuild BM headcount to 30+ active (currently 25)</div>
+        <div class="desc">5 inactive BMs = ~3,500 lost bookings/month at peak.
+        Fast-track hiring or reactivate standby BMs. Each active BM recovers ~700 bookings/month.</div>
+      </div>
+    </div>
+    <div class="rec-row medium">
+      <div class="accent" style="background:var(--amber);"></div>
+      <div class="badge">MEDIUM</div>
+      <div class="content">
+        <div class="title">Add lead quality filter before BM assignment</div>
+        <div class="desc">Auto-tag suspected spam, invalid, and low-intent leads at entry.
+        Route to auto-nurture sequence — not live BM calls. Protect BM utilisation.</div>
+      </div>
+    </div>
+    <div class="rec-row medium">
+      <div class="accent" style="background:var(--amber);"></div>
+      <div class="badge">MEDIUM</div>
+      <div class="content">
+        <div class="title">Restore TCM capacity to 160+ active (currently 144)</div>
+        <div class="desc">Investigate March departures. Re-activate idle TCMs.
+        At 17 MKs/TCM, utilisation is unsustainably low — target 25+ MKs/TCM.</div>
+      </div>
+    </div>
+    <div class="rec-row monitor">
+      <div class="accent" style="background:var(--green);"></div>
+      <div class="badge">MONITOR</div>
+      <div class="content">
+        <div class="title">Track Ramadan recovery in April — validate structural fix</div>
+        <div class="desc">If structural fixes are applied and A2S stays stable, revenue should recover in April.
+        If L2B remains depressed after Ramadan, the channel mix issue is not yet resolved.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 18 — MARCH DROP: WEIGHT ATTRIBUTION
+══════════════════════════════════════════════════ -->
+<div class="slide" id="s18">
+  <div class="fill" style="background:#080E1A;"></div>
+  <div style="position:absolute;left:0;top:0;bottom:0;width:.5%;background:var(--red);"></div>
+
+  <!-- header -->
+  <div style="position:absolute;top:4.5%;left:3%;right:3%;display:flex;justify-content:space-between;align-items:baseline;">
+    <div>
+      <div style="font-size:.7em;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:.18em;">March 2026 · Root Cause Weights</div>
+      <div style="font-size:1.5em;font-weight:700;color:#fff;margin-top:.4%;">What actually drove the −335 sales? Quantified.</div>
+    </div>
+    <div style="font-size:.72em;color:#475569;">Revenue = Leads × L2B% × B2A% × A2S% × AOV &nbsp;·&nbsp; sequential waterfall decomposition</div>
+  </div>
+
+  <div style="position:absolute;top:17%;left:3%;right:3%;bottom:3%;display:flex;gap:2%;">
+
+    <!-- LEFT: waterfall table + bar chart -->
+    <div style="flex:1.05;display:flex;flex-direction:column;gap:2%;">
+
+      <!-- Sales waterfall -->
+      <div style="background:#F1F5F9;border-radius:8px;padding:2.5% 3%;flex-shrink:0;">
+        <div style="font-size:.7em;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:.1em;margin-bottom:2%;">Sales waterfall  Feb→Mar  (−335 sales)</div>
+        <table style="font-size:.78em;width:100%;">
+          <thead><tr>
+            <th style="background:#EFF4FF;color:#94A3B8;font-weight:600;width:42%;">Factor</th>
+            <th style="background:#EFF4FF;color:#94A3B8;font-weight:600;text-align:right;">Sales Δ</th>
+            <th style="background:#EFF4FF;color:#94A3B8;font-weight:600;text-align:right;">% of drop</th>
+          </tr></thead>
+          <tbody>
+            <tr style="background:#0d2010;"><td style="color:var(--green);">Lead volume (+688 leads)</td><td style="color:var(--green);font-weight:700;text-align:right;">+50</td><td style="color:var(--green);text-align:right;">offset</td></tr>
+            <tr style="background:#1a0a0a;"><td style="color:var(--red);font-weight:700;">L2B% collapse −16.2pp</td><td style="color:var(--red);font-weight:700;text-align:right;">−338</td><td style="color:var(--red);font-weight:700;text-align:right;">101%</td></tr>
+            <tr style="background:#FEF3F0;"><td style="color:#475569;">&nbsp;&nbsp;↳ Channel mix (Google surge)</td><td style="color:var(--amber);text-align:right;">−277</td><td style="color:var(--amber);text-align:right;">82.6%</td></tr>
+            <tr style="background:#F1F5F9;"><td style="color:#475569;">&nbsp;&nbsp;↳ Intra-channel quality (LQC)</td><td style="color:#94A3B8;text-align:right;">−61</td><td style="color:#94A3B8;text-align:right;">18.3%</td></tr>
+            <tr style="background:#EEF2F7;"><td style="color:#475569;">B2A% drop −2.1pp</td><td style="color:var(--amber);text-align:right;">−47</td><td style="color:var(--amber);text-align:right;">13.9%</td></tr>
+            <tr style="background:#F1F5F9;"><td style="color:#475569;">A2S% change −0.03pp</td><td style="color:#475569;text-align:right;">−1</td><td style="color:#475569;text-align:right;">~0%</td></tr>
+            <tr style="background:#0d2010;border-top:1px solid #1e3a5f;"><td style="color:#94A3B8;font-weight:700;">AOV drop −$25 (revenue only)</td><td style="color:var(--amber);text-align:right;">—</td><td style="color:var(--amber);text-align:right;">−16.6% rev</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- BM / TCM capacity sub-decomp -->
+      <div style="background:#F1F5F9;border-radius:8px;padding:2.5% 3%;flex-shrink:0;">
+        <div style="font-size:.7em;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:.1em;margin-bottom:2%;">BM &amp; TCM — headcount vs productivity</div>
+        <table style="font-size:.76em;width:100%;">
+          <thead><tr>
+            <th style="background:#EFF4FF;color:#94A3B8;font-weight:600;">Sub-factor</th>
+            <th style="background:#EFF4FF;color:#94A3B8;font-weight:600;text-align:center;">Feb</th>
+            <th style="background:#EFF4FF;color:#94A3B8;font-weight:600;text-align:center;">Mar</th>
+            <th style="background:#EFF4FF;color:#94A3B8;font-weight:600;text-align:right;">Sales impact</th>
+          </tr></thead>
+          <tbody>
+            <tr style="background:#EEF2F7;"><td style="color:#475569;">Active BMs</td><td style="color:#fff;text-align:center;">27</td><td style="color:var(--red);text-align:center;">25</td><td style="color:var(--amber);text-align:right;">−65 (20%)</td></tr>
+            <tr style="background:#F1F5F9;"><td style="color:#475569;">Bookings / BM</td><td style="color:#fff;text-align:center;">337</td><td style="color:var(--red);text-align:center;">273</td><td style="color:var(--red);font-weight:700;text-align:right;">−207 (62%)</td></tr>
+            <tr style="background:#EEF2F7;"><td style="color:#475569;">Active TCMs</td><td style="color:#fff;text-align:center;">184</td><td style="color:var(--amber);text-align:center;">174</td><td style="color:var(--amber);text-align:right;">−47 (14%)</td></tr>
+            <tr style="background:#F1F5F9;"><td style="color:#475569;">Attendance / TCM</td><td style="color:#fff;text-align:center;">19.4</td><td style="color:var(--red);text-align:center;">14.6</td><td style="color:var(--red);font-weight:700;text-align:right;">−271 (81%)</td></tr>
+          </tbody>
+        </table>
+        <div style="font-size:.68em;color:#475569;margin-top:1.5%;">These sub-decompose the L2B and B2A drop mechanisms — not additive to waterfall</div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT: big visual weight chart + key insight -->
+    <div style="flex:1;display:flex;flex-direction:column;gap:2%;">
+
+      <!-- Visual weight bars -->
+      <div style="background:#F1F5F9;border-radius:8px;padding:3% 4%;flex:1;">
+        <div style="font-size:.7em;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:.1em;margin-bottom:3%;">Contribution weight to −335 sales</div>
+
+        <!-- Channel Mix -->
+        <div style="margin-bottom:3%;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:1%;font-size:.78em;">
+            <span style="color:var(--amber);font-weight:700;">Channel Mix Shift (Google 28%→36%)</span>
+            <span style="color:var(--amber);font-weight:700;">82.6%</span>
+          </div>
+          <div style="background:#EFF4FF;border-radius:3px;height:18px;">
+            <div style="width:82.6%;background:linear-gradient(90deg,#F96167,#FFC107);height:100%;border-radius:3px;"></div>
+          </div>
+        </div>
+
+        <!-- B2A drop -->
+        <div style="margin-bottom:3%;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:1%;font-size:.78em;">
+            <span style="color:#FFC107;">B2A% drop (booking → attend)</span>
+            <span style="color:#FFC107;">13.9%</span>
+          </div>
+          <div style="background:#EFF4FF;border-radius:3px;height:18px;">
+            <div style="width:13.9%;background:#FFC107;height:100%;border-radius:3px;"></div>
+          </div>
+        </div>
+
+        <!-- LQC intra-channel -->
+        <div style="margin-bottom:3%;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:1%;font-size:.78em;">
+            <span style="color:#94A3B8;">LQC — Intra-channel quality drop</span>
+            <span style="color:#94A3B8;">18.3%</span>
+          </div>
+          <div style="background:#EFF4FF;border-radius:3px;height:18px;">
+            <div style="width:18.3%;background:#94A3B8;height:100%;border-radius:3px;"></div>
+          </div>
+        </div>
+
+        <!-- AOV -->
+        <div style="margin-bottom:3%;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:1%;font-size:.78em;">
+            <span style="color:#475569;">AOV drop (revenue impact only)</span>
+            <span style="color:#475569;">16.6% rev</span>
+          </div>
+          <div style="background:#EFF4FF;border-radius:3px;height:18px;">
+            <div style="width:16.6%;background:#334155;height:100%;border-radius:3px;"></div>
+          </div>
+        </div>
+
+        <!-- Lead volume offset -->
+        <div style="margin-bottom:3%;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:1%;font-size:.78em;">
+            <span style="color:var(--green);">Lead volume (partial offset)</span>
+            <span style="color:var(--green);">+15% buffer</span>
+          </div>
+          <div style="background:#EFF4FF;border-radius:3px;height:18px;">
+            <div style="width:15%;background:var(--green);height:100%;border-radius:3px;"></div>
+          </div>
+        </div>
+
+        <!-- Divider -->
+        <div style="border-top:1px solid #1e3a5f;margin:3% 0;"></div>
+
+        <!-- FB internal L2B drop callout -->
+        <div style="background:#1a0f00;border-radius:6px;padding:2.5% 3%;border-left:3px solid var(--amber);">
+          <div style="font-size:.72em;font-weight:700;color:var(--amber);margin-bottom:1.5%;">Surprise: Facebook's own L2B collapsed too</div>
+          <div style="display:flex;gap:6%;font-size:.78em;">
+            <div><div style="color:#64748B;font-size:.85em;">FB L2B Feb</div><div style="color:#fff;font-weight:700;font-size:1.4em;">69.9%</div></div>
+            <div style="color:#475569;display:flex;align-items:center;">→</div>
+            <div><div style="color:#64748B;font-size:.85em;">FB L2B Mar</div><div style="color:var(--red);font-weight:700;font-size:1.4em;">52.4%</div></div>
+            <div><div style="color:#64748B;font-size:.85em;">Drop</div><div style="color:var(--red);font-weight:700;font-size:1.4em;">−17.5pp</div></div>
+          </div>
+          <div style="font-size:.71em;color:#94A3B8;margin-top:1.5%;line-height:1.5;">LQC is not only a Google problem. Facebook itself degraded by 17.5pp. This may reflect BM overload (273 bookings/BM vs 337 in Feb) — same leads, fewer follow-up attempts.</div>
+        </div>
+
+      </div>
+
+      <!-- Verdict -->
+      <div style="background:#0d2010;border-radius:8px;padding:3% 4%;border:1.5px solid var(--green);flex-shrink:0;">
+        <div style="font-size:.72em;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:.1em;margin-bottom:2%;">Answer: Is it Google share or LQC?</div>
+        <div style="font-size:.82em;color:#475569;line-height:1.7;">
+          <strong style="color:#fff;">Google share shift is the primary driver (82.6% of the drop).</strong>
+          Pure LQC within channels adds only 18.3%. However, FB's internal collapse (−17.5pp)
+          and BM productivity decline (337→273 bk/BM, −19%) suggest the overload caused by
+          Google's low-quality leads <strong style="color:var(--amber);">contaminated BM effectiveness on Facebook leads too.</strong>
+          Fix Google share → most of L2B recovers. Restore BM capacity → FB L2B recovers further.
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 19 — APRIL W1: TLDR
+══════════════════════════════════════════════════ -->
+<div class="slide" id="s19"
+  <div class="fill" style="background:#080E1A;"></div>
+  <div style="position:absolute;left:0;top:0;bottom:0;width:.5%;background:var(--amber);"></div>
+
+  <!-- header -->
+  <div style="position:absolute;top:5%;left:3%;right:3%;display:flex;justify-content:space-between;align-items:center;">
+    <div>
+      <div style="font-size:.72em;font-weight:700;color:var(--amber);text-transform:uppercase;letter-spacing:.2em;">Week 1 · April 2026</div>
+      <div style="font-size:1.6em;font-weight:700;color:#fff;margin-top:.5%;">Apr 1–6, 2026 &nbsp;<span style="font-size:.55em;color:#475569;font-weight:400;">data cut-off Mon Apr 6 at 13:15 WIB — partial week</span></div>
+    </div>
+    <div style="background:#EFF4FF;border-radius:6px;padding:1.5% 3%;border:1px solid #93C5FD;">
+      <div style="font-size:.68em;color:var(--amber);font-weight:700;text-transform:uppercase;letter-spacing:.1em;">TLDR</div>
+    </div>
+  </div>
+
+  <!-- 4 KPIs -->
+  <div style="position:absolute;top:21%;left:3%;right:3%;display:flex;gap:1.5%;">
+    <div style="flex:1;background:#EEF2F7;border-radius:8px;padding:3% 4%;border-top:2px solid var(--amber);">
+      <div style="font-size:.7em;color:#64748B;margin-bottom:6%;">Leads (6 days)</div>
+      <div style="font-size:2.8em;font-weight:700;color:#fff;">4,380</div>
+      <div style="font-size:.72em;color:var(--green);margin-top:4%;">+37% vs Mar daily avg</div>
+    </div>
+    <div style="flex:1;background:#EEF2F7;border-radius:8px;padding:3% 4%;border-top:2px solid var(--amber);">
+      <div style="font-size:.7em;color:#64748B;margin-bottom:6%;">L2B% raw → settled est.</div>
+      <div style="font-size:2.8em;font-weight:700;color:var(--amber);">44.9%</div>
+      <div style="font-size:.72em;color:#94A3B8;margin-top:4%;">→ ~47% ex-Mon partial · vs Mar 41.5%</div>
+    </div>
+    <div style="flex:1;background:#EEF2F7;border-radius:8px;padding:3% 4%;border-top:2px solid #475569;">
+      <div style="font-size:.7em;color:#64748B;margin-bottom:6%;">A2S% ⚠ cohort lag</div>
+      <div style="font-size:2.8em;font-weight:700;color:#94A3B8;">38.9%</div>
+      <div style="font-size:.72em;color:#F96167;margin-top:4%;">Not comparable — week not settled</div>
+    </div>
+    <div style="flex:1;background:#EEF2F7;border-radius:8px;padding:3% 4%;border-top:2px solid var(--green);">
+      <div style="font-size:.7em;color:#64748B;margin-bottom:6%;">Revenue / day</div>
+      <div style="font-size:2.8em;font-weight:700;color:var(--green);">$9,105</div>
+      <div style="font-size:.72em;color:var(--green);margin-top:4%;">+23% vs Mar avg $7,408</div>
+    </div>
+  </div>
+
+  <!-- TLDR bullets -->
+  <div style="position:absolute;top:55%;left:3%;right:3%;display:flex;gap:2%;">
+    <div style="flex:1;background:#EEF2F7;border-radius:8px;padding:3.5% 4%;border-left:3px solid var(--green);">
+      <div style="font-size:.72em;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:.12em;margin-bottom:3%;">Volume is back</div>
+      <div style="font-size:.85em;color:#475569;line-height:1.65;">
+        Lead volume is <strong style="color:#fff;">+37% above March daily average</strong>. Revenue is running +23% above March and +19% YoY. Thursday Apr 2 was the week's hero: L2B 55.7%, A2S 40.1%, $17,434 revenue — the best single day in the dataset since January.
+      </div>
+    </div>
+    <div style="flex:1;background:#EEF2F7;border-radius:8px;padding:3.5% 4%;border-left:3px solid var(--red);">
+      <div style="font-size:.72em;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:.12em;margin-bottom:3%;">Data is immature — don't trust L2B yet</div>
+      <div style="font-size:.85em;color:#475569;line-height:1.65;">
+        69.6% of leads still show <strong style="color:#fff;">no drop reason</strong>. In March at month-end, 81.2% of leads had received a drop. The true settled L2B% for this cohort will converge to <strong style="color:#fff;">41–47%</strong> over the next 5–7 days. A2S% on Sun/Mon (72–100%) is a cohort-lag artifact — not real.
+      </div>
+    </div>
+    <div style="flex:1;background:#EEF2F7;border-radius:8px;padding:3.5% 4%;border-left:3px solid var(--amber);">
+      <div style="font-size:.72em;font-weight:700;color:var(--amber);text-transform:uppercase;letter-spacing:.12em;margin-bottom:3%;">Channel mix is restructuring</div>
+      <div style="font-size:.85em;color:#475569;line-height:1.65;">
+        Google share collapsed from 36.4% → 18.9%. <code style="color:var(--amber);">reg</code> optimization went from 35.4% → 18.8% of leads. Facebook/Purchase is filling the gap. TikTok is <strong style="color:#fff;">still at ~0%</strong> vs 16.8% share a year ago. 11.3% of leads have broken UTM (up from 7.7% in March).
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 19 — APRIL W1: DRAMA
+══════════════════════════════════════════════════ -->
+<div class="slide" id="s20">
+  <div class="fill" style="background:#080E1A;"></div>
+  <div style="position:absolute;left:0;top:0;bottom:0;width:.5%;background:var(--red);"></div>
+
+  <div style="position:absolute;top:5%;left:3%;right:3%;display:flex;justify-content:space-between;align-items:center;">
+    <div>
+      <div style="font-size:.72em;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:.2em;">Week 1 · April 2026</div>
+      <div style="font-size:1.6em;font-weight:700;color:#fff;margin-top:.5%;">Drama: L2B1, A2S1 &amp; Day-of-Week Patterns</div>
+    </div>
+    <div style="background:#FEF2F2;border-radius:6px;padding:1.5% 3%;border:1px solid #FCA5A5;">
+      <div style="font-size:.68em;color:var(--red);font-weight:700;text-transform:uppercase;letter-spacing:.1em;">DRAMA</div>
+    </div>
+  </div>
+
+  <div style="position:absolute;top:18%;left:3%;right:3%;display:flex;gap:2%;">
+
+    <!-- Left: day table -->
+    <div style="flex:1.1;">
+      <div style="font-size:.72em;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:.1em;margin-bottom:2%;">Daily funnel — Apr 1–6</div>
+      <div style="background:#F1F5F9;border-radius:8px;overflow:hidden;">
+        <table style="font-size:.78em;">
+          <thead>
+            <tr style="background:#EFF4FF;">
+              <th style="color:#94A3B8;font-weight:600;background:#EFF4FF;">Day</th>
+              <th style="color:#94A3B8;font-weight:600;background:#EFF4FF;">Leads</th>
+              <th style="color:#94A3B8;font-weight:600;background:#EFF4FF;">L2B%</th>
+              <th style="color:#94A3B8;font-weight:600;background:#EFF4FF;">A2S%</th>
+              <th style="color:#94A3B8;font-weight:600;background:#EFF4FF;">Revenue</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="background:#F1F5F9;"><td style="color:#94A3B8;">Wed Apr 1</td><td style="color:#fff;">568</td><td style="color:var(--green);font-weight:700;">51.8%</td><td style="color:#94A3B8;">28.3%</td><td style="color:#fff;">$10,994</td></tr>
+            <tr style="background:#EEF2F7;border:2px solid var(--amber);outline:2px solid var(--amber);"><td style="color:var(--amber);font-weight:700;">Thu Apr 2 ⭐</td><td style="color:#fff;">696</td><td style="color:var(--green);font-weight:700;">55.7%</td><td style="color:var(--green);font-weight:700;">40.1%</td><td style="color:var(--amber);font-weight:700;">$17,434</td></tr>
+            <tr style="background:#F1F5F9;"><td style="color:#94A3B8;">Fri Apr 3</td><td style="color:var(--amber);">911</td><td style="color:#94A3B8;">44.7%</td><td style="color:#94A3B8;">29.1%</td><td style="color:#fff;">$10,236</td></tr>
+            <tr style="background:#EEF2F7;"><td style="color:#94A3B8;">Sat Apr 4</td><td style="color:var(--amber);">929</td><td style="color:#94A3B8;">41.0%</td><td style="color:var(--green);">47.9%</td><td style="color:#fff;">$9,832</td></tr>
+            <tr style="background:#F1F5F9;"><td style="color:#94A3B8;">Sun Apr 5</td><td style="color:#94A3B8;">724</td><td style="color:#94A3B8;">47.0%</td><td style="color:var(--red);font-weight:700;">72.7% ⚠</td><td style="color:#94A3B8;">$4,715</td></tr>
+            <tr style="background:#1a0a0a;"><td style="color:#475569;">Mon Apr 6 ✂</td><td style="color:#475569;">552</td><td style="color:var(--red);">28.4% ✂</td><td style="color:var(--red);">100% ✂</td><td style="color:#475569;">$1,416</td></tr>
+          </tbody>
+        </table>
+        <div style="padding:2% 3%;font-size:.7em;color:#475569;">✂ partial day (data to 13:15 WIB only) · ⚠ cohort-lag artifact</div>
+      </div>
+
+      <!-- Wed comparison -->
+      <div style="background:#0d2010;border-radius:6px;padding:2.5% 3%;margin-top:2%;border-left:3px solid var(--green);">
+        <div style="font-size:.75em;color:var(--green);font-weight:700;margin-bottom:1.5%;">Wed Apr 1 — best Wednesday since Dec 2025</div>
+        <div style="font-size:.76em;color:#94A3B8;line-height:1.5;">L2B 51.8% vs March Wednesday avg <strong style="color:#fff;">39.7%</strong> (+12.1pp). Opening-of-post-Ramadan-week booking surge. BMs clearing backlog from Eid weekend.</div>
+      </div>
+    </div>
+
+    <!-- Right: Drama panels -->
+    <div style="flex:1;display:flex;flex-direction:column;gap:2%;">
+
+      <!-- Thursday hero -->
+      <div style="background:#1a1500;border-radius:8px;padding:3.5% 4%;border:1.5px solid var(--amber);">
+        <div style="font-size:.72em;font-weight:700;color:var(--amber);text-transform:uppercase;letter-spacing:.1em;margin-bottom:2%;">Thursday: the week's engine</div>
+        <div style="display:flex;gap:3%;margin-bottom:2%;">
+          <div><div style="font-size:2em;font-weight:700;color:var(--amber);">55.7%</div><div style="font-size:.65em;color:#64748B;">L2B% (vs Thu Mar 46.3%)</div></div>
+          <div><div style="font-size:2em;font-weight:700;color:var(--green);">40.1%</div><div style="font-size:.65em;color:#64748B;">A2S% (vs Thu Mar 29.0%)</div></div>
+          <div><div style="font-size:2em;font-weight:700;color:#fff;">$17.4K</div><div style="font-size:.65em;color:#64748B;">Revenue (week best)</div></div>
+        </div>
+        <div style="font-size:.76em;color:#94A3B8;line-height:1.5;">Thu had better lead quality mix: 28% Purchase-optimized Facebook leads vs 19% week avg. Lower Google share (14% vs 19% week avg).</div>
+      </div>
+
+      <!-- A2S1 drama -->
+      <div style="background:#1a0a0a;border-radius:8px;padding:3.5% 4%;border:1.5px solid var(--red);">
+        <div style="font-size:.72em;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:.1em;margin-bottom:2%;">A2S% Drama — the numbers lie</div>
+        <div style="font-size:.8em;color:#475569;line-height:1.7;">
+          Sun A2S = <strong style="color:var(--red);">72.7%</strong>. Mon A2S = <strong style="color:var(--red);">100%</strong>. <br>
+          These are <strong style="color:#fff;">not conversion improvements.</strong><br><br>
+          The 33 "attended" leads on Sunday and 8 on Monday are from <em>earlier cohorts</em> — they booked days ago and just happened to attend late in the week. Late-week attendees are the most motivated buyers, inflating A2S%. The real A2S for April W1 leads will only be known in ~2 weeks.
+        </div>
+      </div>
+
+      <!-- L2B1 drop reasons not settled -->
+      <div style="background:#F1F5F9;border-radius:8px;padding:3.5% 4%;border:1.5px solid #475569;">
+        <div style="font-size:.72em;font-weight:700;color:var(--amber);text-transform:uppercase;letter-spacing:.1em;margin-bottom:2%;">L2B1 maturity warning</div>
+        <div style="display:flex;gap:4%;margin-bottom:2%;">
+          <div><div style="font-size:1.7em;font-weight:700;color:#fff;">69.6%</div><div style="font-size:.65em;color:#64748B;">leads: no drop yet (Apr W1)</div></div>
+          <div><div style="font-size:1.7em;font-weight:700;color:var(--red);">18.8%</div><div style="font-size:.65em;color:#64748B;">leads: no drop (Mar, settled)</div></div>
+        </div>
+        <div style="font-size:.76em;color:#94A3B8;line-height:1.5;">81% of March leads eventually got a drop reason. April week's L2B will <strong style="color:#fff;">drift down to 41–47%</strong> as BMs work through the queue. Friday/Saturday high volume = most backlog still pending.</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 20 — APRIL W1: NOTABLE OBSERVATIONS
+══════════════════════════════════════════════════ -->
+<div class="slide" id="s21">
+  <div class="fill" style="background:#080E1A;"></div>
+  <div style="position:absolute;left:0;top:0;bottom:0;width:.5%;background:#A78BFA;"></div>
+
+  <div style="position:absolute;top:5%;left:3%;right:3%;display:flex;justify-content:space-between;align-items:center;">
+    <div>
+      <div style="font-size:.72em;font-weight:700;color:#A78BFA;text-transform:uppercase;letter-spacing:.2em;">Week 1 · April 2026</div>
+      <div style="font-size:1.6em;font-weight:700;color:#fff;margin-top:.5%;">Notable Observations — Channel, Optimisation &amp; Courses</div>
+    </div>
+    <div style="background:#F5F3FF;border-radius:6px;padding:1.5% 3%;border:1px solid #DDD6FE;">
+      <div style="font-size:.68em;color:#A78BFA;font-weight:700;text-transform:uppercase;letter-spacing:.1em;">NOTABLE</div>
+    </div>
+  </div>
+
+  <div style="position:absolute;top:18%;left:3%;right:3%;display:flex;gap:2%;">
+
+    <!-- Left column: channel + optimization -->
+    <div style="flex:1;display:flex;flex-direction:column;gap:2%;">
+
+      <!-- Channel shift -->
+      <div style="background:#F1F5F9;border-radius:8px;padding:3% 3.5%;">
+        <div style="font-size:.72em;font-weight:700;color:#A78BFA;text-transform:uppercase;letter-spacing:.1em;margin-bottom:2%;">Channel mix restructuring</div>
+        <table style="font-size:.75em;width:100%;">
+          <thead><tr><th style="background:#EFF4FF;color:#94A3B8;font-weight:600;">Channel</th><th style="background:#EFF4FF;color:#94A3B8;font-weight:600;">Apr W1 share</th><th style="background:#EFF4FF;color:#94A3B8;font-weight:600;">Mar share</th><th style="background:#EFF4FF;color:#94A3B8;font-weight:600;">L2B%</th></tr></thead>
+          <tbody>
+            <tr style="background:#F1F5F9;"><td style="color:#475569;">Facebook</td><td style="color:var(--green);font-weight:700;">59.7%</td><td style="color:#94A3B8;">48.9%</td><td style="color:var(--green);">55.5%</td></tr>
+            <tr style="background:#EEF2F7;"><td style="color:var(--red);">Google ↓↓</td><td style="color:var(--red);font-weight:700;">18.9%</td><td style="color:var(--red);">36.4%</td><td style="color:var(--red);">22.0%</td></tr>
+            <tr style="background:#F1F5F9;"><td style="color:var(--green);">Instagram ↑</td><td style="color:var(--green);font-weight:700;">7.2%</td><td style="color:#94A3B8;">4.2%</td><td style="color:var(--green);">72.8%</td></tr>
+            <tr style="background:#EEF2F7;"><td style="color:var(--amber);">Missing UTM ↑</td><td style="color:var(--amber);font-weight:700;">11.3%</td><td style="color:#94A3B8;">7.7%</td><td style="color:var(--red);">7.1%</td></tr>
+            <tr style="background:#F1F5F9;"><td style="color:#475569;">TikTok 💀</td><td style="color:#475569;font-weight:700;">~0%</td><td style="color:#475569;">~0%</td><td style="color:#475569;">—</td></tr>
+          </tbody>
+        </table>
+        <div style="font-size:.7em;color:#F96167;margin-top:2%;line-height:1.5;">⚠ Missing UTM (11.3% of leads) has 7.1% L2B — dragging aggregate funnel. Growing 3.6pp vs March — broken tracking on a campaign.</div>
+      </div>
+
+      <!-- Optimisation type -->
+      <div style="background:#F1F5F9;border-radius:8px;padding:3% 3.5%;">
+        <div style="font-size:.72em;font-weight:700;color:#A78BFA;text-transform:uppercase;letter-spacing:.1em;margin-bottom:2%;">Optimisation type shift — reg is dying</div>
+        <table style="font-size:.75em;width:100%;">
+          <thead><tr><th style="background:#EFF4FF;color:#94A3B8;font-weight:600;">Opt Type</th><th style="background:#EFF4FF;color:#94A3B8;font-weight:600;">Apr W1</th><th style="background:#EFF4FF;color:#94A3B8;font-weight:600;">Mar 2026</th><th style="background:#EFF4FF;color:#94A3B8;font-weight:600;">L2B%</th></tr></thead>
+          <tbody>
+            <tr style="background:#0d2010;"><td style="color:var(--green);">Purchase ↑↑</td><td style="color:var(--green);font-weight:700;">24.5%</td><td style="color:#94A3B8;">9.0%</td><td style="color:var(--green);">65.7%</td></tr>
+            <tr style="background:#EEF2F7;"><td style="color:var(--red);">reg (Google) ↓↓</td><td style="color:var(--red);font-weight:700;">18.8%</td><td style="color:var(--red);">35.4%</td><td style="color:var(--red);">21.9%</td></tr>
+            <tr style="background:#F1F5F9;"><td style="color:#475569;">RegisteredMK</td><td style="color:#fff;">16.0%</td><td style="color:#94A3B8;">18.0%</td><td style="color:#fff;">48.8%</td></tr>
+            <tr style="background:#EEF2F7;"><td style="color:var(--green);">ig (Instagram)</td><td style="color:var(--green);">7.2%</td><td style="color:#94A3B8;">4.2%</td><td style="color:var(--green);">72.8%</td></tr>
+          </tbody>
+        </table>
+        <div style="font-size:.7em;color:var(--green);margin-top:2%;">Purchase rising = higher CPL but L2B 3× higher than reg. Net positive if CAC math holds.</div>
+      </div>
+
+    </div>
+
+    <!-- Right column: drop reasons + courses -->
+    <div style="flex:1;display:flex;flex-direction:column;gap:2%;">
+
+      <!-- Top drop reasons delta -->
+      <div style="background:#F1F5F9;border-radius:8px;padding:3% 3.5%;">
+        <div style="font-size:.72em;font-weight:700;color:#A78BFA;text-transform:uppercase;letter-spacing:.1em;margin-bottom:2%;">Drop reasons — week vs March</div>
+        <table style="font-size:.75em;width:100%;">
+          <thead><tr><th style="background:#EFF4FF;color:#94A3B8;font-weight:600;">Drop reason</th><th style="background:#EFF4FF;color:#94A3B8;font-weight:600;">Apr W1</th><th style="background:#EFF4FF;color:#94A3B8;font-weight:600;">Mar 2026</th></tr></thead>
+          <tbody>
+            <tr style="background:#0d2010;"><td style="color:var(--green);">No drop (booked) ↑</td><td style="color:var(--green);font-weight:700;">69.6%</td><td style="color:#94A3B8;">18.8%</td></tr>
+            <tr style="background:#EEF2F7;"><td style="color:#475569;">Spam</td><td style="color:var(--amber);">4.8%</td><td style="color:#94A3B8;">5.7%</td></tr>
+            <tr style="background:#F1F5F9;"><td style="color:#475569;">Invalid number</td><td style="color:var(--amber);">4.0%</td><td style="color:#94A3B8;">6.1%</td></tr>
+            <tr style="background:#EEF2F7;"><td style="color:#475569;">No response</td><td style="color:var(--green);">3.5%</td><td style="color:var(--red);">16.7%</td></tr>
+            <tr style="background:#F1F5F9;"><td style="color:#475569;">Stopped responding</td><td style="color:var(--green);">2.1%</td><td style="color:var(--red);">18.4%</td></tr>
+            <tr style="background:#EEF2F7;"><td style="color:#475569;">Double lead</td><td style="color:#94A3B8;">3.1%</td><td style="color:#94A3B8;">3.1%</td></tr>
+          </tbody>
+        </table>
+        <div style="font-size:.7em;color:var(--amber);margin-top:2%;line-height:1.4;">No Response + Stopped Responding = 5.6% combined now vs 35.1% in March. Drop backlog not yet populated — will converge heavily toward these two categories as week matures.</div>
+      </div>
+
+      <!-- Course highlights -->
+      <div style="background:#F1F5F9;border-radius:8px;padding:3% 3.5%;">
+        <div style="font-size:.72em;font-weight:700;color:#A78BFA;text-transform:uppercase;letter-spacing:.1em;margin-bottom:2%;">Course highlights</div>
+        <div style="display:flex;flex-direction:column;gap:1.5%;">
+          <div style="display:flex;justify-content:space-between;align-items:center;background:#0d2010;border-radius:4px;padding:1.5% 2.5%;">
+            <div style="font-size:.78em;color:#475569;">Graphic Design <span style="color:var(--green);">↑↑</span></div>
+            <div style="font-size:.78em;"><span style="color:var(--green);font-weight:700;">60.9%</span> <span style="color:#475569;">vs 43.4% Mar</span> <span style="color:var(--green);font-size:.85em;">+17.5pp</span></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;background:#EEF2F7;border-radius:4px;padding:1.5% 2.5%;">
+            <div style="font-size:.78em;color:#475569;">Math Tutoring <span style="color:var(--green);">↑</span></div>
+            <div style="font-size:.78em;"><span style="color:var(--green);font-weight:700;">82.0%</span> <span style="color:#475569;">vs 85.4% Mar</span> <span style="color:var(--amber);font-size:.85em;">−3.4pp</span></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;background:#1a0a0a;border-radius:4px;padding:1.5% 2.5%;">
+            <div style="font-size:.78em;color:#475569;">Python Start <span style="color:var(--red);">chronic ↓</span></div>
+            <div style="font-size:.78em;"><span style="color:var(--red);font-weight:700;">19.2%</span> <span style="color:#475569;">vs 16.7% Mar</span> <span style="color:#94A3B8;font-size:.85em;">lead quality issue</span></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;background:#EEF2F7;border-radius:4px;padding:1.5% 2.5%;">
+            <div style="font-size:.78em;color:#475569;">The Coding Knight <span style="color:var(--green);">↑</span></div>
+            <div style="font-size:.78em;"><span style="color:var(--green);font-weight:700;">46.0%</span> <span style="color:#475569;">vs 35.6% Mar</span> <span style="color:var(--green);font-size:.85em;">+10.4pp</span></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;background:#F1F5F9;border-radius:4px;padding:1.5% 2.5%;">
+            <div style="font-size:.78em;color:#475569;">Missing course attr.</div>
+            <div style="font-size:.78em;"><span style="color:var(--red);font-weight:700;">4.3%</span> <span style="color:#475569;">16.8% of leads · tracking gap</span></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 21 — CLOSING
+══════════════════════════════════════════════════ -->
+<div class="slide" id="s22">
+  <div class="fill bg-navy2"></div>
+  <div class="accent-bar-left"></div>
+  <div style="position:absolute;top:0;left:1.2%;right:0;height:.8%;background:#2D3C8A;"></div>
+
+  <div style="position:absolute;left:10%;top:8%;right:8%;">
+    <div style="font-size:1.1em;font-weight:700;color:var(--red);text-transform:uppercase;
+                letter-spacing:.2em;margin-bottom:3%;">Key Takeaways</div>
+    <div style="font-size:4.2em;font-weight:700;line-height:1.1;margin-bottom:6%;">
+      March 2026<br>in Three Lines
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:3%;">
+      <div style="display:flex;gap:3%;align-items:flex-start;">
+        <div style="width:.5%;background:var(--green);border-radius:2px;flex-shrink:0;"></div>
+        <div>
+          <span style="font-weight:700;color:#fff;">Revenue fell 39%, but A2S held steady at 32% —&nbsp;</span>
+          <span style="color:var(--lblue);">TCMs are not the problem. The pipeline feeding them is.</span>
+        </div>
+      </div>
+      <div style="display:flex;gap:3%;align-items:flex-start;">
+        <div style="width:.5%;background:var(--red);border-radius:2px;flex-shrink:0;"></div>
+        <div>
+          <span style="font-weight:700;color:#fff;">L2B collapsed 16pp —&nbsp;</span>
+          <span style="color:var(--lblue);">driven by a surge in Google traffic (low intent), spam/invalid leads, and 5 BMs going inactive simultaneously.</span>
+        </div>
+      </div>
+      <div style="display:flex;gap:3%;align-items:flex-start;">
+        <div style="width:.5%;background:var(--amber);border-radius:2px;flex-shrink:0;"></div>
+        <div>
+          <span style="font-weight:700;color:#fff;">This is ~80% structural, ~20% Ramadan —&nbsp;</span>
+          <span style="color:var(--lblue);">fix the channel mix and BM headcount, and revenue recovery does not need to wait for April.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="position:absolute;bottom:5%;left:10%;font-size:.85em;color:#4A5B8A;">
+    Algonova B2C Indonesia · Sales Intelligence · April 2026 · Confidential
+  </div>
+</div>
+
+</div></div><!-- end stage -->
+
+<!-- Navigation -->
+<div id="nav">
+  <button onclick="go(-1)">← Prev</button>
+  <div class="dot-nav" id="dots"></div>
+  <span id="counter">1 / 12</span>
+  <button onclick="go(1)">Next →</button>
+</div>
+
+<script>
+const TOTAL = 22;
+let cur = 1;
+
+// Build dots
+const dotsEl = document.getElementById('dots');
+for (let i = 1; i <= TOTAL; i++) {
+  const d = document.createElement('div');
+  d.className = 'dot' + (i===1 ? ' active' : '');
+  d.onclick = () => goTo(i);
+  dotsEl.appendChild(d);
+}
+
+function goTo(n) {
+  document.getElementById('s'+cur).classList.remove('active');
+  document.querySelectorAll('.dot')[cur-1].classList.remove('active');
+  cur = Math.max(1, Math.min(TOTAL, n));
+  document.getElementById('s'+cur).classList.add('active');
+  document.querySelectorAll('.dot')[cur-1].classList.add('active');
+  document.getElementById('counter').textContent = cur + ' / ' + TOTAL;
+  renderCharts();
+}
+function go(d) { goTo(cur + d); }
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') go(1);
+  if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp') go(-1);
+});
+
+// ── CHARTS ─────────────────────────────────────────────────────────────
+let charts = {};
+function destroyChart(id) { if (charts[id]) { charts[id].destroy(); delete charts[id]; } }
+
+function renderCharts() {
+  if (cur === 4 && !charts.l2b) {
+    destroyChart('l2b');
+    charts.l2b = new Chart(document.getElementById('chartL2B'), {
+      type: 'bar',
+      data: {
+        labels: ['January 2026', 'February 2026', 'March 2026'],
+        datasets: [{
+          label: 'L2B%',
+          data: [67.5, 57.6, 41.4],
+          backgroundColor: ['#4A6CC0', '#6B8ED8', '#F96167'],
+          borderRadius: 4,
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: { label: ctx => ctx.parsed.y + '%' } }
+        },
+        scales: {
+          y: {
+            min: 0, max: 80,
+            grid: { color: '#e2e8f0' },
+            ticks: { callback: v => v + '%', color: '#64748B' }
+          },
+          x: { grid: { display: false }, ticks: { color: '#64748B' } }
+        }
+      }
+    });
+  }
+
+  if (cur === 5 && !charts.a2s) {
+    destroyChart('a2s');
+    charts.a2s = new Chart(document.getElementById('chartA2S'), {
+      type: 'line',
+      data: {
+        labels: ['January', 'February', 'March'],
+        datasets: [{
+          label: 'A2S%',
+          data: [30.8, 31.8, 32.3],
+          borderColor: '#02C39A',
+          backgroundColor: 'rgba(2,195,154,.15)',
+          borderWidth: 3,
+          pointBackgroundColor: '#02C39A',
+          pointRadius: 6,
+          fill: true,
+          tension: 0.3,
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: { label: ctx => ctx.parsed.y + '%' } }
+        },
+        scales: {
+          y: {
+            min: 28, max: 36,
+            grid: { color: '#e2e8f0' },
+            ticks: { callback: v => v + '%', color: '#64748B' }
+          },
+          x: { grid: { display: false }, ticks: { color: '#64748B' } }
+        }
+      }
+    });
+  }
+
+  if (cur === 6 && !charts.channel) {
+    destroyChart('channel');
+    charts.channel = new Chart(document.getElementById('chartChannel'), {
+      type: 'bar',
+      data: {
+        labels: ['January 2026', 'February 2026', 'March 2026'],
+        datasets: [
+          { label: 'Facebook', data: [70.4, 65.0, 53.2],
+            backgroundColor: '#4A6CC0', stack: 's' },
+          { label: 'Google',   data: [16.5, 22.0, 39.5],
+            backgroundColor: '#F96167', stack: 's' },
+          { label: 'TikTok',   data: [8.5, 10.0, 5.0],
+            backgroundColor: '#1DA1F2', stack: 's' },
+          { label: 'Other/SMM',data: [4.6,  3.0,  2.3],
+            backgroundColor: '#94A3B8', stack: 's' },
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'bottom', labels: { color: '#1E293B', font: { size: 11 } } },
+          tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + ctx.parsed.y + '%' } }
+        },
+        scales: {
+          y: {
+            stacked: true, min: 0, max: 100,
+            grid: { color: '#e2e8f0' },
+            ticks: { callback: v => v + '%', color: '#64748B' }
+          },
+          x: { stacked: true, grid: { display: false }, ticks: { color: '#64748B' } }
+        }
+      }
+    });
+  }
+
+  if (cur === 12 && !charts.lqs) {
+    destroyChart('lqs');
+    const lqsData = [95.8, 105.4, 103.3, 95.8, 123.8, 117.0, 86.5];
+    charts.lqs = new Chart(document.getElementById('chartLQS'), {
+      type: 'line',
+      data: {
+        labels: ['Jan 25','Feb 25','Mar 25 ☪','Apr 25','Jan 26','Feb 26','Mar 26 ☪'],
+        datasets: [
+          {
+            label: 'LQS',
+            data: lqsData,
+            borderColor: '#7C3AED',
+            backgroundColor: 'rgba(124,58,237,.12)',
+            borderWidth: 2.5,
+            pointBackgroundColor: lqsData.map(v => v < 90 ? '#F96167' : v < 100 ? '#FFC107' : '#02C39A'),
+            pointRadius: 6,
+            fill: true,
+            tension: 0.3,
+          },
+          {
+            label: 'Alert threshold (90)',
+            data: [90,90,90,90,90,90,90],
+            borderColor: 'rgba(249,97,103,.5)',
+            borderDash: [6,4],
+            borderWidth: 1.5,
+            pointRadius: 0,
+            fill: false,
+          }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: { label: ctx => ctx.dataset.label === 'LQS' ? 'LQS: ' + ctx.parsed.y.toFixed(1) : '' } }
+        },
+        scales: {
+          y: {
+            min: 75, max: 135,
+            grid: { color: '#e2e8f0' },
+            ticks: { color: '#64748B' }
+          },
+          x: { grid: { display: false }, ticks: { color: '#64748B', font: { size: 9 } } }
+        }
+      }
+    });
+  }
+
+  if (cur === 11 && !charts.yoy) {
+    destroyChart('yoy');
+    charts.yoy = new Chart(document.getElementById('chartYoY'), {
+      type: 'bar',
+      data: {
+        labels: ['Jan', 'Feb', 'Mar ☪', 'Apr'],
+        datasets: [
+          {
+            label: '2025 L2B%',
+            data: [53.9, 60.6, 61.2, 54.9],
+            backgroundColor: '#02C39A',
+            borderRadius: 4,
+          },
+          {
+            label: '2026 L2B%',
+            data: [67.5, 57.6, 41.4, null],
+            backgroundColor: ['#4A6CC0','#4A6CC0','#F96167', '#4A6CC0'],
+            borderRadius: 4,
+          }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'bottom', labels: { color: '#1E293B', font: { size: 10 } } },
+          tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + ctx.parsed.y + '%' } }
+        },
+        scales: {
+          y: {
+            min: 30, max: 80,
+            grid: { color: '#e2e8f0' },
+            ticks: { callback: v => v + '%', color: '#64748B' }
+          },
+          x: { grid: { display: false }, ticks: { color: '#64748B' } }
+        }
+      }
+    });
+  }
+
+  if (cur === 9 && !charts.tcm) {
+    destroyChart('tcm');
+    charts.tcm = new Chart(document.getElementById('chartTCM'), {
+      type: 'bar',
+      data: {
+        labels: ['January 2026', 'February 2026', 'March 2026'],
+        datasets: [{
+          label: 'Avg MKs per TCM',
+          data: [30.5, 23.9, 17.2],
+          backgroundColor: ['#FFC107', '#FFC107', '#F96167'],
+          borderRadius: 4,
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: { label: ctx => ctx.parsed.y + ' MKs/TCM' } }
+        },
+        scales: {
+          y: {
+            min: 0, max: 36,
+            grid: { color: '#e2e8f0' },
+            ticks: { color: '#64748B' }
+          },
+          x: { grid: { display: false }, ticks: { color: '#64748B' } }
+        }
+      }
+    });
+  }
+}
+
+renderCharts(); // for slide 1 (no charts needed)
+</script>
+</body>
+</html>

@@ -1,0 +1,1277 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Органика vs CPC — Калькулятор + Справочник</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg:     #0f1117;
+  --card:   #1a1d27;
+  --card2:  #1e2235;
+  --border: #2a2d3e;
+  --accent: #6c63ff;
+  --green:  #22c55e;
+  --red:    #ef4444;
+  --orange: #f59e0b;
+  --blue:   #38bdf8;
+  --purple: #a78bfa;
+  --text:   #e2e8f0;
+  --muted:  #64748b;
+}
+* { box-sizing:border-box; margin:0; padding:0; }
+body { background:var(--bg); color:var(--text); font-family:'Segoe UI',system-ui,sans-serif; font-size:14px; line-height:1.6; }
+.container { max-width:1280px; margin:0 auto; padding:24px 16px; }
+h1 { font-size:22px; font-weight:700; color:#fff; }
+h2 { font-size:15px; font-weight:600; color:#fff; margin-bottom:14px; }
+h3 { font-size:13px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; margin-bottom:10px; }
+.subtitle { color:var(--muted); font-size:12px; margin-top:4px; }
+.header { margin-bottom:24px; padding-bottom:18px; border-bottom:1px solid var(--border); display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:12px; }
+.badge { display:inline-block; background:var(--accent); color:#fff; font-size:11px; font-weight:600; padding:2px 8px; border-radius:99px; margin-left:6px; }
+.section { margin-bottom:28px; }
+
+/* Period picker */
+.period-bar {
+  background:var(--card); border:1px solid var(--border); border-radius:12px;
+  padding:16px 20px; display:flex; align-items:center; gap:20px; flex-wrap:wrap;
+}
+.period-bar label { font-size:12px; color:var(--muted); }
+.period-bar select {
+  background:var(--bg); border:1px solid var(--border); color:var(--text);
+  border-radius:8px; padding:5px 10px; font-size:13px; cursor:pointer;
+}
+.period-bar select:focus { outline:none; border-color:var(--accent); }
+.period-stat { font-size:12px; color:var(--muted); margin-left:auto; }
+.period-stat strong { color:var(--text); }
+#period-info { font-size:12px; color:var(--orange); margin-left:4px; }
+
+/* Grid layouts */
+.grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.grid-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+.grid-4 { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
+@media(max-width:900px) { .grid-2,.grid-3,.grid-4 { grid-template-columns:1fr; } }
+@media(max-width:1100px) { .grid-4 { grid-template-columns:repeat(2,1fr); } }
+
+/* Cards */
+.card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:20px; }
+.stat-card { text-align:center; }
+.stat-label { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; margin-bottom:6px; }
+.stat-value { font-size:26px; font-weight:700; color:#fff; }
+.stat-sub   { font-size:12px; color:var(--muted); margin-top:4px; }
+
+/* Comparison table */
+.cmp-table { width:100%; border-collapse:collapse; }
+.cmp-table th,.cmp-table td { padding:9px 14px; text-align:right; border-bottom:1px solid var(--border); font-size:13px; }
+.cmp-table th { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; }
+.cmp-table td:first-child,.cmp-table th:first-child { text-align:left; }
+.cmp-table tr:last-child td { border-bottom:none; }
+.org-val  { color:var(--green); font-weight:600; }
+.paid-val { color:var(--red); font-weight:600; }
+.delta-pos { color:var(--orange); font-weight:600; }
+
+/* Funnel */
+.funnel-wrap { display:flex; gap:0; overflow-x:auto; }
+.funnel-stage {
+  flex:1; min-width:90px; text-align:center; padding:10px 6px;
+  border-right:1px solid var(--border); position:relative;
+}
+.funnel-stage:last-child { border-right:none; }
+.f-label { font-size:11px; color:var(--muted); margin-bottom:8px; line-height:1.3; }
+.f-bar-wrap { display:flex; gap:4px; justify-content:center; align-items:flex-end; height:80px; margin-bottom:6px; }
+.f-bar { width:22px; border-radius:4px 4px 0 0; transition:height .3s; }
+.f-pct { font-size:10px; font-weight:600; margin-top:4px; }
+.f-arrow { position:absolute; right:-10px; top:50%; transform:translateY(-50%); color:var(--muted); font-size:16px; z-index:1; }
+.funnel-legend { display:flex; gap:16px; justify-content:center; margin-top:12px; font-size:12px; }
+.funnel-legend span { display:flex; align-items:center; gap:6px; }
+.dot { width:10px; height:10px; border-radius:50%; display:inline-block; }
+
+/* Channel chart area */
+canvas { max-height:260px; }
+
+/* Calculator */
+.calc-grid { display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+@media(max-width:900px) { .calc-grid { grid-template-columns:1fr; } }
+.input-group { margin-bottom:18px; }
+.input-group label { display:block; font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; margin-bottom:7px; }
+.input-row { display:flex; gap:10px; align-items:center; }
+input[type=range] { flex:1; accent-color:var(--accent); -webkit-appearance:none; height:5px; border-radius:3px; background:var(--border); cursor:pointer; }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; width:16px; height:16px; border-radius:50%; background:var(--accent); cursor:pointer; }
+input[type=number] { width:110px; background:var(--bg); border:1px solid var(--border); color:var(--text); border-radius:8px; padding:6px 10px; font-size:14px; text-align:right; }
+input[type=number]:focus { outline:none; border-color:var(--accent); }
+
+.result-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px; }
+.result-box { background:var(--bg); border:1px solid var(--border); border-radius:10px; padding:12px 14px; }
+.result-box.hl { border-color:var(--accent); }
+.r-label { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.04em; }
+.r-value { font-size:20px; font-weight:700; color:#fff; margin:3px 0; }
+.r-sub   { font-size:11px; color:var(--muted); }
+.breakeven-box { background:var(--bg); border:1px solid var(--border); border-radius:10px; padding:14px; }
+.bar-track { background:var(--border); height:8px; border-radius:4px; overflow:hidden; margin:6px 0; }
+.bar-fill  { height:100%; border-radius:4px; transition:width .3s; }
+.roi-pill { display:inline-block; font-size:12px; font-weight:700; padding:3px 10px; border-radius:99px; margin-top:6px; }
+
+/* Scenario table */
+.sc-table { width:100%; border-collapse:collapse; }
+.sc-table th,.sc-table td { padding:9px 14px; text-align:right; border-bottom:1px solid var(--border); font-size:13px; }
+.sc-table th { font-size:11px; color:var(--muted); text-transform:uppercase; }
+.sc-table td:first-child,.sc-table th:first-child { text-align:left; }
+.sc-table tr:last-child td { border-bottom:none; }
+
+/* Reference panel */
+.ref-tabs { display:flex; gap:0; border-bottom:1px solid var(--border); margin-bottom:0; overflow-x:auto; }
+.ref-tab {
+  padding:8px 16px; font-size:12px; font-weight:600; color:var(--muted); cursor:pointer;
+  border-bottom:2px solid transparent; white-space:nowrap; transition:color .2s;
+}
+.ref-tab:hover { color:var(--text); }
+.ref-tab.active { color:var(--accent); border-bottom-color:var(--accent); }
+.ref-pane { display:none; padding:16px 0 0; }
+.ref-pane.active { display:block; }
+.ref-search {
+  width:100%; background:var(--bg); border:1px solid var(--border); color:var(--text);
+  border-radius:8px; padding:7px 12px; font-size:13px; margin-bottom:12px;
+}
+.ref-search:focus { outline:none; border-color:var(--accent); }
+.ref-table { width:100%; border-collapse:collapse; font-size:12px; }
+.ref-table th,.ref-table td { padding:7px 10px; text-align:left; border-bottom:1px solid var(--border); vertical-align:top; }
+.ref-table th { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.04em; position:sticky; top:0; background:var(--card); }
+.ref-table tr:last-child td { border-bottom:none; }
+.ref-table tr:hover td { background:rgba(108,99,255,.06); }
+.ref-name { color:var(--blue); font-weight:600; font-family:monospace; font-size:11px; }
+.ref-formula { color:var(--purple); font-family:monospace; font-size:11px; }
+.ref-source { color:var(--muted); font-size:10px; }
+.ref-wrap { max-height:340px; overflow-y:auto; border:1px solid var(--border); border-radius:8px; }
+.funnel-ref { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:10px; }
+.funnel-ref-card {
+  background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:12px;
+}
+.funnel-ref-card .name { color:var(--blue); font-family:monospace; font-size:12px; font-weight:700; }
+.funnel-ref-card .formula { color:var(--purple); font-family:monospace; font-size:11px; margin:4px 0; }
+.funnel-ref-card .desc { color:var(--muted); font-size:11px; }
+
+/* Rate inputs grid */
+.rate-grid { display:flex; flex-direction:column; gap:10px; }
+.rate-row  { display:grid; grid-template-columns:130px 1fr 72px 70px; align-items:center; gap:8px; }
+.rate-label { display:flex; flex-direction:column; }
+.rate-name  { font-size:12px; font-weight:700; color:var(--blue); font-family:monospace; }
+.rate-desc  { font-size:10px; color:var(--muted); }
+.rate-slider { accent-color:var(--orange); -webkit-appearance:none; height:5px; border-radius:3px; background:var(--border); cursor:pointer; }
+.rate-slider::-webkit-slider-thumb { -webkit-appearance:none; width:14px; height:14px; border-radius:50%; background:var(--orange); cursor:pointer; }
+.rate-num   { width:72px; background:var(--bg); border:1px solid var(--border); color:var(--text); border-radius:6px; padding:4px 6px; font-size:13px; text-align:right; }
+.rate-num:focus { outline:none; border-color:var(--orange); }
+.rate-ref   { font-size:10px; color:var(--muted); white-space:nowrap; }
+
+/* Funnel flow output */
+.funnel-flow-wrap { display:flex; flex-direction:column; gap:0; }
+.ff-stage {
+  display:grid; grid-template-columns:28px 1fr 90px 90px;
+  align-items:center; gap:8px;
+  padding:7px 10px; border-radius:8px; background:var(--bg);
+  border:1px solid var(--border); margin-bottom:2px;
+}
+.ff-stage.sale { border-color:var(--green); background:rgba(34,197,94,.07); }
+.ff-arrow-row { text-align:left; padding-left:10px; color:var(--muted); font-size:14px; line-height:1; }
+.ff-icon { font-size:14px; text-align:center; }
+.ff-name { font-size:12px; }
+.ff-name strong { color:var(--text); font-size:13px; display:block; }
+.ff-name span { color:var(--muted); font-size:10px; }
+.ff-org  { text-align:right; font-size:13px; font-weight:700; color:var(--green); }
+.ff-paid { text-align:right; font-size:13px; font-weight:700; color:var(--red); }
+.ff-header { display:grid; grid-template-columns:28px 1fr 90px 90px; gap:8px; padding:0 10px 6px; }
+.ff-header span { font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:.04em; text-align:right; }
+.ff-header span:nth-child(2) { text-align:left; }
+.rev-row { display:flex; justify-content:space-between; align-items:center; margin-top:10px; padding:10px 14px; background:var(--bg); border:1px solid var(--accent); border-radius:10px; }
+.rev-row .r-label { font-size:11px; color:var(--muted); text-transform:uppercase; }
+.rev-row .r-val { font-size:20px; font-weight:700; }
+
+.tip { margin-top:12px; padding:10px 14px; background:rgba(108,99,255,.08); border:1px solid rgba(108,99,255,.25); border-radius:8px; font-size:12px; color:#a5b4fc; }
+.footer { margin-top:40px; padding-top:16px; border-top:1px solid var(--border); font-size:11px; color:var(--muted); text-align:center; }
+
+/* Views → Leads section */
+.views-grid { display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+@media(max-width:900px) { .views-grid { grid-template-columns:1fr; } }
+
+.views-chain { display:flex; flex-direction:column; gap:4px; }
+.vc-step {
+  display:grid; grid-template-columns:28px 1fr 110px;
+  align-items:center; gap:10px;
+  padding:8px 12px; border-radius:8px; background:var(--bg); border:1px solid var(--border);
+}
+.vc-step.highlight { border-color:var(--orange); background:rgba(245,158,11,.06); }
+.vc-step.final   { border-color:var(--green);  background:rgba(34,197,94,.06); }
+.vc-icon { font-size:15px; text-align:center; }
+.vc-label { font-size:12px; }
+.vc-label strong { display:block; color:var(--text); font-size:13px; }
+.vc-label span   { color:var(--muted); font-size:10px; }
+.vc-val  { text-align:right; font-weight:700; font-size:14px; }
+.vc-arrow { text-align:center; color:var(--muted); font-size:11px; padding:1px 0; }
+
+.warm-box {
+  margin-top:10px; padding:12px 14px; border-radius:8px;
+  background:rgba(167,139,250,.08); border:1px solid rgba(167,139,250,.25);
+}
+.warm-title { font-size:11px; color:var(--purple); text-transform:uppercase; letter-spacing:.05em; margin-bottom:6px; }
+.warm-split { display:flex; gap:0; height:18px; border-radius:6px; overflow:hidden; margin:6px 0; }
+.warm-direct { background:var(--orange); display:flex; align-items:center; justify-content:center; font-size:10px; color:#000; font-weight:700; }
+.warm-assist { background:var(--purple); display:flex; align-items:center; justify-content:center; font-size:10px; color:#fff; font-weight:700; }
+
+.bench-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:10px; margin-top:14px; }
+.bench-card {
+  background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:12px;
+}
+.bench-card .bc-platform { font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; margin-bottom:4px; }
+.bench-card .bc-metric   { font-size:12px; font-weight:600; color:var(--text); margin-bottom:2px; }
+.bench-card .bc-range    { font-size:12px; color:var(--orange); font-weight:700; font-family:monospace; }
+.bench-card .bc-note     { font-size:10px; color:var(--muted); margin-top:3px; }
+.bench-card.org { border-color:rgba(34,197,94,.3); }
+.sync-btn {
+  margin-top:14px; padding:8px 16px; background:var(--accent); border:none; color:#fff;
+  border-radius:8px; cursor:pointer; font-size:13px; font-weight:600; width:100%;
+}
+.sync-btn:hover { background:#5b52e0; }
+.rate-input-row {
+  display:grid; grid-template-columns:1fr 72px 80px; align-items:center; gap:8px; margin-bottom:10px;
+}
+.bench-pill {
+  font-size:10px; color:var(--orange); background:rgba(245,158,11,.12);
+  border-radius:4px; padding:2px 6px; white-space:nowrap; text-align:center;
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- Header -->
+<div class="header">
+  <div>
+    <h1>Органика vs Платный трафик <span class="badge">Live</span></h1>
+    <p class="subtitle">orai.csv · 2026-04-13 19:55 · 267,413 лидов · дек 2024 – апр 2026</p>
+  </div>
+</div>
+
+<!-- Period picker -->
+<div class="section">
+  <div class="period-bar">
+    <div>
+      <label>С</label><br>
+      <select id="period-from"></select>
+    </div>
+    <div>
+      <label>По</label><br>
+      <select id="period-to"></select>
+    </div>
+    <div style="display:flex;gap:8px;align-items:flex-end">
+      <button onclick="setPeriod('all')" style="background:var(--accent);border:none;color:#fff;border-radius:8px;padding:6px 14px;cursor:pointer;font-size:12px;">Весь период</button>
+      <button onclick="setPeriod('3m')"  style="background:var(--card2);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:6px 14px;cursor:pointer;font-size:12px;">3 мес</button>
+      <button onclick="setPeriod('6m')"  style="background:var(--card2);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:6px 14px;cursor:pointer;font-size:12px;">6 мес</button>
+    </div>
+    <div class="period-stat" id="period-summary">
+      <span id="period-info"></span>
+    </div>
+  </div>
+</div>
+
+<!-- KPI cards -->
+<div class="section">
+  <div class="grid-4" id="kpi-cards"></div>
+</div>
+
+<!-- Comparison + Funnel -->
+<div class="section grid-2">
+  <div class="card">
+    <h2>Органика vs CPC — сводная таблица</h2>
+    <table class="cmp-table" id="cmp-table"></table>
+    <div class="tip" id="multiplier-tip"></div>
+  </div>
+  <div class="card">
+    <h2>Воронка по этапам</h2>
+    <div class="funnel-wrap" id="funnel-viz"></div>
+    <div class="funnel-legend">
+      <span><span class="dot" style="background:var(--green)"></span>Органика</span>
+      <span><span class="dot" style="background:var(--red)"></span>Платный (CPC)</span>
+    </div>
+  </div>
+</div>
+
+<!-- Charts -->
+<div class="section grid-2">
+  <div class="card">
+    <h2>Конверсия и RPL по каналам (топ-10)</h2>
+    <canvas id="channelChart"></canvas>
+  </div>
+  <div class="card">
+    <h2>Динамика выручки по месяцам</h2>
+    <canvas id="monthlyChart"></canvas>
+  </div>
+</div>
+
+<!-- Calculator -->
+<div class="section">
+  <div class="card">
+    <h2>Прогнозный калькулятор</h2>
+    <div class="calc-grid">
+      <!-- LEFT: inputs -->
+      <div>
+        <div class="input-group">
+          <label>Органических лидов в месяц</label>
+          <div class="input-row">
+            <input type="range" id="orgLeads" min="100" max="10000" step="50" value="1500">
+            <input type="number" id="orgLeadsNum" min="1" max="99999" value="1500">
+          </div>
+        </div>
+        <div class="input-group">
+          <label>Платных лидов в месяц (для сравнения)</label>
+          <div class="input-row">
+            <input type="range" id="paidLeads" min="100" max="30000" step="100" value="5000">
+            <input type="number" id="paidLeadsNum" min="1" max="99999" value="5000">
+          </div>
+        </div>
+        <div class="input-group">
+          <label>Бюджет на контент в месяц, $</label>
+          <div class="input-row">
+            <input type="range" id="contentCost" min="0" max="50000" step="100" value="2000">
+            <input type="number" id="contentCostNum" min="0" max="999999" value="2000">
+          </div>
+        </div>
+
+        <!-- Funnel rate inputs -->
+        <div style="border-top:1px solid var(--border);padding-top:16px;margin-top:4px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+            <h3 style="margin:0">Конверсии воронки (органика)</h3>
+            <button id="btn-reset-rates" onclick="resetRates()"
+              style="font-size:11px;background:var(--card2);border:1px solid var(--border);color:var(--muted);border-radius:6px;padding:3px 10px;cursor:pointer">
+              Сбросить к данным периода
+            </button>
+          </div>
+          <div class="rate-grid">
+            <div class="rate-row">
+              <div class="rate-label">
+                <span class="rate-name">L2B %</span>
+                <span class="rate-desc">Lead → Booking</span>
+              </div>
+              <input type="range" class="rate-slider" id="r-l2b" min="0" max="100" step="0.1" value="30">
+              <input type="number" class="rate-num" id="r-l2b-n" min="0" max="100" step="0.1" value="30">
+              <span class="rate-ref" id="ref-l2b">ref: —</span>
+            </div>
+            <div class="rate-row">
+              <div class="rate-label">
+                <span class="rate-name">B2A %</span>
+                <span class="rate-desc">Booking → Attended</span>
+              </div>
+              <input type="range" class="rate-slider" id="r-b2a" min="0" max="100" step="0.1" value="60">
+              <input type="number" class="rate-num" id="r-b2a-n" min="0" max="100" step="0.1" value="60">
+              <span class="rate-ref" id="ref-b2a">ref: —</span>
+            </div>
+            <div class="rate-row">
+              <div class="rate-label">
+                <span class="rate-name">H2A %</span>
+                <span class="rate-desc">Attended → H2A</span>
+              </div>
+              <input type="range" class="rate-slider" id="r-h2a" min="0" max="100" step="0.1" value="50">
+              <input type="number" class="rate-num" id="r-h2a-n" min="0" max="100" step="0.1" value="50">
+              <span class="rate-ref" id="ref-h2a">ref: —</span>
+            </div>
+            <div class="rate-row">
+              <div class="rate-label">
+                <span class="rate-name">A2S %</span>
+                <span class="rate-desc">H2A → Sale</span>
+              </div>
+              <input type="range" class="rate-slider" id="r-a2s" min="0" max="100" step="0.1" value="20">
+              <input type="number" class="rate-num" id="r-a2s-n" min="0" max="100" step="0.1" value="20">
+              <span class="rate-ref" id="ref-a2s">ref: —</span>
+            </div>
+            <div class="rate-row">
+              <div class="rate-label">
+                <span class="rate-name">AOV $</span>
+                <span class="rate-desc">Выручка / Сделка</span>
+              </div>
+              <input type="range" class="rate-slider" id="r-aov" min="10" max="1000" step="1" value="250">
+              <input type="number" class="rate-num" id="r-aov-n" min="1" max="9999" step="1" value="250">
+              <span class="rate-ref" id="ref-aov">ref: —</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: funnel flow + results -->
+      <div>
+        <div id="funnel-flow"></div>
+        <div class="breakeven-box" style="margin-top:12px" id="breakeven-bar"></div>
+      </div>
+    </div>
+
+    <!-- Scenario table -->
+    <div style="margin-top:20px">
+      <h3>Сценарный анализ</h3>
+      <table class="sc-table" id="scenario-table"></table>
+    </div>
+  </div>
+</div>
+
+<!-- Views → Leads section -->
+<div class="section">
+  <div class="card">
+    <h2>Просмотры → Лиды: прямой эффект и прогрев</h2>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:18px">
+      Сколько лидов органический контент приносит <em>напрямую</em> (клик из видео → лид)
+      и сколько через <em>прогрев</em> (видели контент → позже сами нашли / перешли по рекламе).
+    </p>
+    <div class="views-grid">
+
+      <!-- Inputs -->
+      <div>
+        <h3>Параметры контента</h3>
+
+        <div class="input-group">
+          <label>Роликов в месяц (TikTok + Reels)</label>
+          <div class="input-row">
+            <input type="range" id="v-count" min="1" max="200" step="1" value="30">
+            <input type="number" id="v-count-n" min="1" max="9999" value="30">
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label>Средних просмотров на ролик</label>
+          <div class="input-row">
+            <input type="range" id="v-views" min="500" max="500000" step="500" value="15000">
+            <input type="number" id="v-views-n" min="100" max="9999999" value="15000">
+          </div>
+        </div>
+
+        <div style="border-top:1px solid var(--border);padding-top:14px;margin-top:4px">
+          <h3>Конверсии (редактируй — бенчмарки EdTech справа)</h3>
+
+          <div class="rate-input-row">
+            <div>
+              <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em">Просмотр → Клик / Переход %</div>
+              <div style="font-size:10px;color:var(--muted)">(% смотревших, кто перешёл на сайт/в профиль)</div>
+            </div>
+            <input type="number" id="v-v2c" min="0.01" max="20" step="0.01" value="0.7"
+              style="background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:5px 8px;font-size:13px;text-align:right">
+            <div class="bench-pill">bench: 0.5–1.0%</div>
+          </div>
+
+          <div class="rate-input-row">
+            <div>
+              <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em">Клик → Лид %</div>
+              <div style="font-size:10px;color:var(--muted)">(% пришедших, кто заполнил форму)</div>
+            </div>
+            <input type="number" id="v-c2l" min="0.1" max="50" step="0.1" value="3"
+              style="background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:5px 8px;font-size:13px;text-align:right">
+            <div class="bench-pill">bench: 2–5%</div>
+          </div>
+
+          <div class="rate-input-row">
+            <div>
+              <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em">Прогрев-мультипликатор ×</div>
+              <div style="font-size:10px;color:var(--muted)">(во сколько раз суммарный эффект > прямых лидов)</div>
+            </div>
+            <input type="number" id="v-warm" min="1" max="10" step="0.1" value="2.1"
+              style="background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:5px 8px;font-size:13px;text-align:right">
+            <div class="bench-pill">bench: 1.5–3.0×</div>
+          </div>
+        </div>
+
+        <button class="sync-btn" onclick="syncViewsToCalc()">
+          ↑ Подставить итоговые лиды в калькулятор
+        </button>
+      </div>
+
+      <!-- Output chain -->
+      <div>
+        <h3>Цепочка: ролик → выручка</h3>
+        <div class="views-chain" id="views-chain"></div>
+        <div class="warm-box" id="warm-box"></div>
+
+        <div style="margin-top:18px">
+
+          <!-- Algonova vs Benchmark -->
+          <h3>Algonova факт vs Бенчмарк EdTech</h3>
+
+          <!-- Views→Lead comparison bar -->
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:12px">
+            <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:8px">
+              <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em">Views → Lead (% от просмотров)</div>
+              <div style="font-size:10px;color:var(--muted)">логарифмическая шкала</div>
+            </div>
+            <div style="position:relative;height:48px;background:var(--border);border-radius:6px;overflow:visible;margin-bottom:20px">
+              <!-- scale: 0.001% → 0% (left), 0.05% → 100% (right), log scale -->
+              <!-- log(0.001)=-6.9, log(0.05)=-3.0, range=3.9 -->
+              <!-- current 0.001% → (log(0.001)-log(0.001))/3.9 * 100 = 0% -->
+              <!-- target 0.005% → (log(0.005)-log(0.001))/3.9 * 100 = 41% -->
+              <!-- bench low 0.01% → (log(0.01)-log(0.001))/3.9 * 100 = 59% -->
+              <!-- bench high 0.05% → 100% -->
+              <div style="position:absolute;left:0%;top:0;bottom:0;width:4px;background:var(--red);border-radius:3px 0 0 3px"></div>
+              <div style="position:absolute;left:0%;top:52px;font-size:10px;color:var(--red);white-space:nowrap;transform:translateX(-50%)">Сейчас<br><strong>0.001%</strong></div>
+              <div style="position:absolute;left:41%;top:0;bottom:0;width:3px;background:var(--orange)"></div>
+              <div style="position:absolute;left:41%;top:52px;font-size:10px;color:var(--orange);white-space:nowrap;transform:translateX(-50%)">Цель Q2<br><strong>0.005%</strong></div>
+              <div style="position:absolute;left:59%;right:0;top:0;bottom:0;background:rgba(34,197,94,.2);border-radius:0 6px 6px 0;border:1px solid rgba(34,197,94,.4)"></div>
+              <div style="position:absolute;left:59%;top:52px;font-size:10px;color:var(--green);white-space:nowrap;transform:translateX(-50%)">Рынок<br><strong>0.01–0.05%</strong></div>
+            </div>
+            <div style="margin-top:28px;font-size:12px;color:var(--muted)">
+              Цель Q2 = <strong style="color:var(--orange)">×5</strong> к текущему.
+              Рынок = ещё <strong style="color:var(--green)">×2–10</strong> от цели.
+            </div>
+          </div>
+
+          <!-- ER improvement tool -->
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:12px">
+            <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:10px">Как достичь 0.005%: декомпозиция по рычагам</div>
+            <div style="font-size:11px;color:var(--muted);margin-bottom:12px">
+              views→lead = ER × (клики / вовлечённые) × (лиды / клики). Нужен рост ×5.
+              Текущий ER Instagram = <strong style="color:var(--text)">2.56%</strong>
+            </div>
+            <div id="lever-rows" style="display:flex;flex-direction:column;gap:8px"></div>
+            <div style="margin-top:10px;padding:10px;background:var(--card2);border-radius:8px;display:flex;justify-content:space-between;align-items:center">
+              <div style="font-size:12px;color:var(--muted)">Итоговый ×</div>
+              <div id="lever-total" style="font-size:18px;font-weight:700;color:var(--green)">—</div>
+              <div id="lever-v2l"   style="font-size:13px;font-weight:700;color:var(--orange)">—</div>
+            </div>
+          </div>
+
+          <!-- Benchmark cards -->
+          <div class="bench-grid">
+            <div class="bench-card org">
+              <div class="bc-platform">TikTok Organic</div>
+              <div class="bc-metric">Просмотр → Клик</div>
+              <div class="bc-range">0.5 – 1.0%</div>
+              <div style="margin-top:4px;font-size:10px;color:var(--red)">Algonova: ~0.03% (расч.)</div>
+              <div class="bc-note">EdTech-контент для родителей</div>
+            </div>
+            <div class="bench-card org">
+              <div class="bc-platform">Instagram Organic</div>
+              <div class="bc-metric">Просмотр → Клик</div>
+              <div class="bc-range">0.3 – 0.7%</div>
+              <div style="margin-top:4px;font-size:10px;color:var(--orange)">Algonova: ~0.06% (расч.)</div>
+              <div class="bc-note">ER 2.56% → цель 5–6% для ×5 роста</div>
+            </div>
+            <div class="bench-card">
+              <div class="bc-platform">Views → Lead (рынок)</div>
+              <div class="bc-metric">Итоговая конверсия</div>
+              <div class="bc-range">0.01 – 0.05%</div>
+              <div style="margin-top:4px;font-size:10px;color:var(--red)">Algonova сейчас: 0.001%</div>
+              <div class="bc-note">Цель Q2: 0.005% → ×5 рост</div>
+            </div>
+            <div class="bench-card org">
+              <div class="bc-platform">Instagram Algonova</div>
+              <div class="bc-metric">Lead → Sale</div>
+              <div class="bc-range" style="color:var(--green)">13.23%</div>
+              <div style="margin-top:4px;font-size:10px;color:var(--green)">RPL $40.51 — лучший канал</div>
+              <div class="bc-note">20 879 лидов за весь период</div>
+            </div>
+            <div class="bench-card" style="border-color:rgba(239,68,68,.3)">
+              <div class="bc-platform">TikTok Algonova</div>
+              <div class="bc-metric">Lead → Sale</div>
+              <div class="bc-range" style="color:var(--red)">4.43%</div>
+              <div style="margin-top:4px;font-size:10px;color:var(--red)">RPL $10.09 — в 4× слабее Instagram</div>
+              <div class="bc-note">20 431 лид, проблема качества лида</div>
+            </div>
+            <div class="bench-card" style="border-color:rgba(245,158,11,.3)">
+              <div class="bc-platform">⚠ Проблема атрибуции</div>
+              <div class="bc-metric">UTM не настроен</div>
+              <div class="bc-range" style="color:var(--orange)">Q2 action</div>
+              <div class="bc-note" style="margin-top:4px">Добавить UTM в ссылку в bio + каждый пост: utm_source=instagram&utm_medium=smm_bio — иначе прямые лиды теряются</div>
+            </div>
+          </div>
+
+          <div class="tip" style="margin-top:12px">
+            <strong>Прямой vs Прогрев:</strong>
+            По данным 2024–2025, в EdTech ~35% лидов из органики приходят напрямую (кликнул из видео),
+            ~65% — через прогрев (видели контент, пришли позже через поиск / ретаргет).
+            <strong>Сейчас мы не знаем какая часть у Algonova</strong> — из-за отсутствия UTM в bio/постах.
+            Решение в Q2: utm_source=instagram&utm_medium=smm_bio на все ссылки.
+          </div>
+
+          <!-- Q2 scenario -->
+          <div style="margin-top:12px;padding:14px;background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.3);border-radius:10px">
+            <div style="font-size:12px;font-weight:700;color:var(--orange);margin-bottom:8px">Сценарий Q2: Instagram 50M просмотров × 0.005% views→lead</div>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;font-size:12px">
+              <div style="text-align:center">
+                <div style="color:var(--muted);font-size:10px">Просмотров</div>
+                <div style="font-weight:700;color:var(--text);font-size:15px">50M</div>
+              </div>
+              <div style="text-align:center">
+                <div style="color:var(--muted);font-size:10px">→ Лидов</div>
+                <div style="font-weight:700;color:var(--orange);font-size:15px">2 500</div>
+              </div>
+              <div style="text-align:center">
+                <div style="color:var(--muted);font-size:10px">× L2S 13.23%</div>
+                <div style="font-weight:700;color:var(--green);font-size:15px">~330 продаж</div>
+              </div>
+              <div style="text-align:center">
+                <div style="color:var(--muted);font-size:10px">+ прогрев ×2.6</div>
+                <div style="font-weight:700;color:var(--purple);font-size:15px">~860 продаж</div>
+              </div>
+            </div>
+            <div style="margin-top:8px;font-size:11px;color:var(--muted)">
+              860 продаж = 330 прямых + 530 через прогрев (warming multiplier 2.6×, учитывает отложенный спрос)
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Reference panel -->
+<div class="section">
+  <div class="card">
+    <h2>Справочник конверсий <span style="color:var(--muted);font-weight:400;font-size:12px">(из документации)</span></h2>
+
+    <div class="ref-tabs" id="ref-tabs">
+      <div class="ref-tab active" onclick="showRefTab('funnel')" id="tab-funnel">Этапы воронки</div>
+      <div class="ref-tab" onclick="showRefTab('all')" id="tab-all">Все метрики</div>
+      <div class="ref-tab" onclick="showRefTab('marketing')" id="tab-marketing">Маркетинг</div>
+      <div class="ref-tab" onclick="showRefTab('financial')" id="tab-financial">Финансовые</div>
+    </div>
+
+    <div class="ref-pane active" id="pane-funnel">
+      <div class="funnel-ref" id="funnel-ref-cards"></div>
+    </div>
+
+    <div class="ref-pane" id="pane-all">
+      <input type="text" class="ref-search" id="ref-search" placeholder="Поиск метрики (например: RPL, L2B, AOV...)">
+      <div class="ref-wrap">
+        <table class="ref-table">
+          <thead><tr><th>Метрика</th><th>Формула / Определение</th><th>Источник</th><th>Примечание</th></tr></thead>
+          <tbody id="ref-table-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="ref-pane" id="pane-marketing">
+      <div class="ref-wrap" id="marketing-ref"></div>
+    </div>
+
+    <div class="ref-pane" id="pane-financial">
+      <div class="ref-wrap" id="financial-ref"></div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  Органика = utm_medium: smm | utm_source: tiktok / instagram / social_media ·
+  Данные: 267,413 лидов · Обновлено: 2026-04-13 19:55
+</div>
+
+</div><!-- /container -->
+
+<script>
+// ── Данные модели ────────────────────────────────────────────────────────────────
+const MODEL = {"generated_at": "2026-04-13 19:55", "total_leads": 267413, "organic": {"leads": 45174, "registered": 28726, "attended": 28181, "h2a": 0, "tcm": 0, "sales": 4179, "revenue": 1206494.54, "conv_rate": 9.25, "rpl": 26.71, "rpc": 288.7, "l2reg": 63.59, "reg2att": 98.1, "att2h2a": 0.0, "h2a2tcm": 0, "tcm2sale": 0, "l2sale": 9.25}, "paid": {"leads": 222239, "registered": 134535, "attended": 131251, "h2a": 0, "tcm": 0, "sales": 14960, "revenue": 3837157.93, "conv_rate": 6.73, "rpl": 17.27, "rpc": 256.49, "l2reg": 60.54, "reg2att": 97.56, "att2h2a": 0.0, "h2a2tcm": 0, "tcm2sale": 0, "l2sale": 6.73}, "multiplier": 1.55, "channels": [{"medium": "cpc", "leads": 201729, "conv_rate": 6.45, "rpl": 16.19, "revenue": 3266379.45, "is_paid": true}, {"medium": "instagram", "leads": 20879, "conv_rate": 13.23, "rpl": 40.51, "revenue": 845799.3, "is_paid": false}, {"medium": "(не задан)", "leads": 16305, "conv_rate": 6.62, "rpl": 18.91, "revenue": 308352.59, "is_paid": true}, {"medium": "tiktok", "leads": 20431, "conv_rate": 4.43, "rpl": 10.09, "revenue": 206110.16, "is_paid": false}, {"medium": "employee", "leads": 1439, "conv_rate": 44.75, "rpl": 135.73, "revenue": 195310.98, "is_paid": true}, {"medium": "social_media", "leads": 3612, "conv_rate": 13.29, "rpl": 40.63, "revenue": 146742.61, "is_paid": false}, {"medium": "amo", "leads": 1904, "conv_rate": 8.04, "rpl": 21.93, "revenue": 41749.96, "is_paid": true}, {"medium": "paid", "leads": 619, "conv_rate": 5.98, "rpl": 12.86, "revenue": 7962.35, "is_paid": true}, {"medium": "youtube", "leads": 111, "conv_rate": 11.71, "rpl": 35.54, "revenue": 3945.25, "is_paid": false}, {"medium": "facebook", "leads": 126, "conv_rate": 5.56, "rpl": 14.3, "revenue": 1801.42, "is_paid": false}, {"medium": "organic", "leads": 49, "conv_rate": 4.08, "rpl": 9.35, "revenue": 458.15, "is_paid": true}, {"medium": "youtube", "leads": 77, "conv_rate": 0.0, "rpl": 0.0, "revenue": 0.0, "is_paid": true}], "months_data": {"2024-12": {"organic": {"leads": 5, "registered": 5, "attended": 5, "h2a": 0, "tcm": 0, "sales": 1, "revenue": 108.64}, "paid": {"leads": 12, "registered": 8, "attended": 8, "h2a": 0, "tcm": 0, "sales": 2, "revenue": 307.78}}, "2025-01": {"organic": {"leads": 3250, "registered": 1999, "attended": 1996, "h2a": 0, "tcm": 0, "sales": 288, "revenue": 75903.21}, "paid": {"leads": 12337, "registered": 6407, "attended": 6386, "h2a": 0, "tcm": 0, "sales": 869, "revenue": 199591.63}}, "2025-02": {"organic": {"leads": 2621, "registered": 1707, "attended": 1685, "h2a": 0, "tcm": 0, "sales": 258, "revenue": 61722.38}, "paid": {"leads": 8141, "registered": 4810, "attended": 4751, "h2a": 0, "tcm": 0, "sales": 592, "revenue": 127311.93}}, "2025-03": {"organic": {"leads": 2476, "registered": 1542, "attended": 1414, "h2a": 0, "tcm": 0, "sales": 176, "revenue": 42219.51}, "paid": {"leads": 10130, "registered": 6179, "attended": 5643, "h2a": 0, "tcm": 0, "sales": 722, "revenue": 151960.32}}, "2025-04": {"organic": {"leads": 5438, "registered": 2913, "attended": 2844, "h2a": 0, "tcm": 0, "sales": 381, "revenue": 93041.46}, "paid": {"leads": 10581, "registered": 5874, "attended": 5676, "h2a": 0, "tcm": 0, "sales": 743, "revenue": 167975.21}}, "2025-05": {"organic": {"leads": 6182, "registered": 3372, "attended": 3343, "h2a": 0, "tcm": 0, "sales": 317, "revenue": 77428.07}, "paid": {"leads": 12578, "registered": 7417, "attended": 7338, "h2a": 0, "tcm": 0, "sales": 818, "revenue": 192433.97}}, "2025-06": {"organic": {"leads": 5345, "registered": 3259, "attended": 3230, "h2a": 0, "tcm": 0, "sales": 376, "revenue": 105727.72}, "paid": {"leads": 16592, "registered": 10905, "attended": 10768, "h2a": 0, "tcm": 0, "sales": 1352, "revenue": 331149.01}}, "2025-07": {"organic": {"leads": 4022, "registered": 2865, "attended": 2841, "h2a": 0, "tcm": 0, "sales": 377, "revenue": 107286.51}, "paid": {"leads": 16509, "registered": 11278, "attended": 11159, "h2a": 0, "tcm": 0, "sales": 1240, "revenue": 312318.58}}, "2025-08": {"organic": {"leads": 3420, "registered": 2362, "attended": 2355, "h2a": 0, "tcm": 0, "sales": 299, "revenue": 90086.67}, "paid": {"leads": 15328, "registered": 9742, "attended": 9731, "h2a": 0, "tcm": 0, "sales": 1012, "revenue": 269637.46}}, "2025-09": {"organic": {"leads": 1761, "registered": 1182, "attended": 1181, "h2a": 0, "tcm": 0, "sales": 198, "revenue": 54795.49}, "paid": {"leads": 15693, "registered": 10152, "attended": 10138, "h2a": 0, "tcm": 0, "sales": 1023, "revenue": 273730.58}}, "2025-10": {"organic": {"leads": 1910, "registered": 1129, "attended": 1100, "h2a": 0, "tcm": 0, "sales": 223, "revenue": 57796.79}, "paid": {"leads": 17009, "registered": 10643, "attended": 10224, "h2a": 0, "tcm": 0, "sales": 1184, "revenue": 332145.96}}, "2025-11": {"organic": {"leads": 1871, "registered": 1294, "attended": 1280, "h2a": 0, "tcm": 0, "sales": 238, "revenue": 83431.67}, "paid": {"leads": 16704, "registered": 11265, "attended": 11142, "h2a": 0, "tcm": 0, "sales": 1197, "revenue": 307812.54}}, "2025-12": {"organic": {"leads": 1956, "registered": 1407, "attended": 1331, "h2a": 0, "tcm": 0, "sales": 256, "revenue": 84231.73}, "paid": {"leads": 20272, "registered": 13064, "attended": 12260, "h2a": 0, "tcm": 0, "sales": 1209, "revenue": 335079.78}}, "2026-01": {"organic": {"leads": 1977, "registered": 1563, "attended": 1562, "h2a": 0, "tcm": 0, "sales": 323, "revenue": 113083.02}, "paid": {"leads": 16711, "registered": 11059, "attended": 11046, "h2a": 0, "tcm": 0, "sales": 1305, "revenue": 358306.06}}, "2026-02": {"organic": {"leads": 1544, "registered": 1174, "attended": 1170, "h2a": 0, "tcm": 0, "sales": 272, "revenue": 97007.65}, "paid": {"leads": 14264, "registered": 7926, "attended": 7885, "h2a": 0, "tcm": 0, "sales": 880, "revenue": 257147.16}}, "2026-03": {"organic": {"leads": 1000, "registered": 676, "attended": 664, "h2a": 0, "tcm": 0, "sales": 152, "revenue": 49876.17}, "paid": {"leads": 15496, "registered": 6151, "attended": 6034, "h2a": 0, "tcm": 0, "sales": 665, "revenue": 180797.61}}, "2026-04": {"organic": {"leads": 396, "registered": 277, "attended": 180, "h2a": 0, "tcm": 0, "sales": 44, "revenue": 12747.84}, "paid": {"leads": 3882, "registered": 1655, "attended": 1062, "h2a": 0, "tcm": 0, "sales": 147, "revenue": 39452.35}}}, "all_months": ["2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-10", "2025-11", "2025-12", "2026-01", "2026-02", "2026-03", "2026-04"], "metrics_ref": [{"name": "L2MQL1, %", "formula": "MQL1 / Leads processing today", "source": "Воронка продаж", "notes": ""}, {"name": "MQL2B1, %", "formula": "Booking1 / Leads processing today (from MQL angle)", "source": "Воронка продаж", "notes": ""}, {"name": "L2B, %", "formula": "Bookings / Leads", "source": "Воронка продаж", "notes": ""}, {"name": "L2B1, %", "formula": "Booking1 / Leads processing today", "source": "Воронка продаж", "notes": ""}, {"name": "B2A, %", "formula": "Attended / Bookings", "source": "Воронка продаж", "notes": ""}, {"name": "H2A, %", "formula": "Attended / Bookings (same as B2A in most contexts)", "source": "Воронка продаж", "notes": ""}, {"name": "%A2S1", "formula": "Sales1 / Attended today (same-day)", "source": "Воронка продаж", "notes": ""}, {"name": "A2S, %", "formula": "Sales (all) / Attended today (cross-cohort)", "source": "Воронка продаж", "notes": ""}, {"name": "L2A, %", "formula": "Attended / Leads today (cross-cohort)", "source": "Воронка продаж", "notes": ""}, {"name": "L2P, %", "formula": "Payments / Leads today (cross-cohort)", "source": "Воронка продаж", "notes": ""}, {"name": "Profiling → Bookings, %", "formula": "Bookings with profiling / Leads with profiling", "source": "Воронка продаж", "notes": ""}, {"name": "Profiling → Attended, %", "formula": "Attended with profiling / Leads with profiling", "source": "Воронка продаж", "notes": ""}, {"name": "Profiling → Sales, %", "formula": "Sales with profiling / Leads with profiling", "source": "Воронка продаж", "notes": ""}, {"name": "Leads", "formula": "Total leads created in AMO CRM", "source": "Метрики продаж", "notes": "00:00–23:59 JKT today"}, {"name": "Leads processing", "formula": "Total leads created (cohort for day's work)", "source": "Метрики продаж", "notes": "20:00 JKT prev day – 19:59 JKT today"}, {"name": "Response 1st call, min", "formula": "Avg time from lead creation to first outbound call in AMO", "source": "Метрики продаж", "notes": "10:00–19:00 JKT"}, {"name": "Respond Second+ call", "formula": "Avg time from lead creation to second or later call", "source": "Метрики продаж", "notes": "10:00–19:00 JKT"}, {"name": "% Successful calls", "formula": "Callgear: answered calls / total calls made", "source": "Метрики продаж", "notes": "Day"}, {"name": "Simple Sales Activity", "formula": "BM working time logged in AMO CRM", "source": "Метрики продаж", "notes": "Day"}, {"name": "Talk time", "formula": "Avg Callgear call duration", "source": "Метрики продаж", "notes": "Day"}, {"name": "Missed Call, %", "formula": "% calls where client did not answer", "source": "Метрики продаж", "notes": "Day"}, {"name": "Call back Later", "formula": "Count of leads without a booking (open queue)", "source": "Метрики продаж", "notes": "Day"}, {"name": "Total calls", "formula": "All Callgear calls with answer", "source": "Метрики продаж", "notes": "Day"}, {"name": "Amount of messages", "formula": "All messages delivered to leads", "source": "Метрики продаж", "notes": "Day"}, {"name": "MQL1", "formula": "Qualified leads from today's processing cohort", "source": "Метрики продаж", "notes": "Cohort: 20:00–19:59"}, {"name": "MQL", "formula": "All qualified leads today (includes older cohorts converted today)", "source": "Метрики продаж", "notes": "Full day"}, {"name": "L2MQL1, %", "formula": "MQL1 / Leads processing today", "source": "Метрики продаж", "notes": "Cohort"}, {"name": "Booking1", "formula": "Bookings from today's processing cohort", "source": "Метрики продаж", "notes": "Cohort: 20:00–19:59"}, {"name": "Bookings", "formula": "All bookings confirmed today (any cohort)", "source": "Метрики продаж", "notes": "Full day"}, {"name": "L2B, %", "formula": "Bookings (all) / Leads (today)", "source": "Метрики продаж", "notes": "Cross-cohort"}, {"name": "L2B1, %", "formula": "Booking1 / Leads processing today", "source": "Метрики продаж", "notes": "Same-day cohort"}, {"name": "MQL2B1, %", "formula": "Booking1 / Leads processing today (from MQL perspective)", "source": "Метрики продаж", "notes": "Same-day cohort"}, {"name": "MQL2B, %", "formula": "Bookings (all today) / MQL (all today)", "source": "Метрики продаж", "notes": "Full day"}, {"name": "Pre-Booking Time gap", "formula": "Avg time: lead processing → booking", "source": "Метрики продаж", "notes": "10:00–17:00 JKT"}, {"name": "Booking Time gap", "formula": "Avg delta: booking date → trial class date (days + hours)", "source": "Метрики продаж", "notes": "Day"}, {"name": "Plan of Happens", "formula": "Expected attended trial classes today (snapshot at 10:00 JKT)", "source": "Метрики продаж", "notes": "Forward-looking"}, {"name": "Fact of Happens", "formula": "Actual attended trial classes today (snapshot at 22:00 JKT)", "source": "Метрики продаж", "notes": "Backward-looking"}, {"name": "Plan/Fact Happens", "formula": "Fact of Happens / Plan of Happens", "source": "Метрики продаж", "notes": "Execution rate"}, {"name": "Attended", "formula": "Count of leads who attended a trial class on the fact day", "source": "Метрики продаж", "notes": "Day"}, {"name": "B2A, %", "formula": "Attended / Bookings", "source": "Метрики продаж", "notes": "Day"}, {"name": "H2A, %", "formula": "Attended / Bookings (same definition as B2A; \"H\" = Happens)", "source": "Метрики продаж", "notes": "Day"}, {"name": "B2A1", "formula": "Attended / Bookings — same-cohort (bookings → attendance same day)", "source": "Метрики продаж", "notes": "Cohort"}, {"name": "Plan of happens2A", "formula": "Attended / Plan of Happens", "source": "Метрики продаж", "notes": "Day"}, {"name": "Reschedule Rate", "formula": "Reschedules / Plan of Happens", "source": "Метрики продаж", "notes": "Day"}, {"name": "Reschedules in total Today", "formula": "Count of trial class times moved to future vs action time", "source": "Метрики продаж", "notes": "Day"}, {"name": "L2A, %", "formula": "Attended (all) / Leads today", "source": "Метрики продаж", "notes": "Cross-cohort"}, {"name": "Attendance Time gap", "formula": "Avg delta: attendance date → sale date (days + hours)", "source": "Метрики продаж", "notes": "Day"}, {"name": "Sales1", "formula": "Attended + sale on the **same calendar day**", "source": "Метрики продаж", "notes": "Same-day cohort"}, {"name": "Sales", "formula": "Total payments by payment date (Xendit)", "source": "Метрики продаж", "notes": "Payment day"}, {"name": "%A2S1", "formula": "Sales1 / Attended today", "source": "Метрики продаж", "notes": "Same-day conversion"}, {"name": "A2S, %", "formula": "Sales (all) / Attended today", "source": "Метрики продаж", "notes": "Cross-cohort (includes FU closes)"}, {"name": "L2P, %", "formula": "Payments (all) / Leads today", "source": "Метрики продаж", "notes": "Cross-cohort, end-to-end"}, {"name": "Revenue1", "formula": "Total revenue from Sales1 (same-day sales)", "source": "Метрики продаж", "notes": "USD"}, {"name": "Revenue", "formula": "Total revenue by payment date", "source": "Метрики продаж", "notes": "USD, payment day"}, {"name": "AOV1", "formula": "Revenue1 / Sales1", "source": "Метрики продаж", "notes": "Avg order value, same-day sales"}, {"name": "$AOV", "formula": "Revenue / Sales", "source": "Метрики продаж", "notes": "Avg order value, all sales today"}, {"name": "Av No lessons sold", "formula": "Avg number of lessons per package sold", "source": "Метрики продаж", "notes": "Operational benchmark"}, {"name": "Av check per lesson", "formula": "Avg revenue per lesson (Revenue / lessons sold)", "source": "Метрики продаж", "notes": "Operational benchmark"}, {"name": "Profiling → Bookings, %", "formula": "Bookings with profiling / Leads with profiling", "source": "Метрики продаж", "notes": ""}, {"name": "Profiling → Attended, %", "formula": "Attended with profiling / Leads with profiling", "source": "Метрики продаж", "notes": ""}, {"name": "Profiling → Sales, %", "formula": "Sales with profiling / Leads with profiling", "source": "Метрики продаж", "notes": ""}, {"name": "Spent", "formula": "Total ad spend in reporting period", "source": "Маркетинговые метрики", "notes": ""}, {"name": "Impressions", "formula": "Number of times ads were shown", "source": "Маркетинговые метрики", "notes": ""}, {"name": "CPM", "formula": "Spent / Impressions × 1,000", "source": "Маркетинговые метрики", "notes": ""}, {"name": "CTR", "formula": "Clicks / Impressions", "source": "Маркетинговые метрики", "notes": ""}, {"name": "Clicks", "formula": "Number of clicks on ads", "source": "Маркетинговые метрики", "notes": ""}, {"name": "CPC", "formula": "Spent / Clicks", "source": "Маркетинговые метрики", "notes": ""}, {"name": "Traffic", "formula": "Paid clicks from ad sources + organic impressions from free sources", "source": "Маркетинговые метрики", "notes": ""}, {"name": "%LpCr", "formula": "Leads / Traffic (Landing Page Conversion Rate)", "source": "Маркетинговые метрики", "notes": ""}, {"name": "CPL", "formula": "Spent / Leads", "source": "Маркетинговые метрики", "notes": ""}, {"name": "CTR", "formula": "Clicks / Impressions", "source": "Маркетинговые метрики", "notes": ""}, {"name": "%LpCr", "formula": "Leads / Traffic", "source": "Маркетинговые метрики", "notes": ""}, {"name": "L2P, %", "formula": "Payments / Leads", "source": "Маркетинговые метрики", "notes": ""}, {"name": "CPP (cost per payment)", "formula": "Spent / Sales", "source": "Маркетинговые метрики", "notes": ""}, {"name": "RPL", "formula": "Revenue / Leads", "source": "Маркетинговые метрики", "notes": ""}, {"name": "ROAS", "formula": "Revenue / Spent", "source": "Маркетинговые метрики", "notes": ""}, {"name": "—", "formula": "See `06_financial_metrics.md` — MAC component of CAC", "source": "Маркетинговые метрики", "notes": ""}, {"name": "Av No lessons sold", "formula": "Total lessons in sold packages / Total sales", "source": "Финансовые метрики", "notes": "Package size mix indicator"}, {"name": "Av check per lesson", "formula": "Revenue / Total lessons sold", "source": "Финансовые метрики", "notes": "Revenue per lesson (blended)"}, {"name": "Price per lesson (fact)", "formula": "Fact revenue / Fact lessons delivered", "source": "Финансовые метрики", "notes": "Actual blended price"}]};
+
+const fmt  = n => '$' + (+n).toLocaleString('ru-RU', {minimumFractionDigits:0,maximumFractionDigits:0});
+const fmtp = n => (+n).toFixed(2) + '%';
+const fmtx = n => (+n).toFixed(2) + 'x';
+const fmtn = n => (+n).toLocaleString('ru-RU');
+
+// ── Период ───────────────────────────────────────────────────────────────────────
+const allMonths = MODEL.all_months;
+const fromSel   = document.getElementById('period-from');
+const toSel     = document.getElementById('period-to');
+
+allMonths.forEach(m => {
+  fromSel.innerHTML += `<option value="${m}">${m}</option>`;
+  toSel.innerHTML   += `<option value="${m}">${m}</option>`;
+});
+fromSel.value = allMonths[0];
+toSel.value   = allMonths[allMonths.length - 1];
+
+fromSel.addEventListener('change', refreshAll);
+toSel.addEventListener('change', refreshAll);
+
+function setPeriod(mode) {
+  const n = allMonths.length;
+  if (mode === 'all') { fromSel.value = allMonths[0]; toSel.value = allMonths[n-1]; }
+  if (mode === '3m')  { fromSel.value = allMonths[Math.max(0,n-3)]; toSel.value = allMonths[n-1]; }
+  if (mode === '6m')  { fromSel.value = allMonths[Math.max(0,n-6)]; toSel.value = allMonths[n-1]; }
+  refreshAll();
+}
+
+function getSelectedMonths() {
+  const from = fromSel.value, to = toSel.value;
+  return allMonths.filter(m => m >= from && m <= to);
+}
+
+// Агрегирует данные по выбранным месяцам
+function aggregatePeriod(months) {
+  const agg = { organic: null, paid: null };
+  ['organic','paid'].forEach(ch => {
+    let leads=0,registered=0,attended=0,h2a=0,tcm=0,sales=0,revenue=0;
+    months.forEach(m => {
+      const d = (MODEL.months_data[m] || {})[ch];
+      if (!d) return;
+      leads += d.leads; registered += d.registered; attended += d.attended;
+      h2a   += d.h2a;   tcm       += d.tcm;         sales    += d.sales;
+      revenue += d.revenue;
+    });
+    const pct = (a,b) => b ? +(a/b*100).toFixed(2) : 0;
+    agg[ch] = {
+      leads, registered, attended, h2a, tcm, sales,
+      revenue: +revenue.toFixed(2),
+      conv_rate: pct(sales,leads),
+      rpl: leads ? +(revenue/leads).toFixed(2) : 0,
+      rpc: sales ? +(revenue/sales).toFixed(2) : 0,
+      l2reg:   pct(registered, leads),
+      reg2att: pct(attended, registered),
+      att2h2a: pct(h2a, attended),
+      h2a2tcm: pct(tcm, h2a),
+      tcm2sale: pct(sales, tcm),
+      l2sale:  pct(sales, leads),
+    };
+  });
+  return agg;
+}
+
+// ── KPI карточки ─────────────────────────────────────────────────────────────────
+function renderKPIs(o, p) {
+  const mult = p.rpl ? +(o.rpl/p.rpl).toFixed(2) : 1;
+  const kpis = [
+    {lbl:'Органических лидов', val:fmtn(o.leads), sub:'за период', clr:'var(--green)'},
+    {lbl:'Конверсия органики', val:fmtp(o.conv_rate), sub:'vs '+fmtp(p.conv_rate)+' CPC', clr:'var(--green)'},
+    {lbl:'Выручка на лид (органика)', val:fmt(o.rpl), sub:'vs '+fmt(p.rpl)+' CPC', clr:'var(--accent)'},
+    {lbl:'Organic Quality Multiplier', val:fmtx(mult), sub:'органика ценнее платного', clr:'var(--orange)'},
+  ];
+  document.getElementById('kpi-cards').innerHTML = kpis.map(k =>
+    `<div class="card stat-card">
+      <div class="stat-label">${k.lbl}</div>
+      <div class="stat-value" style="color:${k.clr}">${k.val}</div>
+      <div class="stat-sub">${k.sub}</div>
+     </div>`
+  ).join('');
+}
+
+// ── Сравнительная таблица ─────────────────────────────────────────────────────────
+function renderCmpTable(o, p) {
+  const d = (a, b) => b ? `<span class="delta-pos">${a>b?'+':''}${((a-b)/Math.abs(b)*100).toFixed(1)}%</span>` : '—';
+  document.getElementById('cmp-table').innerHTML = `
+    <thead><tr>
+      <th>Метрика</th>
+      <th style="color:var(--green)">Органика</th>
+      <th style="color:var(--red)">CPC</th>
+      <th>Разница</th>
+    </tr></thead>
+    <tbody>
+      <tr><td>Лидов</td><td class="org-val">${fmtn(o.leads)}</td><td class="paid-val">${fmtn(p.leads)}</td><td>—</td></tr>
+      <tr><td>Конверсий (продаж)</td><td class="org-val">${fmtn(o.sales)}</td><td class="paid-val">${fmtn(p.sales)}</td><td>—</td></tr>
+      <tr><td>Конверсия %</td><td class="org-val">${fmtp(o.conv_rate)}</td><td class="paid-val">${fmtp(p.conv_rate)}</td><td>${d(o.conv_rate,p.conv_rate)}</td></tr>
+      <tr><td>Выручка</td><td class="org-val">${fmt(o.revenue)}</td><td class="paid-val">${fmt(p.revenue)}</td><td>—</td></tr>
+      <tr><td>RPL (выручка / лид)</td><td class="org-val">${fmt(o.rpl)}</td><td class="paid-val">${fmt(p.rpl)}</td><td>${d(o.rpl,p.rpl)}</td></tr>
+      <tr><td>RPC (выручка / сделка)</td><td class="org-val">${fmt(o.rpc)}</td><td class="paid-val">${fmt(p.rpc)}</td><td>${d(o.rpc,p.rpc)}</td></tr>
+      <tr><td>Lead → Регистрация</td><td class="org-val">${fmtp(o.l2reg)}</td><td class="paid-val">${fmtp(p.l2reg)}</td><td>${d(o.l2reg,p.l2reg)}</td></tr>
+      <tr><td>Регистрация → Посещение</td><td class="org-val">${fmtp(o.reg2att)}</td><td class="paid-val">${fmtp(p.reg2att)}</td><td>${d(o.reg2att,p.reg2att)}</td></tr>
+      <tr><td>TCM → Продажа</td><td class="org-val">${fmtp(o.tcm2sale)}</td><td class="paid-val">${fmtp(p.tcm2sale)}</td><td>${d(o.tcm2sale,p.tcm2sale)}</td></tr>
+    </tbody>`;
+
+  const mult = p.rpl ? +(o.rpl/p.rpl).toFixed(2) : 1;
+  document.getElementById('multiplier-tip').innerHTML =
+    `<strong>Вывод:</strong> 1 органический лид = <strong>${fmtx(mult)}</strong> платного по ценности.
+     Рост органики на 1 000 лидов эквивалентен <strong>${fmtn(Math.round(1000*mult))}</strong> платным лидам.`;
+}
+
+// ── Воронка ───────────────────────────────────────────────────────────────────────
+function renderFunnel(o, p) {
+  const stages = [
+    { lbl:'Лиды',          oV:o.leads,      pV:p.leads,      oR:100,          pR:100 },
+    { lbl:'Зарегистрировались\n(MK)',  oV:o.registered, pV:p.registered, oR:o.l2reg,    pR:p.l2reg },
+    { lbl:'Посетили\n(MK)',  oV:o.attended,   pV:p.attended,   oR:o.l2reg>0?+(o.attended/o.leads*100).toFixed(1):0, pR:p.l2reg>0?+(p.attended/p.leads*100).toFixed(1):0 },
+    { lbl:'H2A\n(интерес)', oV:o.h2a,        pV:p.h2a,        oR:+(o.h2a/o.leads*100).toFixed(1), pR:+(p.h2a/p.leads*100).toFixed(1) },
+    { lbl:'TCM\n(пробный)',  oV:o.tcm,        pV:p.tcm,        oR:+(o.tcm/o.leads*100).toFixed(1), pR:+(p.tcm/p.leads*100).toFixed(1) },
+    { lbl:'Продажа',       oV:o.sales,      pV:p.sales,      oR:o.conv_rate, pR:p.conv_rate },
+  ].filter(s => s.oV + s.pV > 0);
+
+  const maxV = Math.max(...stages.map(s => Math.max(s.oV, s.pV)));
+  let html = '';
+  stages.forEach((s, i) => {
+    const oH = maxV ? Math.max(4, Math.round(s.oV / maxV * 76)) : 4;
+    const pH = maxV ? Math.max(4, Math.round(s.pV / maxV * 76)) : 4;
+    const arrow = i < stages.length-1 ? '<div class="f-arrow">›</div>' : '';
+    html += `<div class="funnel-stage">
+      <div class="f-label">${s.lbl.replace('\n','<br>')}</div>
+      <div class="f-bar-wrap">
+        <div class="f-bar" style="height:${oH}px;background:var(--green)" title="Органика: ${fmtn(s.oV)}"></div>
+        <div class="f-bar" style="height:${pH}px;background:var(--red)"   title="CPC: ${fmtn(s.pV)}"></div>
+      </div>
+      <div class="f-pct" style="color:var(--green)">${s.oR}%</div>
+      <div class="f-pct" style="color:var(--red)">${s.pR}%</div>
+      ${arrow}
+    </div>`;
+  });
+  document.getElementById('funnel-viz').innerHTML = html;
+}
+
+// ── Графики ───────────────────────────────────────────────────────────────────────
+let channelChartInst = null, monthlyChartInst = null;
+
+function renderChannelChart() {
+  const ch = MODEL.channels;
+  const ctx = document.getElementById('channelChart').getContext('2d');
+  if (channelChartInst) channelChartInst.destroy();
+  channelChartInst = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ch.map(c => c.medium),
+      datasets: [
+        {
+          label:'Конверсия %',
+          data: ch.map(c => c.conv_rate),
+          backgroundColor: ch.map(c => c.is_paid ? 'rgba(239,68,68,.7)':'rgba(34,197,94,.7)'),
+          borderColor:     ch.map(c => c.is_paid ? '#ef4444':'#22c55e'),
+          borderWidth:1, yAxisID:'y',
+        },
+        {
+          label:'RPL ($)',
+          data: ch.map(c => c.rpl),
+          type:'line', borderColor:'#a78bfa', backgroundColor:'rgba(167,139,250,.08)',
+          borderWidth:2, pointRadius:4, yAxisID:'y1',
+        }
+      ]
+    },
+    options:{
+      responsive:true,
+      interaction:{mode:'index',intersect:false},
+      plugins:{legend:{labels:{color:'#94a3b8',font:{size:11}}}},
+      scales:{
+        x:{ticks:{color:'#64748b',font:{size:10}},grid:{color:'#2a2d3e'}},
+        y:{type:'linear',position:'left',ticks:{color:'#64748b',font:{size:10}},grid:{color:'#2a2d3e'},title:{display:true,text:'Конверсия %',color:'#64748b',font:{size:10}}},
+        y1:{type:'linear',position:'right',ticks:{color:'#64748b',font:{size:10}},grid:{drawOnChartArea:false},title:{display:true,text:'RPL ($)',color:'#64748b',font:{size:10}}}
+      }
+    }
+  });
+}
+
+function renderMonthlyChart(months) {
+  const labels = months;
+  const orgRev  = months.map(m => ((MODEL.months_data[m]||{}).organic||{}).revenue||0);
+  const paidRev = months.map(m => ((MODEL.months_data[m]||{}).paid||{}).revenue||0);
+  const ctx = document.getElementById('monthlyChart').getContext('2d');
+  if (monthlyChartInst) monthlyChartInst.destroy();
+  monthlyChartInst = new Chart(ctx, {
+    type:'line',
+    data:{
+      labels,
+      datasets:[
+        {label:'Органика — выручка ($)',data:orgRev,borderColor:'#22c55e',backgroundColor:'rgba(34,197,94,.07)',borderWidth:2,fill:true,tension:.3,pointRadius:3},
+        {label:'CPC — выручка ($)',data:paidRev,borderColor:'#ef4444',backgroundColor:'rgba(239,68,68,.07)',borderWidth:2,fill:true,tension:.3,pointRadius:3},
+      ]
+    },
+    options:{
+      responsive:true,
+      plugins:{legend:{labels:{color:'#94a3b8',font:{size:11}}}},
+      scales:{
+        x:{ticks:{color:'#64748b',font:{size:10},maxTicksLimit:12},grid:{color:'#2a2d3e'}},
+        y:{ticks:{color:'#64748b',font:{size:10}},grid:{color:'#2a2d3e'}}
+      }
+    }
+  });
+}
+
+// ── Калькулятор ───────────────────────────────────────────────────────────────────
+function syncPair(sId, nId) {
+  const s=document.getElementById(sId), n=document.getElementById(nId);
+  s.addEventListener('input',()=>{n.value=s.value;recalc();});
+  n.addEventListener('input',()=>{s.value=n.value;recalc();});
+}
+syncPair('orgLeads',    'orgLeadsNum');
+syncPair('paidLeads',   'paidLeadsNum');
+syncPair('contentCost', 'contentCostNum');
+
+// Синхронизация ползунков конверсий
+const rateIds = [['r-l2b','r-l2b-n'],['r-b2a','r-b2a-n'],['r-h2a','r-h2a-n'],['r-a2s','r-a2s-n'],['r-aov','r-aov-n']];
+rateIds.forEach(([sid, nid]) => syncPair(sid, nid));
+
+let currentO = MODEL.organic, currentP = MODEL.paid;
+
+// Заполнить конверсии из данных текущего периода
+function updateRatesFromData(o, p) {
+  const set = (sid, nid, val, refId, pRef) => {
+    const v = +val.toFixed(2);
+    document.getElementById(sid).value = v;
+    document.getElementById(nid).value = v;
+    // ref показывает значение из данных (CPC для сравнения)
+    document.getElementById(refId).textContent = `org: ${v}% | cpc: ${(+pRef).toFixed(2)}%`;
+  };
+  // Для AOV отдельно
+  const setAov = (val, pVal) => {
+    const v = Math.round(val);
+    document.getElementById('r-aov').value = v;
+    document.getElementById('r-aov-n').value = v;
+    document.getElementById('ref-aov').textContent = `org: $${v} | cpc: $${Math.round(pVal)}`;
+  };
+
+  set('r-l2b','r-l2b-n', o.l2reg    || 0, 'ref-l2b', p.l2reg    || 0);
+  set('r-b2a','r-b2a-n', o.reg2att  || 0, 'ref-b2a', p.reg2att  || 0);
+  set('r-h2a','r-h2a-n', o.att2h2a  || 0, 'ref-h2a', p.att2h2a  || 0);
+  // A2S: используем h2a2tcm * tcm2sale / 100 если h2a есть, иначе l2sale
+  const oA2S = (o.att2h2a > 0 && o.h2a2tcm > 0) ? +(o.h2a2tcm * o.tcm2sale / 100).toFixed(2) : o.conv_rate;
+  const pA2S = (p.att2h2a > 0 && p.h2a2tcm > 0) ? +(p.h2a2tcm * p.tcm2sale / 100).toFixed(2) : p.conv_rate;
+  set('r-a2s','r-a2s-n', oA2S, 'ref-a2s', pA2S);
+  setAov(o.rpc || 250, p.rpc || 250);
+}
+
+function resetRates() {
+  updateRatesFromData(currentO, currentP);
+  recalc();
+}
+
+function getRates() {
+  return {
+    l2b: +document.getElementById('r-l2b-n').value / 100,
+    b2a: +document.getElementById('r-b2a-n').value / 100,
+    h2a: +document.getElementById('r-h2a-n').value / 100,
+    a2s: +document.getElementById('r-a2s-n').value / 100,
+    aov: +document.getElementById('r-aov-n').value,
+  };
+}
+
+function calcFunnel(leads, r) {
+  const bookings  = Math.round(leads * r.l2b);
+  const attended  = Math.round(bookings * r.b2a);
+  const h2a       = Math.round(attended * r.h2a);
+  const sales     = Math.round(h2a * r.a2s);
+  const revenue   = sales * r.aov;
+  return { leads, bookings, attended, h2a, sales, revenue };
+}
+
+function recalc() {
+  const o  = currentO, p = currentP;
+  const oL = +document.getElementById('orgLeadsNum').value  || 0;
+  const pL = +document.getElementById('paidLeadsNum').value || 0;
+  const cc = +document.getElementById('contentCostNum').value || 0;
+  const r  = getRates();
+
+  // Органика — воронка с заданными конверсиями
+  const oF = calcFunnel(oL, r);
+
+  // CPC — с историческими конверсиями из периода
+  const pF = calcFunnel(pL, {
+    l2b: p.l2reg   / 100,
+    b2a: p.reg2att / 100,
+    h2a: p.att2h2a > 0 ? p.att2h2a / 100 : r.h2a,
+    a2s: (p.att2h2a > 0 && p.h2a2tcm > 0) ? p.h2a2tcm * p.tcm2sale / 10000 : p.conv_rate / 100,
+    aov: p.rpc || r.aov,
+  });
+
+  const roi = cc > 0 ? (oF.revenue - cc) / cc * 100 : null;
+  const be  = Math.max(0, oL * (oF.revenue/oL - p.rpl));
+
+  // Воронка-флоу
+  const stages = [
+    { icon:'👥', name:'Лиды',     sub:'(вход)',         oV:oF.leads,    pV:pF.leads    },
+    { icon:'📅', name:'Букинги',  sub:'L2B '+((r.l2b*100).toFixed(1))+'%', oV:oF.bookings, pV:pF.bookings },
+    { icon:'🎓', name:'Посетили', sub:'B2A '+((r.b2a*100).toFixed(1))+'%', oV:oF.attended, pV:pF.attended },
+    { icon:'🔥', name:'H2A',      sub:'H2A '+((r.h2a*100).toFixed(1))+'%', oV:oF.h2a,      pV:pF.h2a      },
+    { icon:'💰', name:'Продажи',  sub:'A2S '+((r.a2s*100).toFixed(1))+'%', oV:oF.sales,    pV:pF.sales,   sale:true },
+  ];
+
+  let flowHtml = `
+    <div class="funnel-flow-wrap">
+      <div class="ff-header">
+        <span></span><span>Этап</span>
+        <span style="color:var(--green)">Органика</span>
+        <span style="color:var(--red)">CPC</span>
+      </div>`;
+  stages.forEach((s, i) => {
+    flowHtml += `
+      <div class="ff-stage${s.sale?' sale':''}">
+        <div class="ff-icon">${s.icon}</div>
+        <div class="ff-name"><strong>${s.name}</strong><span>${s.sub}</span></div>
+        <div class="ff-org">${fmtn(s.oV)}</div>
+        <div class="ff-paid">${fmtn(s.pV)}</div>
+      </div>`;
+    if (i < stages.length - 1)
+      flowHtml += `<div class="ff-arrow-row">↓</div>`;
+  });
+
+  const effRpl = oL > 0 ? (oF.revenue/oL).toFixed(2) : 0;
+  flowHtml += `
+    <div class="rev-row">
+      <div><div class="r-label">Органика — выручка</div><div class="r-val" style="color:var(--green)">${fmt(oF.revenue)}</div><div style="font-size:11px;color:var(--muted)">RPL ${effRpl}</div></div>
+      <div style="text-align:right"><div class="r-label">CPC — выручка</div><div class="r-val" style="color:var(--red)">${fmt(pF.revenue)}</div><div style="font-size:11px;color:var(--muted)">RPL ${p.rpl}</div></div>
+    </div>
+    </div>`;
+  document.getElementById('funnel-flow').innerHTML = flowHtml;
+
+  // Breakeven / ROI
+  let bkHtml = `
+    <div style="font-size:11px;color:var(--muted);margin-bottom:4px">Ценностная премия органики над CPC</div>
+    <div style="font-size:18px;font-weight:700;color:var(--orange)">${fmt(Math.max(0,oF.revenue - pF.revenue*(oL/Math.max(pL,1)) ))}
+      <span style="font-size:11px;color:var(--muted)">/мес (vs эквив. CPC лидов)</span></div>`;
+  if (cc > 0) {
+    const pct = Math.min(100, oF.revenue/cc*100);
+    const c   = roi >= 0 ? 'var(--green)' : 'var(--red)';
+    bkHtml += `
+      <div style="font-size:11px;color:var(--muted);margin-top:10px;margin-bottom:4px">Покрытие бюджета на контент</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${pct.toFixed(1)}%;background:${c}"></div></div>
+      <div style="font-size:11px;color:var(--muted);margin-top:3px">${fmt(oF.revenue)} / ${fmt(cc)} (${pct.toFixed(0)}%)</div>
+      <span class="roi-pill" style="background:${roi>=0?'rgba(34,197,94,.15)':'rgba(239,68,68,.15)'};color:${c}">
+        ROI: ${roi>=0?'+':''}${roi.toFixed(0)}%
+      </span>`;
+  } else {
+    bkHtml += `<div style="font-size:11px;color:var(--muted);margin-top:8px">Введите бюджет на контент чтобы увидеть ROI</div>`;
+  }
+  document.getElementById('breakeven-bar').innerHTML = bkHtml;
+
+  // Сценарии (используют текущие конверсии)
+  const sc = [
+    {name:'Консервативный',mult:.5,cls:'color:#94a3b8'},
+    {name:'Базовый',       mult:1, cls:'color:var(--green);font-weight:600'},
+    {name:'Оптимистичный', mult:1.3,cls:'color:#a78bfa;font-weight:600'},
+  ];
+  const rows = sc.map(s => {
+    const f  = calcFunnel(Math.round(oL*s.mult), r);
+    const roi2 = cc > 0 ? `${((f.revenue-cc)/cc*100).toFixed(0)}%` : '—';
+    return `<tr>
+      <td style="${s.cls}">${s.name}</td>
+      <td>${fmtn(f.leads)}</td><td>${fmtn(f.bookings)}</td>
+      <td>${fmtn(f.attended)}</td><td>${fmtn(f.sales)}</td>
+      <td style="${s.cls}">${fmt(f.revenue)}</td><td>${roi2}</td>
+    </tr>`;
+  }).join('');
+  document.getElementById('scenario-table').innerHTML = `
+    <thead><tr><th>Сценарий</th><th>Лидов</th><th>Букингов</th><th>Посетили</th><th>Продаж</th><th>Выручка</th><th>ROI</th></tr></thead>
+    <tbody>${rows}</tbody>`;
+}
+
+// ── Справочник ────────────────────────────────────────────────────────────────────
+const METRICS_REF = MODEL.metrics_ref;
+
+// Карточки воронки
+const funnelMetrics = [
+  {name:'L2MQL1, %', formula:'MQL1 / Leads processing', desc:'Лид → квалификация (тот же день)'},
+  {name:'L2B1, %',   formula:'Booking1 / Leads processing', desc:'Лид → букинг (тот же день)'},
+  {name:'L2B, %',    formula:'Bookings / Leads', desc:'Лид → букинг (кросс-когортный)'},
+  {name:'B2A, %',    formula:'Attended / Bookings', desc:'Букинг → посещение пробного'},
+  {name:'%A2S1',     formula:'Sales1 / Attended today', desc:'Посещение → продажа (тот же день)'},
+  {name:'A2S, %',    formula:'Sales / Attended today', desc:'Посещение → продажа (все, вкл. FU)'},
+  {name:'L2P, %',    formula:'Payments / Leads today', desc:'Сквозная конверсия Lead → Payment'},
+  {name:'RPL',       formula:'Revenue / Leads', desc:'Выручка на один лид'},
+  {name:'ROAS',      formula:'Revenue / Spent', desc:'Возврат на рекламный бюджет'},
+  {name:'CPP',       formula:'Spent / Sales', desc:'Стоимость одной продажи (платный трафик)'},
+  {name:'CAC',       formula:'MAC + SAC', desc:'Полная стоимость привлечения клиента'},
+  {name:'CF Margin', formula:'(AOV - CAC - OpCost) / AOV', desc:'Маржа на первой покупке'},
+];
+document.getElementById('funnel-ref-cards').innerHTML = funnelMetrics.map(m =>
+  `<div class="funnel-ref-card">
+    <div class="name">${m.name}</div>
+    <div class="formula">${m.formula}</div>
+    <div class="desc">${m.desc}</div>
+   </div>`
+).join('');
+
+// Общая таблица метрик
+function renderRefTable(data) {
+  document.getElementById('ref-table-body').innerHTML = data.map(m =>
+    `<tr>
+      <td><span class="ref-name">${m.name}</span></td>
+      <td><span class="ref-formula">${m.formula}</span></td>
+      <td><span class="ref-source">${m.source}</span></td>
+      <td style="color:var(--muted);font-size:11px">${m.notes}</td>
+     </tr>`
+  ).join('');
+}
+renderRefTable(METRICS_REF);
+
+document.getElementById('ref-search').addEventListener('input', function() {
+  const q = this.value.toLowerCase();
+  const filtered = METRICS_REF.filter(m =>
+    m.name.toLowerCase().includes(q) || m.formula.toLowerCase().includes(q) || m.source.toLowerCase().includes(q)
+  );
+  renderRefTable(filtered);
+});
+
+// Маркетинговые метрики
+const mktMetrics = METRICS_REF.filter(m => m.source.includes('Маркетинг'));
+document.getElementById('marketing-ref').innerHTML = `
+  <table class="ref-table">
+    <thead><tr><th>Метрика</th><th>Формула</th><th>Примечание</th></tr></thead>
+    <tbody>${mktMetrics.map(m=>`<tr><td><span class="ref-name">${m.name}</span></td><td><span class="ref-formula">${m.formula}</span></td><td style="color:var(--muted);font-size:11px">${m.notes}</td></tr>`).join('')}</tbody>
+  </table>`;
+
+const finMetrics = METRICS_REF.filter(m => m.source.includes('Финанс'));
+document.getElementById('financial-ref').innerHTML = `
+  <table class="ref-table">
+    <thead><tr><th>Метрика</th><th>Формула</th><th>Примечание</th></tr></thead>
+    <tbody>${finMetrics.map(m=>`<tr><td><span class="ref-name">${m.name}</span></td><td><span class="ref-formula">${m.formula}</span></td><td style="color:var(--muted);font-size:11px">${m.notes}</td></tr>`).join('')}</tbody>
+  </table>`;
+
+function showRefTab(id) {
+  document.querySelectorAll('.ref-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.ref-pane').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  document.getElementById('pane-'+id).classList.add('active');
+}
+
+// ── Главный refresh ────────────────────────────────────────────────────────────────
+function refreshAll() {
+  const months = getSelectedMonths();
+  if (!months.length) return;
+
+  const agg = aggregatePeriod(months);
+  const o = agg.organic, p = agg.paid;
+  currentO = o; currentP = p;
+
+  // Период-инфо
+  const totalLeads = (o?.leads||0)+(p?.leads||0);
+  document.getElementById('period-info').textContent =
+    `${months[0]} – ${months[months.length-1]} · ${months.length} мес · ${fmtn(totalLeads)} лидов`;
+
+  renderKPIs(o, p);
+  renderCmpTable(o, p);
+  renderFunnel(o, p);
+  renderMonthlyChart(months);
+  updateRatesFromData(o, p);
+  recalc();
+}
+
+// ── Просмотры → Лиды ─────────────────────────────────────────────────────────────
+// ── Lever analysis (ER → views→lead) ─────────────────────────────────────────────
+const LEVERS = [
+  { id:'lv-er',  label:'ER (Engagement Rate)',         unit:'%',  cur:2.56, min:0.1,  max:20,  step:0.1,  note:'Текущий: 2.56% | Рынок EdTech TikTok: 7.4%' },
+  { id:'lv-cta', label:'Клики / Вовлечённые',          unit:'%',  cur:3,    min:0.1,  max:30,  step:0.1,  note:'% engaged кто кликнул в bio/сторис' },
+  { id:'lv-lc',  label:'Клик → Лид (LC)',              unit:'%',  cur:1,    min:0.1,  max:20,  step:0.1,  note:'Текущая LP conv (оценочно 1%)' },
+  { id:'lv-utm', label:'Коэф. UTM-дозахвата',          unit:'×',  cur:1,    min:1,    max:5,   step:0.1,  note:'×1 = нет UTM | ×1.5–2.5 после настройки UTM в bio' },
+];
+const BASE_V2L = 0.001; // текущий views→lead %
+
+function buildLevers() {
+  const wrap = document.getElementById('lever-rows');
+  LEVERS.forEach(lv => {
+    wrap.innerHTML += `
+      <div style="display:grid;grid-template-columns:160px 1fr 56px 60px;align-items:center;gap:8px">
+        <div>
+          <div style="font-size:11px;color:var(--text)">${lv.label}</div>
+          <div style="font-size:9px;color:var(--muted)">${lv.note}</div>
+        </div>
+        <input type="range" id="${lv.id}" min="${lv.min}" max="${lv.max}" step="${lv.step}" value="${lv.cur}"
+          style="accent-color:var(--orange);-webkit-appearance:none;height:5px;border-radius:3px;background:var(--border);cursor:pointer"
+          oninput="document.getElementById('${lv.id}-n').value=this.value;updateLevers()">
+        <input type="number" id="${lv.id}-n" value="${lv.cur}" min="${lv.min}" max="${lv.max}" step="${lv.step}"
+          style="background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:3px 6px;font-size:12px;text-align:right"
+          oninput="document.getElementById('${lv.id}').value=this.value;updateLevers()">
+        <div style="font-size:10px;color:var(--muted);text-align:right">${lv.unit}</div>
+      </div>`;
+  });
+  updateLevers();
+}
+
+function updateLevers() {
+  const er  = +document.getElementById('lv-er-n').value  / 100;
+  const cta = +document.getElementById('lv-cta-n').value / 100;
+  const lc  = +document.getElementById('lv-lc-n').value  / 100;
+  const utm = +document.getElementById('lv-utm-n').value;
+  // views→lead = er × cta × lc × utm_factor
+  const v2l = er * cta * lc * utm * 100; // in %
+  const mult = v2l / BASE_V2L;
+  const col  = mult >= 5 ? 'var(--green)' : mult >= 2 ? 'var(--orange)' : 'var(--red)';
+  document.getElementById('lever-total').innerHTML =
+    `<span style="color:${col}">×${mult.toFixed(1)}</span>`;
+  document.getElementById('lever-v2l').innerHTML =
+    `views→lead: <span style="color:${col}">${v2l.toFixed(4)}%</span>
+     ${mult >= 5 ? '<span style="font-size:10px;color:var(--green)">✓ цель достигнута</span>' :
+       '<span style="font-size:10px;color:var(--muted)">цель: 0.005%</span>'}`;
+}
+
+buildLevers();
+
+function syncViewsPair(sId, nId) {
+  const s = document.getElementById(sId), n = document.getElementById(nId);
+  s.addEventListener('input', () => { n.value = s.value; calcViews(); });
+  n.addEventListener('input', () => { s.value = n.value; calcViews(); });
+}
+syncViewsPair('v-count',  'v-count-n');
+syncViewsPair('v-views',  'v-views-n');
+['v-v2c','v-c2l','v-warm'].forEach(id => {
+  document.getElementById(id).addEventListener('input', calcViews);
+});
+
+function calcViews() {
+  const videos    = +document.getElementById('v-count-n').value  || 0;
+  const avgViews  = +document.getElementById('v-views-n').value  || 0;
+  const v2cPct    = +document.getElementById('v-v2c').value      || 0;
+  const c2lPct    = +document.getElementById('v-c2l').value      || 0;
+  const warmMult  = +document.getElementById('v-warm').value     || 1;
+
+  const totalViews   = videos * avgViews;
+  const clicks       = Math.round(totalViews * v2cPct / 100);
+  const directLeads  = Math.round(clicks * c2lPct / 100);
+  const totalLeads   = Math.round(directLeads * warmMult);
+  const warmLeads    = totalLeads - directLeads;
+  const directPct    = totalLeads > 0 ? (directLeads / totalLeads * 100) : 0;
+  const warmPct      = 100 - directPct;
+
+  // Воронка-цепочка
+  const o = currentO;
+  const r = getRates();
+  const funnelFromViews = calcFunnel(totalLeads, r);
+
+  const chain = [
+    { icon:'🎬', label:'Роликов/мес',    sub:fmtn(videos)+' × '+fmtn(avgViews)+' просм.',  val:fmtn(totalViews)+' просмотров', cls:'' },
+    { icon:'👆', label:'Переходов',       sub:'CTR '+v2cPct+'%',                             val:fmtn(clicks)+' кликов',         cls:'' },
+    { icon:'📋', label:'Прямых лидов',    sub:'LC '+c2lPct+'%',                              val:fmtn(directLeads)+' лидов',     cls:'highlight' },
+    { icon:'🔥', label:'Всего лидов',     sub:'×'+warmMult+' прогрев',                       val:fmtn(totalLeads)+' лидов',      cls:'highlight' },
+    { icon:'💰', label:'Продажи (прогноз)',sub:'conv '+((r.l2b*r.b2a*r.h2a*r.a2s)*100).toFixed(3)+'%', val:fmtn(funnelFromViews.sales)+' сделок', cls:'final' },
+    { icon:'💵', label:'Выручка (прогноз)',sub:'AOV $'+r.aov,                                val:fmt(funnelFromViews.revenue),   cls:'final' },
+  ];
+
+  let chainHtml = '';
+  chain.forEach((s, i) => {
+    chainHtml += `<div class="vc-step ${s.cls}">
+      <div class="vc-icon">${s.icon}</div>
+      <div class="vc-label"><strong>${s.label}</strong><span>${s.sub}</span></div>
+      <div class="vc-val" style="color:${s.cls==='final'?'var(--green)':s.cls==='highlight'?'var(--orange)':'var(--text)'}">${s.val}</div>
+    </div>`;
+    if (i < chain.length - 1)
+      chainHtml += `<div class="vc-arrow">↓</div>`;
+  });
+  document.getElementById('views-chain').innerHTML = chainHtml;
+
+  // Прогрев-визуализация
+  const v2lTotal = totalViews > 0 ? (totalLeads / totalViews * 100).toFixed(4) : 0;
+  document.getElementById('warm-box').innerHTML = `
+    <div class="warm-title">Прямой vs Прогрев</div>
+    <div class="warm-split">
+      <div class="warm-direct" style="width:${directPct.toFixed(1)}%">
+        ${directPct >= 15 ? 'Прямые '+directPct.toFixed(0)+'%' : ''}
+      </div>
+      <div class="warm-assist" style="width:${warmPct.toFixed(1)}%">
+        ${warmPct >= 15 ? 'Прогрев '+warmPct.toFixed(0)+'%' : ''}
+      </div>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted)">
+      <span><span style="color:var(--orange)">●</span> Прямые: ${fmtn(directLeads)} лидов</span>
+      <span><span style="color:var(--purple)">●</span> Прогрев: ${fmtn(warmLeads)} лидов</span>
+    </div>
+    <div style="margin-top:8px;font-size:11px;color:var(--muted)">
+      Итог: <strong style="color:var(--text)">${v2lTotal}%</strong> views→lead (1 лид на
+      <strong style="color:var(--text)">${totalLeads > 0 ? fmtn(Math.round(totalViews/totalLeads)) : '∞'}</strong> просмотров)
+    </div>`;
+}
+
+function syncViewsToCalc() {
+  const videos   = +document.getElementById('v-count-n').value || 0;
+  const avgViews = +document.getElementById('v-views-n').value || 0;
+  const v2cPct   = +document.getElementById('v-v2c').value     || 0;
+  const c2lPct   = +document.getElementById('v-c2l').value     || 0;
+  const warmMult = +document.getElementById('v-warm').value    || 1;
+  const total    = Math.round(videos * avgViews * v2cPct / 100 * c2lPct / 100 * warmMult);
+  if (total > 0) {
+    document.getElementById('orgLeadsNum').value = total;
+    document.getElementById('orgLeads').value    = Math.min(total, 10000);
+    recalc();
+    document.getElementById('orgLeadsNum').scrollIntoView({behavior:'smooth',block:'center'});
+  }
+}
+
+calcViews();
+
+// Канальный график не зависит от периода
+renderChannelChart();
+
+// Инициализация
+refreshAll();
+</script>
+</body>
+</html>

@@ -348,24 +348,114 @@ img.emoji{
 
 /* ── Research card (vNext, заготовка) ────────── */
 
-.card-research:hover{
-  transform:translateY(-4px);
-  border-color:var(--accent);
-  box-shadow:0 12px 24px rgba(45,91,255,0.12);
+.card-research{
+  cursor:default;
+  gap:12px;
+  min-height:auto;
 }
-.card-research .name{
+.card-research:hover{
+  border-color:var(--accent);
+  box-shadow:0 8px 20px rgba(45,91,255,0.08);
+}
+
+.research-header{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.research-date{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;
+  font-weight:500;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:var(--muted);
+  background:var(--bg);
+  border:1px solid var(--line);
+  padding:3px 8px;
+  border-radius:6px;
+}
+
+.research-title{
   font-family:'Inter',sans-serif;
   font-weight:700;
   font-size:18px;
   line-height:1.3;
   color:var(--ink);
+  text-decoration:none;
+  transition:color .15s ease;
+  display:inline-block;
 }
-.card-research .tldr{
+.research-title:hover{
+  color:var(--accent);
+  text-decoration:underline;
+  text-decoration-style:dotted;
+  text-underline-offset:3px;
+}
+
+.research-tags{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+}
+.research-summary{
   font-family:'Inter',sans-serif;
   font-weight:400;
   font-size:14px;
-  line-height:1.45;
-  color:var(--muted);
+  line-height:1.5;
+  color:var(--ink);
+  margin:0;
+}
+
+.research-findings{
+  margin-top:6px;
+  background:transparent;
+  border:none;
+  padding:0;
+  box-shadow:none;
+}
+.research-findings summary{
+  list-style:none;
+  cursor:pointer;
+  padding:8px 0;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;
+  font-weight:500;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  color:var(--accent);
+  border-top:1px solid var(--line);
+}
+.research-findings summary::-webkit-details-marker{display:none}
+.research-findings ul{
+  list-style:none;
+  padding:6px 0 0 0;
+  margin:0;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+.research-findings li{
+  font-family:'Inter',sans-serif;
+  font-size:13px;
+  line-height:1.5;
+  color:var(--ink);
+  padding-left:18px;
+  position:relative;
+}
+.research-findings li::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:9px;
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:var(--accent);
 }
 
 /* ── Empty / Coming soon card ────────────────── */

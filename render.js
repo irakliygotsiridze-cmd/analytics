@@ -257,6 +257,66 @@
     target.appendChild(grid);
   }
 
+  function renderResearch(target, data, lang, buLabels, labels) {
+    target.innerHTML = '';
+
+    ['indonesia', 'malaysia', 'latam'].forEach(buKey => {
+      const buMeta = BU_META[buKey];
+      const items = data[buKey] || [];
+      const section = el(
+        '<section class="bu-section">' +
+          '<h2 class="bu-title"><span class="bu-flag">' + buMeta.flag + '</span> <span>' + escapeHtml(pick(buMeta.label, lang)) + '</span></h2>' +
+        '</section>'
+      );
+
+      const grid = el('<div class="grid grid-wide"></div>');
+
+      if (items.length === 0) {
+        grid.appendChild(el(
+          '<div class="card card-empty">' +
+            '<span class="empty-text">' + escapeHtml(pick(META_LABELS.coming_soon, lang)) + '</span>' +
+          '</div>'
+        ));
+      } else {
+        items.forEach(item => {
+          const summary = pick(item.summary, lang);
+          const tagsHtml = (item.tags || []).map(t =>
+            '<span class="bu-chip">' + escapeHtml(t) + '</span>'
+          ).join('');
+          const findingsItems = (item.findings || []).map(f =>
+            '<li>' + escapeHtml(pick(f, lang)) + '</li>'
+          ).join('');
+
+          const card = el(
+            '<div class="card card-research">' +
+              '<div class="research-header">' +
+                '<span class="research-date">' + escapeHtml(item.date || '—') + '</span>' +
+              '</div>' +
+              '<a class="card-name research-title" href="assets/research/' + escapeHtml(item.file) + '" target="_blank" rel="noopener noreferrer">' +
+                escapeHtml(item.title) +
+              '</a>' +
+              '<div class="research-tags">' + tagsHtml + '</div>' +
+              '<p class="research-summary">' + escapeHtml(summary) + '</p>' +
+              (findingsItems
+                ? '<details class="research-findings">' +
+                    '<summary>' +
+                      '<span>' + escapeHtml(pick(labels.findings, lang)) + ' (' + item.findings.length + ')</span>' +
+                      '<span class="faq-chevron" aria-hidden="true">+</span>' +
+                    '</summary>' +
+                    '<ul>' + findingsItems + '</ul>' +
+                  '</details>'
+                : '') +
+            '</div>'
+          );
+          grid.appendChild(card);
+        });
+      }
+
+      section.appendChild(grid);
+      target.appendChild(section);
+    });
+  }
+
   function renderFAQ(target, data, lang) {
     target.innerHTML = '';
     const list = el('<div class="faq-list"></div>');
@@ -297,6 +357,9 @@
     } else if (page === 'team') {
       const target = document.querySelector('[data-render="team"]');
       if (target) renderTeam(target, data.team, lang, data.buLabels);
+    } else if (page === 'research') {
+      const target = document.querySelector('[data-render="research"]');
+      if (target) renderResearch(target, data.research, lang, data.buLabels, data.researchLabels || {});
     } else if (page === 'faq') {
       const target = document.querySelector('[data-render="faq"]');
       if (target) renderFAQ(target, data.faq, lang);

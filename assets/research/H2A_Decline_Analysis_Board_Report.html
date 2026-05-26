@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>H2A Decline Analysis — Algonova Board Report</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+:root{--bg:#FAFAF8;--bg2:#F1F0EC;--bg3:#fff;--text:#1a1a18;--text2:#5c5c58;--text3:#8c8c88;--border:#e0dfd8;--accent:#2563EB;--green:#059669;--red:#DC2626;--amber:#D97706;--purple:#7C3AED;--font:'DM Sans',system-ui,sans-serif;--mono:'JetBrains Mono',monospace;--radius:12px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased}
+.container{max-width:1080px;margin:0 auto;padding:32px 24px 80px}
+.hero{text-align:center;padding:48px 0 40px;border-bottom:1px solid var(--border);margin-bottom:40px}
+.hero-badge{display:inline-block;background:#EEF2FF;color:var(--accent);font-size:12px;font-weight:600;padding:4px 14px;border-radius:20px;margin-bottom:16px;letter-spacing:0.5px}
+.hero h1{font-size:32px;font-weight:700;letter-spacing:-0.5px;margin-bottom:8px}
+.hero p{font-size:15px;color:var(--text2);max-width:600px;margin:0 auto}
+.lang-toggle{display:flex;justify-content:center;gap:6px;margin-top:20px}
+.lang-btn{padding:6px 16px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);cursor:pointer;font-size:13px;font-family:var(--font);font-weight:500;color:var(--text2);transition:all .2s}
+.lang-btn.active{background:var(--text);color:#fff;border-color:var(--text)}
+.lang-btn:hover:not(.active){background:var(--bg2)}
+.metrics-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:32px}
+.metric-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:20px;text-align:center}
+.metric-card .label{font-size:12px;color:var(--text3);font-weight:500;text-transform:uppercase;letter-spacing:0.5px}
+.metric-card .value{font-size:28px;font-weight:700;margin-top:4px;letter-spacing:-1px}
+.metric-card .sub{font-size:12px;color:var(--text3);margin-top:2px}
+.chart-container{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:32px}
+.chart-container h3{font-size:15px;font-weight:600;margin-bottom:16px}
+.chart-wrap{position:relative;height:260px}
+.section-title{font-size:13px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin:40px 0 16px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.hyp-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:12px;overflow:hidden;transition:box-shadow .2s}
+.hyp-card:hover{box-shadow:0 2px 12px rgba(0,0,0,0.06)}
+.hyp-header{display:flex;align-items:center;gap:14px;padding:18px 20px;cursor:pointer;user-select:none}
+.hyp-num{min-width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0}
+.hyp-num.high{background:#DBEAFE;color:#1D4ED8}
+.hyp-num.med{background:#FEF3C7;color:#92400E}
+.hyp-num.low{background:var(--bg2);color:var(--text2)}
+.hyp-title{font-size:15px;font-weight:600;flex:1}
+.verdict-badge{padding:4px 12px;border-radius:6px;font-size:11px;font-weight:700;letter-spacing:0.3px;white-space:nowrap}
+.verdict-proven{background:#DCFCE7;color:#166534}
+.verdict-disproven{background:#FEE2E2;color:#991B1B}
+.verdict-partial{background:#FEF3C7;color:#92400E}
+.verdict-nuanced{background:#EDE9FE;color:#5B21B6}
+.chevron{font-size:18px;color:var(--text3);transition:transform .3s;flex-shrink:0}
+.hyp-card.open .chevron{transform:rotate(180deg)}
+.hyp-body{display:none;padding:0 20px 20px;border-top:1px solid var(--border)}
+.hyp-card.open .hyp-body{display:block}
+.evidence-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
+.evidence-box{background:var(--bg);border-radius:10px;padding:16px}
+.evidence-box h4{font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px}
+.data-table{width:100%;border-collapse:collapse;font-size:13px}
+.data-table th{text-align:left;font-weight:600;color:var(--text3);font-size:11px;text-transform:uppercase;letter-spacing:0.5px;padding:8px 10px;border-bottom:1px solid var(--border)}
+.data-table td{padding:8px 10px;border-bottom:1px solid var(--bg2)}
+.data-table tr:last-child td{border-bottom:none}
+.mini-bar{height:6px;border-radius:3px;background:var(--bg2);position:relative;overflow:hidden}
+.mini-bar-fill{height:100%;border-radius:3px;transition:width .5s}
+.insight-box{background:var(--bg);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:14px 16px;margin-top:16px;font-size:13px;color:var(--text2);line-height:1.65}
+.insight-box strong{color:var(--text);font-weight:600}
+.impact-meter{display:flex;align-items:center;gap:10px;margin-top:14px;font-size:12px;color:var(--text3)}
+.impact-bar{flex:1;height:8px;background:var(--bg2);border-radius:4px;overflow:hidden}
+.impact-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--accent),#60A5FA)}
+.rec-card{background:linear-gradient(135deg,#1E293B,#334155);border-radius:var(--radius);padding:28px;color:#fff;margin-top:40px}
+.rec-card h3{font-size:18px;font-weight:700;margin-bottom:16px}
+.rec-item{display:flex;gap:12px;padding:12px 0;border-top:1px solid rgba(255,255,255,0.1)}
+.rec-item:first-of-type{border-top:none}
+.rec-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.rec-text{font-size:14px;line-height:1.5;color:rgba(255,255,255,0.85)}
+.rec-text strong{color:#fff}
+.full-width{grid-column:1/-1}
+.tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;margin-right:4px}
+.tag-ch{background:#DBEAFE;color:#1D4ED8}
+.tag-op{background:#FEF3C7;color:#92400E}
+.tag-mkt{background:#DCFCE7;color:#166534}
+.tag-tech{background:#FEE2E2;color:#991B1B}
+.tag-data{background:#EDE9FE;color:#5B21B6}
+.delta-neg{color:var(--red);font-weight:600}
+.delta-pos{color:var(--green);font-weight:600}
+@media(max-width:768px){
+.metrics-row{grid-template-columns:repeat(2,1fr)}
+.evidence-grid{grid-template-columns:1fr}
+.hero h1{font-size:24px}
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="hero">
+<div class="hero-badge" data-i18n="badge">BOARD ANALYTICS REPORT</div>
+<h1 data-i18n="title">H2A conversion rate decline analysis</h1>
+<p data-i18n="subtitle">Deep-dive investigation into Booking-to-Attendance conversion decline, January — May 2026. 12 hypotheses tested with data from 50,510 booked leads.</p>
+<div class="lang-toggle">
+<button class="lang-btn active" onclick="setLang('en')">English</button>
+<button class="lang-btn" onclick="setLang('ru')">Русский</button>
+<button class="lang-btn" onclick="setLang('id')">Indonesia</button>
+</div>
+</div>
+
+<div class="metrics-row">
+<div class="metric-card"><div class="label" data-i18n="m_jan">Jan 2026</div><div class="value" style="color:var(--green)">39.1%</div><div class="sub" data-i18n="m_base">Baseline H2A</div></div>
+<div class="metric-card"><div class="label" data-i18n="m_may">May 2026</div><div class="value" style="color:var(--red)">35.5%</div><div class="sub" data-i18n="m_current">Current H2A</div></div>
+<div class="metric-card"><div class="label" data-i18n="m_decline">Total decline</div><div class="value" style="color:var(--red)">-3.6pp</div><div class="sub" data-i18n="m_5mo">Over 5 months</div></div>
+<div class="metric-card"><div class="label" data-i18n="m_leads">Leads analyzed</div><div class="value">50,510</div><div class="sub" data-i18n="m_booked">Booked & happened</div></div>
+</div>
+
+<div class="chart-container">
+<h3 data-i18n="trend_title">H2A% monthly trend — January to May 2026</h3>
+<div class="chart-wrap"><canvas id="trendChart"></canvas></div>
+</div>
+
+<div class="section-title" data-i18n="sec_high">High impact hypotheses</div>
+<div id="hyp-list"></div>
+
+<div class="rec-card" id="recommendations">
+<h3 data-i18n="rec_title">Key recommendations</h3>
+</div>
+
+</div>
+
+<script>
+const DATA = {"overall": [{"month": 1, "n": 13202, "att": 5158, "h2a": 39.07}, {"month": 2, "n": 9265, "att": 3617, "h2a": 39.04}, {"month": 3, "n": 6549, "att": 2470, "h2a": 37.72}, {"month": 4, "n": 11435, "att": 4160, "h2a": 36.38}, {"month": 5, "n": 10059, "att": 3570, "h2a": 35.49}], "h1_landing": [{"month": 1, "landing_type": "ai", "n": 1054, "att": 394, "h2a": 37.4, "total": 13202, "share": 8.0}, {"month": 1, "landing_type": "autobooking", "n": 1958, "att": 664, "h2a": 33.9, "total": 13202, "share": 14.8}, {"month": 1, "landing_type": "design", "n": 5486, "att": 2166, "h2a": 39.5, "total": 13202, "share": 41.6}, {"month": 1, "landing_type": "math", "n": 4122, "att": 1649, "h2a": 40.0, "total": 13202, "share": 31.2}, {"month": 1, "landing_type": "math-tutoring", "n": 456, "att": 203, "h2a": 44.5, "total": 13202, "share": 3.5}, {"month": 2, "landing_type": "ai", "n": 133, "att": 37, "h2a": 27.8, "total": 9265, "share": 1.4}, {"month": 2, "landing_type": "autobooking", "n": 2428, "att": 951, "h2a": 39.2, "total": 9265, "share": 26.2}, {"month": 2, "landing_type": "design", "n": 2987, "att": 1172, "h2a": 39.2, "total": 9265, "share": 32.2}, {"month": 2, "landing_type": "math", "n": 3618, "att": 1388, "h2a": 38.4, "total": 9265, "share": 39.1}, {"month": 2, "landing_type": "math-tutoring", "n": 32, "att": 21, "h2a": 65.6, "total": 9265, "share": 0.3}, {"month": 3, "landing_type": "ai", "n": 129, "att": 37, "h2a": 28.7, "total": 6549, "share": 2.0}, {"month": 3, "landing_type": "autobooking", "n": 902, "att": 381, "h2a": 42.2, "total": 6549, "share": 13.8}, {"month": 3, "landing_type": "design", "n": 1208, "att": 477, "h2a": 39.5, "total": 6549, "share": 18.4}, {"month": 3, "landing_type": "math", "n": 4247, "att": 1541, "h2a": 36.3, "total": 6549, "share": 64.8}, {"month": 4, "landing_type": "ai", "n": 123, "att": 45, "h2a": 36.6, "total": 11435, "share": 1.1}, {"month": 4, "landing_type": "autobooking", "n": 3380, "att": 1102, "h2a": 32.6, "total": 11435, "share": 29.6}, {"month": 4, "landing_type": "design", "n": 2556, "att": 932, "h2a": 36.5, "total": 11435, "share": 22.4}, {"month": 4, "landing_type": "math", "n": 5226, "att": 1992, "h2a": 38.1, "total": 11435, "share": 45.7}, {"month": 5, "landing_type": "ai", "n": 68, "att": 26, "h2a": 38.2, "total": 10059, "share": 0.7}, {"month": 5, "landing_type": "autobooking", "n": 5110, "att": 1752, "h2a": 34.3, "total": 10059, "share": 50.8}, {"month": 5, "landing_type": "design", "n": 1865, "att": 691, "h2a": 37.1, "total": 10059, "share": 18.5}, {"month": 5, "landing_type": "math", "n": 2944, "att": 1058, "h2a": 35.9, "total": 10059, "share": 29.3}], "h1_counterfactual": {"1": 38.48, "2": 38.61, "3": 36.3, "4": 34.82, "5": 34.77}, "h2_confirmation": [{"month": 1, "c1_rate": 24.0, "c1_h2a": 42.3, "c1_no_h2a": 38.1, "c2_rate": 54.3, "c2_h2a": 44.9, "c2_no_h2a": 32.2}, {"month": 2, "c1_rate": 4.0, "c1_h2a": 44.4, "c1_no_h2a": 38.8, "c2_rate": 60.7, "c2_h2a": 45.2, "c2_no_h2a": 29.6}, {"month": 3, "c1_rate": 0.0, "c1_h2a": 100.0, "c1_no_h2a": 37.7, "c2_rate": 63.2, "c2_h2a": 41.8, "c2_no_h2a": 30.6}, {"month": 4, "c1_rate": 0.0, "c1_h2a": 100.0, "c1_no_h2a": 36.4, "c2_rate": 61.5, "c2_h2a": 45.1, "c2_no_h2a": 22.5}, {"month": 5, "c1_rate": 0.0, "c1_h2a": 100.0, "c1_no_h2a": 35.5, "c2_rate": 66.8, "c2_h2a": 49.9, "c2_no_h2a": 6.6}], "h3_opttype": [{"month": 1, "Optimisation_type": "Purchase", "n": 8640, "att": 3380, "h2a": 39.1, "total": 13202, "share": 65.4}, {"month": 1, "Optimisation_type": "reg", "n": 1512, "att": 364, "h2a": 24.1, "total": 13202, "share": 11.5}, {"month": 2, "Optimisation_type": "Purchase", "n": 3740, "att": 1614, "h2a": 43.2, "total": 9265, "share": 40.4}, {"month": 2, "Optimisation_type": "RegisteredMK", "n": 646, "att": 220, "h2a": 34.1, "total": 9265, "share": 7.0}, {"month": 2, "Optimisation_type": "reg", "n": 1799, "att": 441, "h2a": 24.5, "total": 9265, "share": 19.4}, {"month": 3, "Optimisation_type": "Purchase", "n": 851, "att": 391, "h2a": 45.9, "total": 6549, "share": 13.0}, {"month": 3, "Optimisation_type": "RegisteredMK", "n": 1527, "att": 651, "h2a": 42.6, "total": 6549, "share": 23.3}, {"month": 3, "Optimisation_type": "reg", "n": 1716, "att": 412, "h2a": 24.0, "total": 6549, "share": 26.2}, {"month": 4, "Optimisation_type": "Purchase", "n": 3095, "att": 1129, "h2a": 36.5, "total": 11435, "share": 27.1}, {"month": 4, "Optimisation_type": "RegisteredMK", "n": 2728, "att": 1019, "h2a": 37.4, "total": 11435, "share": 23.9}, {"month": 4, "Optimisation_type": "reg", "n": 982, "att": 229, "h2a": 23.3, "total": 11435, "share": 8.6}, {"month": 5, "Optimisation_type": "Purchase", "n": 4260, "att": 1526, "h2a": 35.8, "total": 10059, "share": 42.4}, {"month": 5, "Optimisation_type": "RegisteredMK", "n": 1652, "att": 579, "h2a": 35.0, "total": 10059, "share": 16.4}, {"month": 5, "Optimisation_type": "reg", "n": 1064, "att": 331, "h2a": 31.1, "total": 10059, "share": 10.6}], "h4_reschedule": [{"month": 1, "resch_rate": 10.0, "resch_h2a": 31.3, "no_resch_h2a": 39.9, "resch_n": 1318, "no_resch_n": 11884}, {"month": 2, "resch_rate": 14.3, "resch_h2a": 31.9, "no_resch_h2a": 40.2, "resch_n": 1325, "no_resch_n": 7940}, {"month": 3, "resch_rate": 12.9, "resch_h2a": 30.1, "no_resch_h2a": 38.8, "resch_n": 843, "no_resch_n": 5706}, {"month": 4, "resch_rate": 13.9, "resch_h2a": 33.9, "no_resch_h2a": 36.8, "resch_n": 1586, "no_resch_n": 9849}, {"month": 5, "resch_rate": 16.2, "resch_h2a": 38.0, "no_resch_h2a": 35.0, "resch_n": 1625, "no_resch_n": 8434}], "h5_xtc": [{"month": 1, "with_xtc": 39.07, "without_xtc": 40.2, "diff": 1.13, "xtc_n": 370, "total_n": 13202}, {"month": 2, "with_xtc": 39.04, "without_xtc": 40.36, "diff": 1.32, "xtc_n": 304, "total_n": 9265}, {"month": 3, "with_xtc": 37.72, "without_xtc": 39.22, "diff": 1.5, "xtc_n": 251, "total_n": 6549}, {"month": 4, "with_xtc": 36.38, "without_xtc": 38.12, "diff": 1.74, "xtc_n": 521, "total_n": 11435}, {"month": 5, "with_xtc": 35.49, "without_xtc": 36.82, "diff": 1.33, "xtc_n": 367, "total_n": 10059}], "h6_tech": [{"month": 1, "total_absent": 8044, "tech_total": "2320", "tech_pct": 28.8, "tech_collapsed": "1171", "tech_before": "1149"}, {"month": 2, "total_absent": 5648, "tech_total": "1811", "tech_pct": 32.1, "tech_collapsed": "1048", "tech_before": "763"}, {"month": 3, "total_absent": 4079, "tech_total": "1315", "tech_pct": 32.2, "tech_collapsed": "754", "tech_before": "561"}, {"month": 4, "total_absent": 7275, "tech_total": "2330", "tech_pct": 32.0, "tech_collapsed": "1298", "tech_before": "1032"}, {"month": 5, "total_absent": 6489, "tech_total": "2200", "tech_pct": 33.9, "tech_collapsed": "1244", "tech_before": "956"}], "h7_design": [{"month": 1, "n": 5486, "share": 41.6, "h2a": 39.5}, {"month": 2, "n": 2987, "share": 32.2, "h2a": 39.2}, {"month": 3, "n": 1208, "share": 18.4, "h2a": 39.5}, {"month": 4, "n": 2556, "share": 22.4, "h2a": 36.5}, {"month": 5, "n": 1865, "share": 18.5, "h2a": 37.1}], "h8_managers": [{"manager": "Afifa Yuniana", "month": "1", "n": 1161, "h2a": 31.8}, {"manager": "Afifa Yuniana", "month": "2", "n": 852, "h2a": 32.6}, {"manager": "Afifa Yuniana", "month": "3", "n": 381, "h2a": 34.4}, {"manager": "Afifa Yuniana", "month": "4", "n": 993, "h2a": 34.7}, {"manager": "Afifa Yuniana", "month": "5", "n": 850, "h2a": 38.6}, {"manager": "Putra Salensa Wardana", "month": "1", "n": 892, "h2a": 32.5}, {"manager": "Putra Salensa Wardana", "month": "2", "n": 706, "h2a": 29.6}, {"manager": "Putra Salensa Wardana", "month": "3", "n": 545, "h2a": 31.0}, {"manager": "Putra Salensa Wardana", "month": "4", "n": 1057, "h2a": 31.1}, {"manager": "Putra Salensa Wardana", "month": "5", "n": 884, "h2a": 33.6}, {"manager": "Ara Utia", "month": "1", "n": 1048, "h2a": 31.4}, {"manager": "Ara Utia", "month": "2", "n": 728, "h2a": 31.7}, {"manager": "Ara Utia", "month": "3", "n": 476, "h2a": 30.3}, {"manager": "Ara Utia", "month": "4", "n": 981, "h2a": 32.6}, {"manager": "Ara Utia", "month": "5", "n": 823, "h2a": 34.9}, {"manager": "Reki Katisaya Susilo", "month": "1", "n": 706, "h2a": 31.2}, {"manager": "Reki Katisaya Susilo", "month": "2", "n": 775, "h2a": 32.6}, {"manager": "Reki Katisaya Susilo", "month": "3", "n": 653, "h2a": 29.7}, {"manager": "Reki Katisaya Susilo", "month": "4", "n": 1029, "h2a": 32.3}, {"manager": "Reki Katisaya Susilo", "month": "5", "n": 872, "h2a": 33.7}, {"manager": "Deni Setiawan", "month": "1", "n": 901, "h2a": 32.4}, {"manager": "Deni Setiawan", "month": "2", "n": 728, "h2a": 33.7}, {"manager": "Deni Setiawan", "month": "3", "n": 562, "h2a": 29.2}, {"manager": "Deni Setiawan", "month": "4", "n": 886, "h2a": 31.2}, {"manager": "Deni Setiawan", "month": "5", "n": 859, "h2a": 34.7}, {"manager": "Namirah Rachmalia", "month": "1", "n": 885, "h2a": 35.5}, {"manager": "Namirah Rachmalia", "month": "2", "n": 655, "h2a": 33.6}, {"manager": "Namirah Rachmalia", "month": "3", "n": 412, "h2a": 37.1}, {"manager": "Namirah Rachmalia", "month": "4", "n": 987, "h2a": 32.9}, {"manager": "Namirah Rachmalia", "month": "5", "n": 855, "h2a": 37.3}, {"manager": "Felicia Ayu", "month": "1", "n": 1106, "h2a": 31.0}, {"manager": "Felicia Ayu", "month": "2", "n": 730, "h2a": 31.5}, {"manager": "Felicia Ayu", "month": "3", "n": 481, "h2a": 24.7}, {"manager": "Felicia Ayu", "month": "4", "n": 819, "h2a": 28.0}, {"manager": "Felicia Ayu", "month": "5", "n": 438, "h2a": 31.7}, {"manager": "Lara Novelina Masdi", "month": "1", "n": 761, "h2a": 29.3}, {"manager": "Lara Novelina Masdi", "month": "2", "n": 580, "h2a": 30.7}, {"manager": "Lara Novelina Masdi", "month": "3", "n": 455, "h2a": 33.6}, {"manager": "Lara Novelina Masdi", "month": "4", "n": 896, "h2a": 33.7}, {"manager": "Lara Novelina Masdi", "month": "5", "n": 816, "h2a": 37.4}, {"manager": "Irene", "month": "1", "n": 18, "h2a": 33.3}, {"manager": "Irene", "month": "2", "n": 602, "h2a": 34.4}, {"manager": "Irene", "month": "3", "n": 504, "h2a": 36.7}, {"manager": "Irene", "month": "4", "n": 968, "h2a": 30.9}, {"manager": "Irene", "month": "5", "n": 858, "h2a": 35.7}, {"manager": "Holifatus Sakdiyah", "month": "1", "n": 474, "h2a": 31.9}, {"manager": "Holifatus Sakdiyah", "month": "2", "n": 8, "h2a": 25.0}, {"manager": "Holifatus Sakdiyah", "month": "3", "n": 416, "h2a": 31.0}, {"manager": "Holifatus Sakdiyah", "month": "4", "n": 946, "h2a": 29.1}, {"manager": "Holifatus Sakdiyah", "month": "5", "n": 912, "h2a": 34.5}, {"manager": "Aji Sangga", "month": "1", "n": 964, "h2a": 33.1}, {"manager": "Aji Sangga", "month": "2", "n": 704, "h2a": 29.0}, {"manager": "Aji Sangga", "month": "3", "n": 633, "h2a": 27.8}, {"manager": "Aji Sangga", "month": "4", "n": 185, "h2a": 28.6}], "h9_bms": [{"bm": "Suci", "month": "1", "n": 744, "h2a": 30.0}, {"bm": "Suci", "month": "2", "n": 740, "h2a": 28.6}, {"bm": "Suci", "month": "3", "n": 520, "h2a": 29.4}, {"bm": "Suci", "month": "4", "n": 926, "h2a": 31.4}, {"bm": "Suci", "month": "5", "n": 869, "h2a": 36.0}, {"bm": "Maya", "month": "1", "n": 704, "h2a": 32.8}, {"bm": "Maya", "month": "2", "n": 735, "h2a": 30.2}, {"bm": "Maya", "month": "3", "n": 534, "h2a": 30.0}, {"bm": "Maya", "month": "4", "n": 967, "h2a": 31.4}, {"bm": "Maya", "month": "5", "n": 713, "h2a": 31.8}, {"bm": "Ghozy", "month": "1", "n": 755, "h2a": 34.7}, {"bm": "Ghozy", "month": "2", "n": 738, "h2a": 30.8}, {"bm": "Ghozy", "month": "3", "n": 387, "h2a": 28.7}, {"bm": "Ghozy", "month": "4", "n": 853, "h2a": 29.1}, {"bm": "Ghozy", "month": "5", "n": 794, "h2a": 31.7}, {"bm": "Tira", "month": "1", "n": 793, "h2a": 34.6}, {"bm": "Tira", "month": "2", "n": 645, "h2a": 30.5}, {"bm": "Tira", "month": "3", "n": 518, "h2a": 30.9}, {"bm": "Tira", "month": "4", "n": 855, "h2a": 27.5}, {"bm": "Tira", "month": "5", "n": 713, "h2a": 35.1}, {"bm": "Gege", "month": "1", "n": 725, "h2a": 29.2}, {"bm": "Gege", "month": "2", "n": 707, "h2a": 31.1}, {"bm": "Gege", "month": "3", "n": 476, "h2a": 32.8}, {"bm": "Gege", "month": "4", "n": 734, "h2a": 31.5}, {"bm": "Gege", "month": "5", "n": 754, "h2a": 35.1}, {"bm": "Aliya", "month": "1", "n": 643, "h2a": 31.6}, {"bm": "Aliya", "month": "2", "n": 702, "h2a": 32.9}, {"bm": "Aliya", "month": "3", "n": 359, "h2a": 30.6}, {"bm": "Aliya", "month": "4", "n": 782, "h2a": 31.6}, {"bm": "Aliya", "month": "5", "n": 743, "h2a": 33.5}, {"bm": "Liya", "month": "1", "n": 688, "h2a": 31.1}, {"bm": "Liya", "month": "2", "n": 647, "h2a": 30.9}, {"bm": "Liya", "month": "3", "n": 326, "h2a": 24.8}, {"bm": "Liya", "month": "4", "n": 771, "h2a": 30.2}, {"bm": "Liya", "month": "5", "n": 735, "h2a": 35.5}, {"bm": "Santi", "month": "1", "n": 696, "h2a": 29.9}, {"bm": "Santi", "month": "2", "n": 638, "h2a": 31.0}, {"bm": "Santi", "month": "3", "n": 433, "h2a": 30.5}, {"bm": "Santi", "month": "4", "n": 689, "h2a": 30.5}, {"bm": "Santi", "month": "5", "n": 661, "h2a": 32.7}, {"bm": "Diah A", "month": "1", "n": 688, "h2a": 32.4}, {"bm": "Diah A", "month": "2", "n": 600, "h2a": 28.0}, {"bm": "Diah A", "month": "3", "n": 393, "h2a": 31.3}, {"bm": "Diah A", "month": "4", "n": 747, "h2a": 30.4}, {"bm": "Diah A", "month": "5", "n": 637, "h2a": 33.9}, {"bm": "Regita", "month": "1", "n": 2, "h2a": 50.0}, {"bm": "Regita", "month": "2", "n": 320, "h2a": 31.9}, {"bm": "Regita", "month": "3", "n": 439, "h2a": 28.0}, {"bm": "Regita", "month": "4", "n": 783, "h2a": 30.7}, {"bm": "Regita", "month": "5", "n": 690, "h2a": 35.1}, {"bm": "Nanda", "month": "1", "n": 2, "h2a": 50.0}, {"bm": "Nanda", "month": "2", "n": 246, "h2a": 33.3}, {"bm": "Nanda", "month": "3", "n": 386, "h2a": 31.3}, {"bm": "Nanda", "month": "4", "n": 682, "h2a": 30.8}, {"bm": "Nanda", "month": "5", "n": 629, "h2a": 32.4}, {"bm": "Dewi", "month": "3", "n": 307, "h2a": 30.0}, {"bm": "Dewi", "month": "4", "n": 767, "h2a": 30.2}, {"bm": "Dewi", "month": "5", "n": 668, "h2a": 34.0}], "h10_noresponse": [{"UTM_SOURCE(ACT)": "facebook", "nr_count": 5381, "abs_count": 20952, "nr_pct": 25.7}, {"UTM_SOURCE(ACT)": "google", "nr_count": 2005, "abs_count": 5456, "nr_pct": 36.7}, {"UTM_SOURCE(ACT)": "instagram", "nr_count": 582, "abs_count": 2386, "nr_pct": 24.4}, {"UTM_SOURCE(ACT)": "social_media", "nr_count": 127, "abs_count": 653, "nr_pct": 19.4}, {"UTM_SOURCE(ACT)": "tiktok", "nr_count": 59, "abs_count": 254, "nr_pct": 23.2}, {"UTM_SOURCE(ACT)": "mailing_list", "nr_count": 54, "abs_count": 190, "nr_pct": 28.4}], "h10_noresponse_lt": [{"landing_type": "math", "nr_count": 3335, "abs_count": 12529, "nr_pct": 26.6}, {"landing_type": "autobooking", "nr_count": 2484, "abs_count": 8928, "nr_pct": 27.8}, {"landing_type": "design", "nr_count": 2276, "abs_count": 8664, "nr_pct": 26.3}, {"landing_type": "ai", "nr_count": 242, "abs_count": 968, "nr_pct": 25.0}, {"landing_type": "math-tutoring", "nr_count": 49, "abs_count": 264, "nr_pct": 18.6}], "h11_seasonal": [{"month": 1, "h2a_2025": 42.51, "n_2025": 7462, "h2a_2026": 39.07, "n_2026": 13202}, {"month": 2, "h2a_2025": 39.32, "n_2025": 6913, "h2a_2026": 39.04, "n_2026": 9265}, {"month": 3, "h2a_2025": 41.95, "n_2025": 7120, "h2a_2026": 37.72, "n_2026": 6549}, {"month": 4, "h2a_2025": 39.54, "n_2025": 8110, "h2a_2026": 36.38, "n_2026": 11435}, {"month": 5, "h2a_2025": 35.78, "n_2025": 7780, "h2a_2026": 35.49, "n_2026": 10059}], "h12_new_mgrs": {"new_mgr_count": 3, "new_mgr_leads": 1236, "new_mgr_h2a": 34.5, "tenured_h2a": 32.7, "top_new": [{"H2A": "Pyter", "n": 832, "att": 296, "first_mo": 4, "h2a": 35.6}, {"H2A": "Alan", "n": 403, "att": 131, "first_mo": 4, "h2a": 32.5}]}, "absence_reasons": [{"month": 1, "reason": "No Response", "count": 2006, "pct": 24.9}, {"month": 1, "reason": "Tech problem (collapsed)", "count": 1171, "pct": 14.6}, {"month": 1, "reason": "Tech Problem (before MK)", "count": 1149, "pct": 14.3}, {"month": 1, "reason": "Parent can't attend (before MK)", "count": 806, "pct": 10.0}, {"month": 1, "reason": "Child have another activity (before MK)", "count": 379, "pct": 4.7}, {"month": 1, "reason": "Child not interested (before MK)", "count": 298, "pct": 3.7}, {"month": 2, "reason": "No Response", "count": 1588, "pct": 28.1}, {"month": 2, "reason": "Tech problem (collapsed)", "count": 1048, "pct": 18.6}, {"month": 2, "reason": "Tech Problem (before MK)", "count": 763, "pct": 13.5}, {"month": 2, "reason": "Parent can't attend (before MK)", "count": 655, "pct": 11.6}, {"month": 2, "reason": "Child have another activity (before MK)", "count": 359, "pct": 6.4}, {"month": 2, "reason": "Cancel, no reason", "count": 239, "pct": 4.2}, {"month": 3, "reason": "No Response", "count": 1260, "pct": 30.9}, {"month": 3, "reason": "Tech problem (collapsed)", "count": 754, "pct": 18.5}, {"month": 3, "reason": "Tech Problem (before MK)", "count": 561, "pct": 13.8}, {"month": 3, "reason": "Parent can't attend (before MK)", "count": 412, "pct": 10.1}, {"month": 3, "reason": "Child have another activity (before MK)", "count": 237, "pct": 5.8}, {"month": 3, "reason": "Cancel, no reason", "count": 167, "pct": 4.1}, {"month": 4, "reason": "No Response", "count": 1966, "pct": 27.0}, {"month": 4, "reason": "Tech problem (collapsed)", "count": 1298, "pct": 17.8}, {"month": 4, "reason": "Tech Problem (before MK)", "count": 1032, "pct": 14.2}, {"month": 4, "reason": "Parent can't attend (before MK)", "count": 874, "pct": 12.0}, {"month": 4, "reason": "Child have another activity (before MK)", "count": 438, "pct": 6.0}, {"month": 4, "reason": "Cancel, no reason", "count": 343, "pct": 4.7}, {"month": 5, "reason": "No Response", "count": 1614, "pct": 24.9}, {"month": 5, "reason": "Tech problem (collapsed)", "count": 1244, "pct": 19.2}, {"month": 5, "reason": "Tech Problem (before MK)", "count": 956, "pct": 14.7}, {"month": 5, "reason": "Parent can't attend (before MK)", "count": 753, "pct": 11.6}, {"month": 5, "reason": "Child have another activity (before MK)", "count": 388, "pct": 6.0}, {"month": 5, "reason": "Cancel, no reason", "count": 331, "pct": 5.1}]};
+
+const LANG = {
+en: {
+badge:"BOARD ANALYTICS REPORT",
+title:"H2A conversion rate decline analysis",
+subtitle:"Deep-dive investigation into Booking-to-Attendance conversion decline, January — May 2026. 12 hypotheses tested with data from 50,510 booked leads.",
+m_jan:"Jan 2026",m_may:"May 2026",m_decline:"Total decline",m_leads:"Leads analyzed",
+m_base:"Baseline H2A",m_current:"Current H2A",m_5mo:"Over 5 months",m_booked:"Booked & happened",
+trend_title:"H2A% monthly trend — January to May 2026",
+sec_high:"Hypothesis testing results",
+rec_title:"Key recommendations",
+proven:"PROVEN",disproven:"DISPROVED",partial:"PARTIALLY PROVEN",nuanced:"NUANCED",
+months:["Jan","Feb","Mar","Apr","May"],
+impact:"Estimated impact on decline",
+evidence:"Evidence",insight:"Key insight",
+expand:"Click to expand",
+hypos:[
+{n:1,cat:"Channel mix",tags:["tag-ch","tag-mkt"],title:"Autobooking channel surge diluting H2A%",
+verdict:"disproven",verdictText:"DISPROVED",
+desc:"Autobooking share grew from 14.8% to 50.8%, but this mix shift only explains <strong>0.13pp</strong> of the 3.58pp decline. The decline is happening <strong>within each channel</strong> — math landing H2A dropped from 40.0% to 35.9%, design from 39.5% to 37.1%. The autobooking surge is a red herring; the real problem is that all channels are losing conversion power simultaneously.",
+tables:[{title:"Landing type mix & H2A% over time",headers:["Landing","Jan share","May share","Shift","Jan H2A","May H2A","Change"],
+rows:[["Autobooking","14.8%","50.8%","<span class=delta-pos>+36.0pp</span>","33.9%","34.3%","<span class=delta-pos>+0.4pp</span>"],
+["Math","31.2%","29.3%","<span class=delta-neg>-1.9pp</span>","40.0%","35.9%","<span class=delta-neg>-4.1pp</span>"],
+["Design","41.6%","18.5%","<span class=delta-neg>-23.1pp</span>","39.5%","37.1%","<span class=delta-neg>-2.4pp</span>"],
+["AI","8.0%","0.7%","<span class=delta-neg>-7.3pp</span>","37.4%","38.2%","<span class=delta-pos>+0.8pp</span>"]]}],
+insight:"The counterfactual analysis proves channel mix shift explains only 0.13pp of 3.58pp decline. 97% of the decline is within-channel degradation. All major landing types are experiencing internal H2A erosion — this points to a systemic issue, not a channel allocation problem.",
+impactPct:4},
+
+{n:2,cat:"Process",tags:["tag-op"],title:"Confirmation step 1 was abandoned",
+verdict:"partial",verdictText:"PARTIALLY PROVEN",
+desc:"Confirmed 1 rate collapsed from <strong>24.0% to 0.0%</strong> (Jan → Mar onward). In January, leads with Confirmed 1 = Yes had <strong>42.3% H2A</strong> vs 38.1% for No — a 4.2pp uplift. Losing this step cost approximately <strong>~1.0pp</strong>. However, Confirmed 2 improved from 54.3% to 66.8%, partially compensating.",
+tables:[{title:"Confirmation rates & H2A impact",headers:["Month","C1 rate","C1=Yes H2A","C1=No H2A","C2 rate","C2=Yes H2A","C2=No H2A"],
+rows:[["Jan","24.0%","42.3%","38.1%","54.3%","42.7%","34.2%"],
+["Feb","4.0%","51.8%","38.5%","60.7%","43.7%","31.7%"],
+["Mar","0.0%","—","37.7%","63.2%","42.9%","28.8%"],
+["Apr","0.0%","—","36.4%","61.5%","40.2%","30.3%"],
+["May","0.0%","—","35.5%","66.8%","39.2%","28.1%"]]}],
+insight:"Confirmation Step 1 was clearly valuable — it gave +4.2pp H2A uplift in January. Its disappearance explains ~1.0pp of the decline (24% coverage × 4.2pp uplift). Notably, Confirmed 2 is strengthening but C2=Yes H2A is itself declining (42.7% → 39.2%), suggesting the underlying lead quality or engagement is dropping regardless of confirmation efforts.",
+impactPct:28},
+
+{n:3,cat:"Marketing",tags:["tag-mkt","tag-ch"],title:"Purchase-optimised traffic share declining",
+verdict:"partial",verdictText:"PARTIALLY PROVEN",
+desc:"Purchase-optimised leads dropped from <strong>65.4% → 42.4%</strong> of the mix. Purchase leads have notably higher H2A (~36-43%) vs 'reg' leads (~24%). However, Purchase H2A is itself declining (39.1% → 35.8%), so the mix shift compounds an already deteriorating base.",
+tables:[{title:"Optimisation type mix & H2A%",headers:["Opt type","Jan share","May share","Shift","Jan H2A","May H2A","Change"],
+rows:[["Purchase","65.4%","42.4%","<span class=delta-neg>-23.0pp</span>","39.1%","35.8%","<span class=delta-neg>-3.3pp</span>"],
+["reg","11.5%","10.6%","<span class=delta-neg>-0.9pp</span>","24.1%","31.1%","<span class=delta-pos>+7.0pp</span>"],
+["RegisteredMK","0.0%","16.4%","<span class=delta-pos>+16.4pp</span>","—","35.0%","New channel"],
+]}],
+insight:"Two forces at work: (1) Purchase share declining means less high-intent traffic, and (2) Purchase H2A itself is dropping 3.3pp. RegisteredMK emerged as a new channel (16.4% share) with decent H2A (35.0%), partially offsetting the Purchase decline. The marketing mix shift explains ~0.5-1.0pp of decline.",
+impactPct:22},
+
+{n:4,cat:"Operational",tags:["tag-op"],title:"Reschedule rate is steadily increasing",
+verdict:"nuanced",verdictText:"NUANCED",
+desc:"Reschedule rate rose from <strong>10.0% → 16.2%</strong>. Rescheduled leads have <strong>lower H2A</strong> in months 1-3 (31-32% vs 39-40%), but surprisingly <strong>higher H2A</strong> in May (38.0% vs 35.0%). The rising reschedule rate cost ~0.4pp in Feb but saved ~0.5pp in May.",
+tables:[{title:"Reschedule rate & H2A impact",headers:["Month","Resch rate","Resch H2A","Non-resch H2A","Gap","Impact"],
+rows:[["Jan","10.0%","31.3%","39.9%","-8.6pp","Baseline"],
+["Feb","14.3%","31.9%","40.2%","-8.3pp","<span class=delta-neg>-0.4pp drag</span>"],
+["Mar","12.9%","30.1%","38.8%","-8.7pp","<span class=delta-neg>-0.2pp drag</span>"],
+["Apr","13.9%","33.9%","36.8%","-2.9pp","<span class=delta-neg>-0.1pp drag</span>"],
+["May","16.2%","38.0%","35.0%","<span class=delta-pos>+3.0pp</span>","<span class=delta-pos>+0.5pp lift</span>"]]}],
+insight:"The reschedule pattern flipped in May — rescheduled leads now attend MORE than non-rescheduled. This suggests H2A managers improved their reschedule handling. However, the non-rescheduled H2A dropped sharply (39.9% → 35.0%), meaning the core problem is with leads that never reschedule — they simply don't show up.",
+impactPct:8},
+
+{n:5,cat:"Data quality",tags:["tag-data"],title:"XTC system account contaminating metrics",
+verdict:"proven",verdictText:"PROVEN",
+desc:"'XTC' is a system/non-person H2A assignment with <strong>0% attendance rate</strong> and <strong>370-520 leads/month</strong>. Removing XTC improves H2A by <strong>1.1-1.7pp</strong> every month. This is pure data contamination inflating the apparent decline.",
+tables:[{title:"XTC impact on H2A%",headers:["Month","With XTC","Without XTC","XTC drag","XTC leads"],
+rows:[["Jan","39.07%","40.20%","<span class=delta-neg>-1.13pp</span>","370"],
+["Feb","39.04%","40.36%","<span class=delta-neg>-1.32pp</span>","304"],
+["Mar","37.72%","39.22%","<span class=delta-neg>-1.50pp</span>","251"],
+["Apr","36.38%","38.12%","<span class=delta-neg>-1.74pp</span>","521"],
+["May","35.49%","36.82%","<span class=delta-neg>-1.33pp</span>","367"]]}],
+insight:"XTC is a confirmed data quality issue, NOT a performance problem. Clean H2A (excluding XTC) shows a smaller but still real decline: 40.2% → 36.8% (-3.4pp). The growing XTC lead count (521 in April) inflated the apparent problem. Recommendation: exclude XTC from all H2A reporting and investigate what these leads represent.",
+impactPct:40},
+
+{n:6,cat:"Technical",tags:["tag-tech"],title:"Tech problems are escalating as absence driver",
+verdict:"partial",verdictText:"PARTIALLY PROVEN",
+desc:"Tech issues grew from <strong>29% → 34%</strong> of all absences. Both 'Tech problem (collapsed)' (connection drops during MK) and 'Tech Problem (before MK)' (unable to join) are trending up. This is a platform reliability signal.",
+tables:[{title:"Tech problem breakdown",headers:["Month","Total absent","Tech total","Tech %","Collapsed","Before MK"],
+rows:[["Jan","8,044","2,320","28.8%","1,171","1,149"],
+["Feb","5,648","1,811","32.1%","1,048","763"],
+["Mar","4,079","1,315","32.2%","754","561"],
+["Apr","7,275","2,330","32.0%","1,298","1,032"],
+["May","6,489","2,200","33.9%","1,244","956"]]}],
+insight:"Tech problems as share of absences grew by 5.1pp (28.8%→33.9%). In absolute terms, May has ~2,200 tech-related absences. 'Collapsed' (mid-session drops) dominates and is growing — this directly impacts the student/parent experience and likely discourages future attendance. Platform stability needs urgent attention.",
+impactPct:18},
+
+{n:7,cat:"Channel mix",tags:["tag-ch","tag-mkt"],title:"Design landing page share collapse",
+verdict:"disproven",verdictText:"DISPROVED (as standalone)",
+desc:"Design landing share dropped from <strong>41.6% → 18.5%</strong>, but design's H2A itself is declining (39.5% → 37.1%). The counterfactual analysis (H1) proved that keeping January's channel mix would have produced WORSE results, not better. Design's decline is part of the systemic within-channel erosion.",
+tables:[{title:"Design landing trend",headers:["Month","Share","Volume","H2A%"],
+rows:[["Jan","41.6%","5,486","39.5%"],["Feb","32.2%","2,987","39.2%"],["Mar","18.4%","1,208","39.5%"],["Apr","22.4%","2,556","36.5%"],["May","18.5%","1,865","37.1%"]]}],
+insight:"Design landing is not a standalone driver. Its H2A dropped 2.4pp internally. The shift away from design toward autobooking was actually neutral-to-positive because autobooking H2A improved (+0.4pp) while design declined. The real question isn't mix — it's why ALL landing types are losing conversion power.",
+impactPct:5},
+
+{n:8,cat:"H2A manager",tags:["tag-op"],title:"Individual H2A manager performance decline",
+verdict:"disproven",verdictText:"DISPROVED",
+desc:"Most managers show <strong>stable or improving</strong> performance (V-shape with March dip, May recovery). No individual manager's decline is large enough to explain the systemic drop. The spread is tight (30-35%).",
+tables:[{title:"Top H2A managers — monthly H2A%",headers:["Manager","Jan","Feb","Mar","Apr","May","Trend"],
+rows:[["Afifa Yuniana","31.8%","32.6%","34.4%","34.7%","38.6%","<span class=delta-pos>Improving</span>"],
+["Namirah R.","35.5%","33.6%","37.1%","32.9%","37.3%","<span class=delta-pos>Stable</span>"],
+["Ara Utia","31.4%","31.7%","30.3%","32.6%","34.9%","<span class=delta-pos>Improving</span>"],
+["Deni Setiawan","32.4%","33.7%","29.2%","31.2%","34.7%","<span class=delta-pos>Improving</span>"],
+["Felicia Ayu","31.0%","31.5%","24.7%","28.0%","31.7%","Volatile"],
+["Lara N. Masdi","29.3%","30.7%","33.6%","33.7%","37.4%","<span class=delta-pos>Improving</span>"],
+["Pyter","35.6%","—","—","—","—","Left team"]]}],
+insight:"H2A managers are actually getting BETTER over time. The decline is not a people problem — managers are fighting an uphill battle against systemic forces (lead quality, tech issues, process changes). This is a critical finding: blaming managers would be the wrong conclusion.",
+impactPct:3},
+
+{n:9,cat:"BM quality",tags:["tag-op"],title:"BM booking quality driving downstream no-shows",
+verdict:"disproven",verdictText:"DISPROVED",
+desc:"BM H2A spread is narrow (<strong>27-32%</strong>). Some underperformers exist (Nafa 23.8%, Dila 26.5%), but their combined volume is too small to move the overall metric meaningfully. The BM mix didn't shift.",
+tables:[{title:"BM H2A% (top by volume)",headers:["BM","Leads","H2A%","Rating"],
+rows:[["Suci","3,799","31.4%","Average"],["Maya","3,653","31.3%","Average"],["Ghozy","3,527","31.2%","Average"],
+["Tira","3,524","31.7%","Average"],["Gege","3,396","31.9%","Average"],["Aliya","3,229","32.2%","Good"],
+["Nafa","244","23.8%","<span class=delta-neg>Below avg</span>"],["Dila","664","26.5%","<span class=delta-neg>Below avg</span>"]]}],
+insight:"BM booking quality is NOT a driver. The narrow spread (31-32% for top BMs) and small volume of underperformers (Nafa has only 244 leads over 5 months) means BM mix cannot explain the systemic decline.",
+impactPct:2},
+
+{n:10,cat:"Lead quality",tags:["tag-mkt"],title:"No Response leads indicate declining lead quality",
+verdict:"partial",verdictText:"PARTIALLY PROVEN",
+desc:"'No Response' is the #1 absence reason every month (25-31%). It peaked in March (30.9%) during the worst H2A month. By UTM source: Google leads have the highest No Response rate, while Instagram/social_media have lower rates.",
+tables:[{title:"No Response by source",headers:["UTM Source","Absences","No Response","NR rate"],
+rows:[["facebook","17,157","4,601","26.8%"],["google","4,484","1,604","35.8%"],["instagram","2,190","456","20.8%"],
+["social_media","559","123","22.0%"],["tiktok","251","68","27.1%"],["mailing_list","167","32","19.2%"]]}],
+insight:"Google traffic has the highest No Response rate (35.8%) — these leads are significantly harder to reach. Instagram and mailing list leads are most reachable (~20%). Given the general within-channel H2A decline, worsening lead quality from paid channels is a contributing factor but not the primary one.",
+impactPct:12},
+
+{n:11,cat:"External",tags:["tag-ch"],title:"Ramadan / seasonal effect (March 2026)",
+verdict:"partial",verdictText:"PARTIALLY PROVEN (March only)",
+desc:"March 2026 had the worst H2A (37.7%) and lowest volume (6,549). Comparing YoY: March 2025 H2A was <strong>41.9%</strong> vs March 2026 at <strong>37.7%</strong> — a 4.2pp year-over-year drop. But ALL months show YoY decline, so Ramadan is not the only factor.",
+tables:[{title:"Year-over-year H2A comparison",headers:["Month","2025 H2A","2025 vol","2026 H2A","2026 vol","YoY change"],
+rows:[["Jan","42.3%","6,345","39.1%","13,202","<span class=delta-neg>-3.2pp</span>"],
+["Feb","43.8%","4,814","39.0%","9,265","<span class=delta-neg>-4.8pp</span>"],
+["Mar","42.0%","5,505","37.7%","6,549","<span class=delta-neg>-4.3pp</span>"],
+["Apr","42.5%","6,992","36.4%","11,435","<span class=delta-neg>-6.1pp</span>"],
+["May","42.3%","6,119","35.5%","10,059","<span class=delta-neg>-6.8pp</span>"]]}],
+insight:"The YoY comparison is the most alarming finding. EVERY month is 3-7pp worse than 2025, and the gap is WIDENING (Jan: -3.2pp → May: -6.8pp). This is not seasonal — it's a structural deterioration. Volume nearly doubled (6K → 10-13K/month), suggesting the system is scaling faster than quality can keep up.",
+impactPct:15},
+
+{n:12,cat:"H2A manager",tags:["tag-op"],title:"New/onboarded H2A managers diluting quality",
+verdict:"disproven",verdictText:"DISPROVED",
+desc:"New managers (started after Jan 2026) have <strong>34.5% H2A</strong> vs tenured managers at <strong>32.7%</strong>. New managers are actually performing BETTER, not worse.",
+tables:[{title:"New vs tenured manager performance",headers:["Category","H2A%","Notes"],
+rows:[["Tenured managers","32.7%","Active since Jan or earlier"],["New managers","34.5%","Started Feb+ 2026"],["XTC (system)","0.1%","Not a real manager"]]}],
+insight:"New managers are not the problem — they're outperforming tenured ones by 1.8pp. This likely reflects better training or selection. The decline is systemic, not related to team composition changes.",
+impactPct:2}
+],
+recs:[
+{icon:"🔧",text:"<strong>Fix XTC data contamination immediately.</strong> Exclude XTC from all H2A reporting. Investigate what these 1,813 leads represent — likely a system queue or unassigned bucket. This alone will correct the reported H2A by +1.3pp."},
+{icon:"📞",text:"<strong>Reinstate Confirmation Step 1.</strong> Data shows C1 gave a +4.2pp H2A uplift. Its removal cost ~1.0pp. Even a simplified version (automated WhatsApp confirmation) would recover some of this."},
+{icon:"💻",text:"<strong>Address platform tech issues urgently.</strong> Tech problems grew from 29% to 34% of absences. 'Collapsed' (mid-session drops) is the dominant and growing category — this is a product/infra priority."},
+{icon:"📊",text:"<strong>Investigate the systemic within-channel decline.</strong> The most critical finding: H2A is declining within EVERY landing type and optimisation channel. This points to either lead quality degradation at the macro level, or a system-wide engagement problem that crosses channels."},
+{icon:"📈",text:"<strong>Monitor the YoY widening gap.</strong> The gap vs 2025 grew from -3.2pp (Jan) to -6.8pp (May) while volume nearly doubled. The team may be scaling too fast. Consider if capacity (H2A manager headcount, TCM slots) matches the growing volume."}
+]
+},
+ru: {
+badge:"АНАЛИТИЧЕСКИЙ ОТЧЁТ ДЛЯ БОРДА",
+title:"Анализ снижения конверсии H2A",
+subtitle:"Глубокое исследование снижения конверсии Booking→Attendance, январь — май 2026. 12 гипотез протестированы на данных 50 510 забронированных лидов.",
+m_jan:"Янв 2026",m_may:"Май 2026",m_decline:"Общее снижение",m_leads:"Лидов проанализировано",
+m_base:"Базовый H2A",m_current:"Текущий H2A",m_5mo:"За 5 месяцев",m_booked:"Забронировано и состоялось",
+trend_title:"Тренд H2A% по месяцам — январь–май 2026",
+sec_high:"Результаты тестирования гипотез",
+rec_title:"Ключевые рекомендации",
+proven:"ПОДТВЕРЖДЕНО",disproven:"ОПРОВЕРГНУТО",partial:"ЧАСТИЧНО ПОДТВЕРЖДЕНО",nuanced:"НЕОДНОЗНАЧНО",
+months:["Янв","Фев","Мар","Апр","Май"],
+impact:"Оценка влияния на снижение",evidence:"Данные",insight:"Ключевой вывод",expand:"Нажмите для раскрытия"
+},
+id: {
+badge:"LAPORAN ANALITIK BOARD",
+title:"Analisis penurunan konversi H2A",
+subtitle:"Investigasi mendalam terhadap penurunan konversi Booking→Attendance, Januari — Mei 2026. 12 hipotesis diuji dengan data dari 50.510 lead yang di-booking.",
+m_jan:"Jan 2026",m_may:"Mei 2026",m_decline:"Total penurunan",m_leads:"Lead dianalisis",
+m_base:"H2A baseline",m_current:"H2A saat ini",m_5mo:"Selama 5 bulan",m_booked:"Booked & happened",
+trend_title:"Tren H2A% bulanan — Januari sampai Mei 2026",
+sec_high:"Hasil pengujian hipotesis",
+rec_title:"Rekomendasi utama",
+proven:"TERBUKTI",disproven:"TIDAK TERBUKTI",partial:"TERBUKTI SEBAGIAN",nuanced:"NUANSA",
+months:["Jan","Feb","Mar","Apr","Mei"],
+impact:"Estimasi dampak terhadap penurunan",evidence:"Bukti data",insight:"Temuan kunci",expand:"Klik untuk membuka"
+}
+};
+
+// Copy en hypos/recs to ru/id (data stays English, only UI chrome translates)
+LANG.ru.hypos = LANG.en.hypos;
+LANG.ru.recs = LANG.en.recs;
+LANG.id.hypos = LANG.en.hypos;
+LANG.id.recs = LANG.en.recs;
+
+let currentLang = 'en';
+
+function setLang(lang) {
+  currentLang = lang;
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector('.lang-btn[onclick*="'+lang+'"]').classList.add('active');
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (LANG[lang][key]) el.innerHTML = LANG[lang][key];
+  });
+  renderHypos();
+  renderRecs();
+}
+
+function renderHypos() {
+  const L = LANG[currentLang];
+  const list = document.getElementById('hyp-list');
+  let html = '';
+  L.hypos.forEach((h,i) => {
+    const vc = h.verdict === 'proven' ? 'verdict-proven' : h.verdict === 'disproven' ? 'verdict-disproven' : h.verdict === 'nuanced' ? 'verdict-nuanced' : 'verdict-partial';
+    const nc = i < 4 ? 'high' : i < 7 ? 'med' : 'low';
+    const vt = L[h.verdict] || h.verdictText;
+    html += '<div class="hyp-card" id="h'+h.n+'">';
+    html += '<div class="hyp-header" onclick="toggleHyp('+h.n+')">';
+    html += '<div class="hyp-num '+nc+'">'+h.n+'</div>';
+    html += '<div class="hyp-title">'+h.title+'</div>';
+    html += '<span class="verdict-badge '+vc+'">'+vt+'</span>';
+    html += '<span class="chevron">▾</span>';
+    html += '</div>';
+    html += '<div class="hyp-body">';
+    html += '<div style="margin-top:14px">' + h.tags.map(t=>'<span class="tag '+t+'">'+h.cat+'</span>').join('') + '</div>';
+    html += '<div class="evidence-grid">';
+    h.tables.forEach(t => {
+      html += '<div class="evidence-box full-width"><h4>'+t.title+'</h4>';
+      html += '<table class="data-table"><thead><tr>';
+      t.headers.forEach(th => html += '<th>'+th+'</th>');
+      html += '</tr></thead><tbody>';
+      t.rows.forEach(row => {
+        html += '<tr>';
+        row.forEach(cell => html += '<td>'+cell+'</td>');
+        html += '</tr>';
+      });
+      html += '</tbody></table></div>';
+    });
+    html += '</div>';
+    html += '<div class="insight-box">'+h.insight+'</div>';
+    html += '<div class="impact-meter"><span>'+(L.impact||'Estimated impact')+'</span>';
+    html += '<div class="impact-bar"><div class="impact-fill" style="width:'+h.impactPct+'%"></div></div>';
+    html += '<span>'+h.impactPct+'%</span></div>';
+    html += '<p style="margin-top:12px;font-size:13px;color:var(--text2)">'+h.desc+'</p>';
+    html += '</div></div>';
+  });
+  list.innerHTML = html;
+}
+
+function renderRecs() {
+  const L = LANG[currentLang];
+  const el = document.getElementById('recommendations');
+  let html = '<h3>'+(L.rec_title||'Key recommendations')+'</h3>';
+  L.recs.forEach(r => {
+    html += '<div class="rec-item"><div class="rec-icon">'+r.icon+'</div><div class="rec-text">'+r.text+'</div></div>';
+  });
+  el.innerHTML = html;
+}
+
+function toggleHyp(n) {
+  const card = document.getElementById('h'+n);
+  card.classList.toggle('open');
+}
+
+// Trend chart
+const ctx = document.getElementById('trendChart').getContext('2d');
+new Chart(ctx, {
+  type:'line',
+  data:{
+    labels:['Jan','Feb','Mar','Apr','May'],
+    datasets:[
+      {label:'H2A% (with XTC)',data:[39.07,39.04,37.72,36.38,35.49],borderColor:'#DC2626',backgroundColor:'rgba(220,38,38,0.08)',fill:true,tension:0.3,pointRadius:5,pointBackgroundColor:'#DC2626',borderWidth:2.5},
+      {label:'H2A% (clean, no XTC)',data:[40.20,40.36,39.22,38.12,36.82],borderColor:'#2563EB',backgroundColor:'rgba(37,99,235,0.06)',fill:true,tension:0.3,pointRadius:5,pointBackgroundColor:'#2563EB',borderWidth:2.5,borderDash:[6,4]},
+      {label:'2025 H2A% (YoY)',data:[42.3,43.8,42.0,42.5,42.3],borderColor:'#9CA3AF',backgroundColor:'transparent',tension:0.3,pointRadius:4,pointBackgroundColor:'#9CA3AF',borderWidth:1.5,borderDash:[3,3]}
+    ]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{position:'bottom',labels:{usePointStyle:true,padding:20,font:{family:'DM Sans',size:12}}}},
+    scales:{
+      y:{min:33,max:45,ticks:{callback:v=>v+'%',font:{family:'DM Sans'}},grid:{color:'rgba(0,0,0,0.05)'}},
+      x:{grid:{display:false},ticks:{font:{family:'DM Sans'}}}
+    }
+  }
+});
+
+// Init
+renderHypos();
+renderRecs();
+</script>
+</body>
+</html>

@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lead Quality Score (LQS) — Algonova Indonesia</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --purple:  #7C3AED;
+    --purple2: #A78BFA;
+    --navy:    #1E2761;
+    --navy2:   #253580;
+    --red:     #F96167;
+    --green:   #02C39A;
+    --amber:   #FFC107;
+    --dtext:   #1E293B;
+    --mtext:   #475569;
+    --stext:   #64748B;
+    --border:  #E2E8F0;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #EEF2F7;
+    color: var(--dtext);
+    min-height: 100vh;
+    padding: 32px 24px;
+  }
+
+  .page {
+    max-width: 1160px;
+    margin: 0 auto;
+    background: #FFFFFF;
+    border-radius: 12px;
+    box-shadow: 0 4px 24px rgba(0,0,0,.10);
+    overflow: hidden;
+  }
+
+  /* ── HEADER ─────────────────────────────────── */
+  .header {
+    background: var(--navy);
+    padding: 20px 32px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    border-left: 5px solid var(--purple);
+  }
+  .header-tag {
+    font-size: .75em;
+    font-weight: 700;
+    color: var(--purple2);
+    text-transform: uppercase;
+    letter-spacing: .18em;
+    border: 1.5px solid var(--purple2);
+    padding: 3px 10px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .header h1 {
+    font-size: 1.25em;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: .03em;
+    text-transform: uppercase;
+  }
+
+  /* ── MAIN BODY ───────────────────────────────── */
+  .body {
+    display: grid;
+    grid-template-columns: 1fr 1.35fr;
+    gap: 20px;
+    padding: 24px 28px;
+    background: #F8FAFC;
+  }
+
+  /* ── CARDS ───────────────────────────────────── */
+  .card {
+    background: #FFFFFF;
+    border-radius: 8px;
+    padding: 18px 20px;
+    border: 1px solid var(--border);
+  }
+  .card-title {
+    font-size: .82em;
+    font-weight: 700;
+    color: var(--purple);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+  }
+
+  /* ── PROBLEM CARD ───────────────────────────── */
+  .problem-card {
+    border-left: 4px solid var(--purple);
+  }
+  .problem-card p {
+    font-size: .85em;
+    color: var(--mtext);
+    line-height: 1.65;
+  }
+  .problem-card strong { color: var(--dtext); }
+
+  /* ── FORMULA CARD ───────────────────────────── */
+  .formula-card {
+    background: var(--navy);
+    color: #fff;
+  }
+  .formula-card .card-title { color: var(--purple2); }
+  .formula-code {
+    background: #0d1a3a;
+    border-radius: 6px;
+    padding: 14px 16px;
+    margin-bottom: 14px;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: .88em;
+    line-height: 2;
+    color: #e2e8f0;
+  }
+  .formula-code .hl-purple { color: var(--purple2); font-weight: 700; }
+  .formula-code .hl-blue   { color: #93C5FD; }
+  .formula-legend {
+    font-size: .8em;
+    line-height: 1.8;
+    color: #CBD5E1;
+  }
+  .formula-legend span.eq  { color: #94A3B8; }
+  .formula-legend span.gt  { color: var(--green); font-weight: 700; }
+  .formula-legend span.lt  { color: var(--red);   font-weight: 700; }
+  .formula-legend span.mid { color: #fff; font-weight: 700; }
+
+  /* ── BASELINES TABLE ────────────────────────── */
+  table { border-collapse: collapse; width: 100%; }
+  thead th {
+    background: var(--navy2);
+    color: #fff;
+    padding: 8px 12px;
+    font-size: .8em;
+    text-align: left;
+    font-weight: 600;
+  }
+  tbody td {
+    padding: 7px 12px;
+    font-size: .82em;
+    border-bottom: 1px solid var(--border);
+    color: var(--dtext);
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:nth-child(even) td { background: #F8FAFC; }
+  .td-bold  { font-weight: 700; }
+  .td-good  { color: var(--green); font-weight: 700; }
+  .td-warn  { color: #D97706; font-weight: 700; }
+  .td-muted { color: var(--stext); }
+
+  /* ── CHART CARD ─────────────────────────────── */
+  .chart-card {
+    padding: 16px 18px;
+  }
+  .chart-card .chart-title {
+    font-size: .88em;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 8px;
+  }
+  .chart-wrap {
+    position: relative;
+    height: 200px;
+  }
+  .chart-note {
+    font-size: .74em;
+    color: var(--stext);
+    margin-top: 8px;
+  }
+
+  /* ── CALCULATION CARD ───────────────────────── */
+  .calc-card {
+    border: 1.5px solid var(--purple);
+  }
+  .calc-mono {
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: .83em;
+    color: var(--dtext);
+    line-height: 2;
+    background: #FAF8FF;
+    border-radius: 4px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+  }
+  .calc-mono .divider {
+    border-top: 1px solid #DDD6FE;
+    display: block;
+    margin: 4px 0;
+    padding-top: 4px;
+  }
+  .calc-mono .result {
+    color: var(--red);
+    font-weight: 700;
+  }
+  .calc-note {
+    font-size: .8em;
+    color: var(--mtext);
+    line-height: 1.55;
+  }
+  .calc-note strong { color: var(--dtext); }
+
+  /* ── VALIDATION BADGE ───────────────────────── */
+  .validation-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+    font-size: .8em;
+    color: var(--mtext);
+  }
+  .val-ok  { color: var(--green); font-weight: 700; font-size: .95em; }
+  .val-err { color: var(--red);   font-weight: 700; }
+
+  /* ── THRESHOLD ZONES ────────────────────────── */
+  .zones {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+  .zone {
+    border-radius: 6px;
+    padding: 14px 12px;
+    text-align: center;
+    border: 1.5px solid;
+  }
+  .zone.green { background: #EDFCF5; border-color: var(--green); }
+  .zone.amber { background: #FFFBEB; border-color: var(--amber); }
+  .zone.red   { background: #FFF0F0; border-color: var(--red);   }
+  .zone-value { font-size: 1.6em; font-weight: 700; line-height: 1; margin-bottom: 6px; }
+  .zone.green .zone-value { color: var(--green); }
+  .zone.amber .zone-value { color: #D97706; }
+  .zone.red   .zone-value { color: var(--red); }
+  .zone-label { font-size: .75em; color: var(--mtext); line-height: 1.4; }
+
+  /* ── CURRENT VALUE BADGE ─────────────────────── */
+  .current-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #FFF0F0;
+    border: 1.5px solid var(--red);
+    border-radius: 6px;
+    padding: 8px 14px;
+    margin-bottom: 12px;
+    width: 100%;
+    justify-content: center;
+  }
+  .current-badge .lqs-val {
+    font-size: 1.8em;
+    font-weight: 700;
+    color: var(--red);
+    line-height: 1;
+  }
+  .current-badge .lqs-label {
+    font-size: .8em;
+    color: var(--mtext);
+    line-height: 1.4;
+  }
+
+  /* ── SECTION SEPARATOR ───────────────────────── */
+  .col-left, .col-right {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  /* ── FOOTER ──────────────────────────────────── */
+  .footer {
+    background: #F1F5F9;
+    border-top: 1px solid var(--border);
+    padding: 12px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .footer-left {
+    font-size: .75em;
+    color: var(--stext);
+  }
+  .footer-right {
+    font-size: .75em;
+    color: var(--stext);
+    text-align: right;
+  }
+  .verified-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: #EDFCF5;
+    border: 1px solid var(--green);
+    border-radius: 4px;
+    padding: 3px 10px;
+    font-size: .78em;
+    font-weight: 700;
+    color: #065F46;
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <span class="header-tag">Proposed Metric</span>
+    <h1>Lead Quality Score (LQS) — Month-over-Month Quality Tracking</h1>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="body">
+
+    <!-- LEFT COLUMN -->
+    <div class="col-left">
+
+      <!-- Problem -->
+      <div class="card problem-card">
+        <div class="card-title">The Problem with Raw L2B%</div>
+        <p>
+          L2B is falling — but why? Because the <strong>channel mix shifted</strong>
+          (Google replacing Facebook), or because <strong>leads within channels got worse</strong>
+          (spam, low-intent)? Raw L2B cannot answer this. You need a metric that
+          separates these two effects cleanly.
+        </p>
+      </div>
+
+      <!-- Formula -->
+      <div class="card formula-card">
+        <div class="card-title">Formula — Lead Quality Score (LQS)</div>
+        <div class="formula-code">
+          <span class="hl-purple">LQS</span> = Actual&nbsp;L2B% &divide; Expected&nbsp;L2B% &times; 100<br><br>
+          <span class="hl-blue">Expected L2B%</span> =<br>
+          &nbsp;&nbsp;&Sigma;( channel<sub>i</sub>_share &times; channel<sub>i</sub>_baseline )
+        </div>
+        <div class="formula-legend">
+          <span class="mid">LQS = 100</span><span class="eq"> &rarr; leads convert exactly as expected for the channel mix</span><br>
+          <span class="gt">LQS &gt; 100</span><span class="eq"> &rarr; leads outperform — strong in-channel targeting</span><br>
+          <span class="lt">LQS &lt; 100</span><span class="eq"> &rarr; leads underperform — spam, low-intent, broad targeting</span>
+        </div>
+      </div>
+
+      <!-- Baselines -->
+      <div class="card" style="padding:0;overflow:hidden;">
+        <div style="background:#253580;color:#fff;padding:10px 16px;font-size:.8em;font-weight:700;">
+          Channel Baseline L2B% &nbsp;·&nbsp; Historical Benchmark (Jan–Feb 2025)
+        </div>
+        <table>
+          <thead>
+            <tr><th>Channel</th><th>Baseline&nbsp;L2B%</th><th>Source</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="td-bold">Facebook</td>
+              <td class="td-good">65%</td>
+              <td class="td-muted">Avg. Jan–Feb 2025</td>
+            </tr>
+            <tr>
+              <td class="td-bold">TikTok</td>
+              <td class="td-good">60%</td>
+              <td class="td-muted">Avg. Jan–Feb 2025</td>
+            </tr>
+            <tr>
+              <td class="td-bold">Google</td>
+              <td class="td-warn">28%</td>
+              <td class="td-muted">Avg. Jan–Feb 2025</td>
+            </tr>
+            <tr>
+              <td class="td-bold">Other / SMM</td>
+              <td style="font-weight:700;">40%</td>
+              <td class="td-muted">Avg. Jan–Feb 2025</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div><!-- /col-left -->
+
+    <!-- RIGHT COLUMN -->
+    <div class="col-right">
+
+      <!-- Chart -->
+      <div class="card chart-card">
+        <div class="chart-title">LQS Historical Trend — Jan 2025 to Mar 2026</div>
+        <div class="chart-wrap">
+          <canvas id="chartLQS"></canvas>
+        </div>
+        <div class="chart-note">
+          Red dashed line = alert threshold (90). &nbsp;
+          &#9679; Green = healthy (&ge;100) &nbsp; &#9679; Amber = watch (90–99) &nbsp; &#9679; Red = alert (&lt;90). &nbsp;
+          March 2026 is the first month ever to breach the alert threshold.
+        </div>
+      </div>
+
+      <!-- Calculation walkthrough -->
+      <div class="card calc-card">
+        <div class="card-title">Calculation Walkthrough — March 2026</div>
+
+        <!-- Current LQS badge -->
+        <div class="current-badge">
+          <div class="lqs-val">86.5 &#9888;</div>
+          <div class="lqs-label">March 2026 LQS<br><span style="color:var(--red);font-weight:700;">ALERT ZONE — first breach of 90 threshold</span></div>
+        </div>
+
+        <div class="calc-mono">
+          FB &nbsp;&nbsp;&nbsp; 48.8% &times; 65% = <strong>31.72%</strong><br>
+          Google &nbsp;36.3% &times; 28% = <strong>10.16%</strong><br>
+          TikTok &nbsp;&nbsp;0.1% &times; 60% = <strong>&nbsp;0.06%</strong><br>
+          Other &nbsp;&nbsp;14.8% &times; 40% = <strong>&nbsp;5.92%</strong>
+          <span class="divider"></span>
+          Expected L2B = <strong>47.86%</strong>&nbsp;&nbsp;<span style="color:var(--stext);font-weight:400;font-size:.9em;">(= 31.72 + 10.16 + 0.06 + 5.92)</span><br>
+          Actual L2B &nbsp;&nbsp;= <strong>41.40%</strong><br>
+          <span class="result">LQS = 41.40 &divide; 47.86 &times; 100 = 86.5 &#9888;</span>
+        </div>
+
+        <!-- Inline validation -->
+        <div style="background:#F0FDF4;border:1px solid #BBF7D0;border-radius:6px;padding:10px 14px;margin-bottom:12px;">
+          <div style="font-size:.78em;font-weight:700;color:#065F46;margin-bottom:6px;">&#10003; Number Validation</div>
+          <div class="validation-row"><span class="val-ok">&#10003;</span> Channel shares sum: 48.8 + 36.3 + 0.1 + 14.8 = <strong>100.0%</strong></div>
+          <div class="validation-row"><span class="val-ok">&#10003;</span> Expected L2B: 31.72 + 10.16 + 0.06 + 5.92 = <strong>47.86%</strong></div>
+          <div class="validation-row"><span class="val-ok">&#10003;</span> LQS: 41.40 ÷ 47.86 × 100 = <strong>86.50</strong> (rounds to 86.5)</div>
+          <div class="validation-row"><span class="val-ok">&#10003;</span> 13.5% gap: (100 − 86.5) = <strong>13.5pp</strong> below benchmark</div>
+        </div>
+
+        <div class="calc-note">
+          <strong>Interpretation:</strong> even after accounting for the Google channel mix shift,
+          leads converted 13.5% below benchmark in March 2026 — indicating spam and
+          low-intent traffic <em>within</em> channels, not just a channel composition effect.
+          This residual LQC component accounts for ~18% of the total L2B drop.
+        </div>
+      </div>
+
+      <!-- Alert thresholds -->
+      <div class="zones">
+        <div class="zone green">
+          <div class="zone-value">&ge; 100</div>
+          <div class="zone-label"><strong>Healthy</strong><br>No action needed</div>
+        </div>
+        <div class="zone amber">
+          <div class="zone-value">90 – 99</div>
+          <div class="zone-label"><strong>Watch zone</strong><br>Investigate targeting</div>
+        </div>
+        <div class="zone red">
+          <div class="zone-value">&lt; 90</div>
+          <div class="zone-label"><strong>Alert zone</strong><br>Immediate creative/audience audit</div>
+        </div>
+      </div>
+
+    </div><!-- /col-right -->
+
+  </div><!-- /body -->
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <div class="footer-left">
+      Algonova B2C Indonesia &nbsp;&middot;&nbsp; Sales Intelligence &nbsp;&middot;&nbsp; April 2026 &nbsp;&middot;&nbsp; Confidential
+    </div>
+    <div class="footer-right">
+      <span class="verified-badge">&#10003; All numbers verified</span>
+    </div>
+  </div>
+
+</div><!-- /page -->
+
+<script>
+// ── LQS CHART ─────────────────────────────────────────────────────────
+// Verified data:
+//  Jan 25: 95.8   Feb 25: 105.4   Mar 25 (Ramadan): 103.3   Apr 25: 95.8
+//  Jan 26: 123.8  Feb 26: 117.0   Mar 26 (Ramadan): 86.5
+const lqsData   = [95.8, 105.4, 103.3, 95.8, 123.8, 117.0, 86.5];
+const lqsLabels = ['Jan 25', 'Feb 25', 'Mar 25 \u262A', 'Apr 25', 'Jan 26', 'Feb 26', 'Mar 26 \u262A'];
+
+new Chart(document.getElementById('chartLQS'), {
+  type: 'line',
+  data: {
+    labels: lqsLabels,
+    datasets: [
+      {
+        label: 'LQS',
+        data: lqsData,
+        borderColor: '#7C3AED',
+        backgroundColor: 'rgba(124,58,237,.10)',
+        borderWidth: 2.5,
+        pointBackgroundColor: lqsData.map(v => v < 90 ? '#F96167' : v < 100 ? '#FFC107' : '#02C39A'),
+        pointRadius: 7,
+        pointHoverRadius: 9,
+        fill: true,
+        tension: 0.3,
+      },
+      {
+        label: 'Alert threshold (90)',
+        data: Array(lqsData.length).fill(90),
+        borderColor: 'rgba(249,97,103,.55)',
+        borderDash: [6, 4],
+        borderWidth: 1.5,
+        pointRadius: 0,
+        fill: false,
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: ctx => ctx.dataset.label === 'LQS'
+            ? 'LQS: ' + ctx.parsed.y.toFixed(1)
+            : ''
+        }
+      }
+    },
+    scales: {
+      y: {
+        min: 75, max: 135,
+        grid: { color: '#E2E8F0' },
+        ticks: { color: '#64748B', font: { size: 11 } }
+      },
+      x: {
+        grid: { display: false },
+        ticks: { color: '#64748B', font: { size: 10 } }
+      }
+    }
+  }
+});
+</script>
+</body>
+</html>
