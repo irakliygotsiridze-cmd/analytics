@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lead Scoring · B×A Formula · Algonova ASEAN</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
+  :root {
+    --bg:#f6f5f1; --surface:#fff; --surface2:#efede7; --border:rgba(0,0,0,0.08);
+    --border-strong:rgba(0,0,0,0.16); --text:#18170f; --muted:#6a6760; --faint:#a5a39d;
+    --green:#0b5e44; --green-mid:#1a9467; --green-light:#ddf0e8;
+    --blue:#0c4a82; --blue-mid:#1d72cb; --blue-light:#e0ecfb;
+    --red:#8a1f1f; --red-mid:#cb3232; --red-light:#fce0e0;
+    --amber:#7a420a; --amber-mid:#c06510; --amber-light:#f7e9d8;
+    --gold:#b89008; --gold-light:#fdf5db;
+    --purple:#5a2d8a; --purple-light:#ede4f8;
+    --mono:'DM Mono',monospace; --sans:'DM Sans',-apple-system,sans-serif;
+    --display:'Syne',sans-serif; --r:8px; --r-sm:4px;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:13.5px;line-height:1.65;}
+  .wrap{max-width:1020px;margin:0 auto;padding:40px 24px 100px;}
+
+  /* HEADER */
+  .header{display:grid;grid-template-columns:1fr auto;gap:20px;align-items:start;
+    margin-bottom:40px;padding-bottom:28px;border-bottom:2px solid var(--text);}
+  .brand-row{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+  .brand-dot{width:10px;height:10px;background:var(--purple);border-radius:50%;}
+  .brand-text{font-family:var(--mono);font-size:10.5px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--faint);}
+  h1{font-family:var(--display);font-size:28px;font-weight:800;letter-spacing:-0.02em;line-height:1.1;margin-bottom:6px;}
+  .meta{font-size:11.5px;color:var(--muted);font-family:var(--mono);}
+  .meta span{margin-right:14px;}
+  .formula-badge{display:inline-flex;align-items:center;gap:8px;margin-top:10px;
+    background:var(--purple-light);border:1px solid rgba(90,45,138,0.2);border-radius:6px;
+    padding:6px 12px;font-family:var(--mono);font-size:12px;font-weight:500;color:var(--purple);}
+  .formula-badge .arrow{opacity:0.5;}
+  .lang-toggle{display:flex;border:1.5px solid var(--border-strong);border-radius:6px;overflow:hidden;margin-top:6px;}
+  .lang-btn{padding:7px 18px;font-size:12px;font-weight:600;font-family:var(--mono);cursor:pointer;border:none;background:transparent;color:var(--muted);transition:all .12s;letter-spacing:0.05em;}
+  .lang-btn.active{background:var(--text);color:#fff;}
+
+  /* PART HEADER */
+  .part-header{display:flex;align-items:baseline;gap:14px;margin:48px 0 6px;padding-bottom:10px;border-bottom:1.5px solid var(--text);}
+  .part-num{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--faint);letter-spacing:0.1em;text-transform:uppercase;}
+  .part-title{font-family:var(--display);font-size:16px;font-weight:700;}
+
+  .section-title{font-size:13.5px;font-weight:600;margin:26px 0 12px;display:flex;align-items:baseline;gap:10px;}
+  .s-num{font-family:var(--mono);font-size:11px;color:var(--faint);font-weight:500;}
+
+  /* INSIGHT */
+  .insight{padding:14px 18px;border-radius:0 var(--r) var(--r) 0;border-left:3px solid var(--blue-mid);background:var(--blue-light);margin:14px 0;font-size:12.5px;}
+  .insight.warn{border-left-color:var(--red-mid);background:var(--red-light);}
+  .insight.ok{border-left-color:var(--green-mid);background:var(--green-light);}
+  .insight.amber{border-left-color:var(--amber-mid);background:var(--amber-light);}
+  .insight.gold{border-left-color:var(--gold);background:var(--gold-light);}
+  .insight.purple{border-left-color:var(--purple);background:var(--purple-light);}
+  .insight-title{font-weight:700;margin-bottom:5px;}
+
+  /* TABLES */
+  .tbl-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin:12px 0;}
+  table{width:100%;border-collapse:collapse;font-size:12.5px;}
+  thead tr{background:var(--surface2);}
+  th{padding:9px 12px;text-align:left;font-size:11px;font-weight:600;font-family:var(--mono);letter-spacing:0.06em;color:var(--muted);text-transform:uppercase;border-bottom:1px solid var(--border-strong);}
+  th.c,td.c{text-align:center;}
+  td{padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:middle;}
+  tr:last-child td{border-bottom:none;}
+  tr:hover td{background:var(--surface2);}
+  .mono{font-family:var(--mono);}
+  .bold{font-weight:700;}
+  .up{color:var(--green);font-weight:600;}
+  .down{color:var(--red);font-weight:600;}
+  .neutral{color:var(--muted);}
+  .star-col{color:var(--gold);}
+
+  /* PILLS */
+  .pill{display:inline-block;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:600;font-family:var(--mono);white-space:nowrap;}
+  .pa{background:#e4eef9;color:var(--blue);}
+  .pb{background:var(--green-light);color:var(--green);}
+  .pc{background:var(--amber-light);color:var(--amber);}
+  .pd{background:var(--surface2);color:var(--muted);}
+
+  /* CARDS */
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(195px,1fr));gap:12px;margin:14px 0;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px;}
+  .card-label{font-size:11px;font-family:var(--mono);color:var(--faint);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;}
+  .card-val{font-size:25px;font-weight:700;font-family:var(--display);letter-spacing:-0.02em;}
+  .card-val.up{color:var(--green);}
+  .card-val.down{color:var(--red);}
+  .card-val.purple{color:var(--purple);}
+  .card-sub{font-size:11px;color:var(--muted);margin-top:4px;}
+  .card.aa{border-top:3px solid var(--blue-mid);}
+  .card.ab{border-top:3px solid var(--green-mid);}
+  .card.ac{border-top:3px solid var(--amber-mid);}
+  .card.ad{border-top:3px solid #a5a39d;}
+  .card.diff{border-top:3px solid var(--purple);}
+
+  /* COMPARE BADGE */
+  .vs{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:11px;
+    padding:2px 8px;border-radius:4px;background:var(--surface2);color:var(--muted);margin-left:8px;}
+  .vs.better{background:var(--green-light);color:var(--green);}
+  .vs.worse{background:var(--red-light);color:var(--red);}
+  .vs.neutral2{background:var(--surface2);color:var(--muted);}
+
+  /* CHOSEN */
+  .chosen td{background:#fdf8e8;font-weight:600;}
+
+  /* FORMULA BOX */
+  .formula-box{background:var(--text);color:#fff;border-radius:var(--r);padding:16px 20px;font-family:var(--mono);font-size:13px;margin:16px 0;line-height:1.9;}
+  .formula-box .f-title{font-size:10px;text-transform:uppercase;letter-spacing:0.12em;color:rgba(255,255,255,0.4);margin-bottom:6px;}
+  .formula-box .f-main{font-size:15px;font-weight:600;margin-bottom:8px;}
+  .formula-box .f-note{color:rgba(255,255,255,0.55);font-size:11.5px;}
+  .formula-box .strike{text-decoration:line-through;color:rgba(255,255,255,0.3);}
+
+  /* FLOW */
+  .ch-header{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--text);margin:18px 0 8px;
+    padding:6px 12px;background:var(--surface2);border-radius:var(--r-sm);display:inline-block;}
+
+  /* COMPARISON TABLE */
+  .comp-row-better td{background:rgba(26,148,103,0.05);}
+  .comp-row-worse td{background:rgba(203,50,50,0.05);}
+
+  /* FOOTER */
+  .footer{margin-top:60px;padding-top:16px;border-top:1px solid var(--border-strong);display:flex;justify-content:space-between;font-size:11px;font-family:var(--mono);color:var(--faint);}
+
+  @media(max-width:600px){.header{grid-template-columns:1fr;}.cards{grid-template-columns:1fr 1fr;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- HEADER -->
+<div class="header">
+  <div>
+    <div class="brand-row">
+      <div class="brand-dot"></div>
+      <span class="brand-text">Algonova · ASEAN B2C Indonesia</span>
+    </div>
+    <h1 id="h-title" data-en="Lead Scoring &amp; Segmentation" data-ru="Lead Scoring &amp; Сегментация">Lead Scoring &amp; Segmentation</h1>
+    <div class="meta">
+      <span id="h-period" data-en="Data: Dec 2025 – May 2026" data-ru="Данные: Дек 2025 – Май 2026">Data: Dec 2025 – May 2026</span>
+      <span>N = 112,079</span>
+    </div>
+    <div class="formula-badge">
+      <span class="strike">L2B ×</span>
+      <span>B2Att × Att2S</span>
+      <span class="arrow">— <span data-en="L2B excluded" data-ru="L2B исключён">L2B excluded</span></span>
+    </div>
+    <div style="font-size:11px;color:var(--muted);margin-top:6px;" id="h-note" data-en="Bundling / Primary / Additional leads excluded from all calculations" data-ru="Бандлинги / Primary / Additional исключены из всех расчётов">Bundling / Primary / Additional leads excluded from all calculations</div>
+  </div>
+  <div>
+    <div class="lang-toggle">
+      <button class="lang-btn active" onclick="setLang('en')">EN</button>
+      <button class="lang-btn" onclick="setLang('ru')">RU</button>
+    </div>
+  </div>
+</div>
+
+<!-- FORMULA -->
+<div class="formula-box">
+  <div class="f-title" data-en="Segmentation formula — L2B excluded" data-ru="Формула сегментации — L2B исключён">Segmentation formula — L2B excluded</div>
+  <div class="f-main">Score = B2Att_forecast × Att2S_forecast</div>
+  <div class="f-note">
+    D Cold &lt; 0.042546 &nbsp;|&nbsp; C Warm &lt; 0.089991 &nbsp;|&nbsp; B Hot &lt; 0.205036 &nbsp;|&nbsp; A★ Star ≥ 0.205036<br>
+    <span data-en="Thresholds re-derived from same splits: D=30% · C=35% · B=30% · A★=5%" data-ru="Пороги пересчитаны из тех же долей: D=30% · C=35% · B=30% · A★=5%">Thresholds re-derived from same splits: D=30% · C=35% · B=30% · A★=5%</span>
+  </div>
+</div>
+
+<!-- PART 1 -->
+<div class="part-header">
+  <span class="part-num" data-en="Part 1" data-ru="Часть 1">Part 1</span>
+  <span class="part-title" data-en="Forecast Accuracy Without L2B" data-ru="Точность прогнозов без L2B">Forecast Accuracy Without L2B</span>
+</div>
+
+<p style="font-size:12.5px;color:var(--muted);margin-bottom:16px;" data-en="This report tests the two-signal formula: B2Att × Att2S. L2B is excluded from scoring. All validations compare the new formula vs the full three-signal reference." data-ru="Этот отчёт проверяет двухсигнальную формулу: B2Att × Att2S. L2B исключён из скоринга. Все проверки сравнивают новую формулу с трёхсигнальной референсной.">This report tests the two-signal formula: B2Att × Att2S. L2B is excluded from scoring. All validations compare the new formula vs the full three-signal reference.</p>
+
+<div class="section-title"><span class="s-num">1.1</span> <span data-en="Point-Biserial Correlations — B2Att &amp; Att2S" data-ru="Точечно-бисериальные корреляции — B2Att и Att2S">Point-Biserial Correlations — B2Att &amp; Att2S</span></div>
+
+<div class="tbl-wrap">
+  <table>
+    <thead><tr>
+      <th data-en="Forecast / Score" data-ru="Прогноз / Скор">Forecast / Score</th>
+      <th class="c" data-en="vs Registered" data-ru="vs Регистрация">vs Registered</th>
+      <th class="c" data-en="vs Attended" data-ru="vs Посещение">vs Attended</th>
+      <th class="c" data-en="vs Paid" data-ru="vs Оплата">vs Paid</th>
+      <th class="c" data-en="Best at" data-ru="Лучший для">Best at</th>
+    </tr></thead>
+    <tbody>
+      <tr>
+        <td class="bold mono">B2Att_forecast</td>
+        <td class="c mono">PB=0.229 / Sp=0.242</td>
+        <td class="c bold mono">PB=0.342 / Sp=0.278</td>
+        <td class="c mono">PB=0.193 / Sp=0.144</td>
+        <td class="c"><span class="pill pa" data-en="Attendance" data-ru="Посещение">Attendance</span></td>
+      </tr>
+      <tr>
+        <td class="bold mono">Att2S_forecast</td>
+        <td class="c mono">PB=0.042 / Sp=0.072</td>
+        <td class="c mono">PB=0.077 / Sp=0.057</td>
+        <td class="c bold mono">PB=0.182 / Sp=0.102</td>
+        <td class="c"><span class="pill pb" data-en="Purchase" data-ru="Покупка">Purchase</span></td>
+      </tr>
+      <tr style="background:var(--gold-light);">
+        <td class="bold mono">B×A score (combined)</td>
+        <td class="c mono">PB=0.154 / Sp=0.216</td>
+        <td class="c mono">PB=0.250 / Sp=0.239</td>
+        <td class="c bold up mono">PB=0.322 / Sp=0.151</td>
+        <td class="c"><span class="pill" style="background:var(--gold-light);color:var(--gold);" data-en="Purchase (best)" data-ru="Покупка (лучший)">Purchase (best)</span></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="insight purple">
+  <div class="insight-title" data-en="B×A score exceeds individual signals for purchase prediction" data-ru="Скор B×A превосходит отдельные сигналы в предсказании покупки">B×A score exceeds individual signals for purchase prediction</div>
+  <span data-en="B2Att alone achieves PB=0.193 vs paid, Att2S alone achieves PB=0.182 — but their product B×A reaches PB=0.322. Multiplication creates a non-linear interaction: leads must score high on both dimensions simultaneously. The combined score is a better purchase proxy than either component alone." data-ru="B2Att в одиночку достигает PB=0.193 vs оплата, Att2S — PB=0.182. Но их произведение B×A достигает PB=0.322. Умножение создаёт нелинейное взаимодействие: лиды должны одновременно иметь высокий балл по обоим измерениям. Совокупный скор лучше предсказывает покупку, чем каждый компонент по отдельности.">B2Att alone achieves PB=0.193 vs paid, Att2S alone achieves PB=0.182 — but their product B×A reaches PB=0.322. Multiplication creates a non-linear interaction: leads must score high on both dimensions simultaneously. The combined score is a better purchase proxy than either component alone.</span>
+</div>
+
+<div class="section-title"><span class="s-num">1.2</span> <span data-en="Mean Forecast by Purchase Outcome" data-ru="Среднее значение прогноза по итогу покупки">Mean Forecast by Purchase Outcome</span></div>
+<div class="tbl-wrap">
+  <table>
+    <thead><tr>
+      <th data-en="Signal" data-ru="Сигнал">Signal</th>
+      <th class="c" data-en="Not paid (avg)" data-ru="Не оплатил">Not paid</th>
+      <th class="c" data-en="Paid (avg)" data-ru="Оплатил">Paid</th>
+      <th class="c" data-en="Lift" data-ru="Прирост">Lift</th>
+    </tr></thead>
+    <tbody>
+      <tr><td class="mono bold">B2Att_forecast</td><td class="c mono">0.297</td><td class="c mono bold">0.477</td><td class="c up">+60%</td></tr>
+      <tr><td class="mono bold">Att2S_forecast</td><td class="c mono">0.268</td><td class="c mono bold">0.384</td><td class="c up">+43%</td></tr>
+      <tr style="background:var(--gold-light);">
+        <td class="mono bold">B×A score</td><td class="c mono">0.080</td><td class="c mono bold">0.226</td>
+        <td class="c up bold">+182% ★</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<div class="insight ok">
+  <div class="insight-title" data-en="B×A score lift is 182% — 3× higher than individual signals" data-ru="Прирост скора B×A = 182% — в 3× выше отдельных сигналов">B×A score lift is 182% — 3× higher than individual signals</div>
+  <span data-en="The product score amplifies differentiation between buyers and non-buyers: buyers average 0.226 vs 0.080 for non-buyers — a 182% lift, versus 60% for B2Att alone. This confirms the multiplicative scoring logic: high score requires simultaneously high attendance AND purchase intent forecasts." data-ru="Произведение скоров усиливает различие между покупателями и непокупателями: покупатели в среднем 0.226 против 0.080 у непокупателей — прирост 182%, против 60% у одиночного B2Att. Это подтверждает мультипликативную логику скоринга: высокий скор требует одновременно высокого прогноза посещаемости И намерения купить.">The product score amplifies differentiation between buyers and non-buyers: buyers average 0.226 vs 0.080 for non-buyers — a 182% lift, versus 60% for B2Att alone. This confirms the multiplicative scoring logic: high score requires simultaneously high attendance AND purchase intent forecasts.</span>
+</div>
+
+<div class="section-title"><span class="s-num">1.3</span> <span data-en="AUC Comparison — B×A vs Full Formula" data-ru="Сравнение AUC — B×A против полной формулы">AUC Comparison — B×A vs Full Formula</span></div>
+<div class="tbl-wrap">
+  <table>
+    <thead><tr>
+      <th data-en="Formula" data-ru="Формула">Formula</th>
+      <th class="c">AUC</th><th class="c">PB-r vs Paid</th>
+      <th data-en="vs L×B×A" data-ru="vs L×B×A">vs L×B×A</th>
+      <th data-en="Note" data-ru="Примечание">Note</th>
+    </tr></thead>
+    <tbody>
+      <tr><td class="mono">B2Att only</td><td class="c mono">0.700</td><td class="c mono">0.193</td><td class="c"><span class="vs worse">−6.7pp</span></td><td class="neutral" data-en="Single signal" data-ru="Одиночный сигнал">Single signal</td></tr>
+      <tr><td class="mono">Att2S only</td><td class="c mono">0.641</td><td class="c mono">0.182</td><td class="c"><span class="vs worse">−12.6pp</span></td><td class="neutral" data-en="Weakest standalone" data-ru="Слабейший одиночный">Weakest standalone</td></tr>
+      <tr><td class="mono">Linear equal B+A (0.5/0.5)</td><td class="c mono">0.711</td><td class="c mono">0.247</td><td class="c"><span class="vs worse">−5.6pp</span></td><td data-en="Combining signals helps" data-ru="Комбинирование помогает">Combining signals helps</td></tr>
+      <tr><td class="mono">Linear best B+A (0.65/0.35)</td><td class="c mono">0.711</td><td class="c mono">0.234</td><td class="c"><span class="vs worse">−5.6pp</span></td><td data-en="Weighting doesn't improve" data-ru="Взвешивание не помогает">Weighting doesn't improve</td></tr>
+      <tr class="chosen">
+        <td class="mono bold">★ Multiply B×A (this report)</td><td class="c mono bold">0.709</td><td class="c mono bold">0.322</td>
+        <td class="c"><span class="vs worse">−5.8pp AUC</span></td>
+        <td class="bold" data-en="Best PB-r of 2-signal variants; still −5.8pp AUC vs full" data-ru="Лучший PB-r из 2-сигнальных; −5.8pp AUC vs полная">Best PB-r of 2-signal variants; −5.8pp AUC vs full</td>
+      </tr>
+      <tr style="background:#f0f0f0;">
+        <td class="mono bold">Full L×B×A (reference)</td><td class="c mono bold">0.767</td><td class="c mono bold">0.356</td>
+        <td class="c"><span class="vs neutral2">baseline</span></td>
+        <td data-en="Original formula — higher AUC and PB-r" data-ru="Оригинальная формула — выше AUC и PB-r">Original formula — higher AUC and PB-r</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="insight warn">
+  <div class="insight-title" data-en="Key trade-off: removing L2B costs −5.8pp AUC" data-ru="Ключевой компромисс: исключение L2B стоит −5.8pp AUC">Key trade-off: removing L2B costs −5.8pp AUC</div>
+  <span data-en="The B×A formula achieves AUC=0.709 vs 0.767 for the full formula — a meaningful gap. However PB-r vs paid is 0.322 vs 0.356 (−0.034) — a smaller gap in calibration. The practical consequence: 44.9% of leads change segments vs the full formula. Without L2B, leads who register easily (high L2B) but are unlikely to attend/buy are no longer penalised in scoring." data-ru="Формула B×A достигает AUC=0.709 против 0.767 у полной — значимый разрыв. Однако PB-r vs оплата: 0.322 против 0.356 (−0.034) — меньший разрыв в калибровке. Практическое следствие: 44.9% лидов меняют сегменты относительно полной формулы. Без L2B лиды, которые легко регистрируются (высокий L2B), но вряд ли придут/купят, больше не штрафуются.">The B×A formula achieves AUC=0.709 vs 0.767 for the full formula — a meaningful gap. However PB-r vs paid is 0.322 vs 0.356 (−0.034) — a smaller gap in calibration. The practical consequence: 44.9% of leads change segments vs the full formula. Without L2B, leads who register easily (high L2B) but are unlikely to attend/buy are no longer penalised in scoring.</span>
+</div>
+
+<!-- PART 2 -->
+<div class="part-header">
+  <span class="part-num" data-en="Part 2" data-ru="Часть 2">Part 2</span>
+  <span class="part-title" data-en="Segmentation: 4 Tiers Without L2B" data-ru="Сегментация: 4 тира без L2B">Segmentation: 4 Tiers Without L2B</span>
+</div>
+
+<div class="section-title"><span class="s-num">2.1</span> <span data-en="Score Distribution — New Thresholds" data-ru="Распределение скора — новые пороги">Score Distribution — New Thresholds</span></div>
+
+<div class="insight amber">
+  <div class="insight-title" data-en="D Cold boundary rises to 1.58% L2S (vs 1.00% in full formula)" data-ru="Граница D Cold поднимается до 1.58% L2S (против 1.00% в полной формуле)">D Cold boundary rises to 1.58% L2S (vs 1.00% in full formula)</div>
+  <span data-en="Without L2B, D Cold captures leads with low B2Att AND low Att2S — but some of these still register (L2B avg 43.0%). The D Cold floor is higher because moderate-registration leads are no longer dragged down by low L2B. The formula is less discriminating for leads that are 'easy to book but hard to convert'." data-ru="Без L2B, D Cold захватывает лиды с низким B2Att И низким Att2S — но некоторые из них всё же регистрируются (L2B ср. 43.0%). Нижний уровень D Cold выше, потому что лиды со средней регистрацией больше не штрафуются за низкий L2B. Формула менее дискриминирует лиды, которые 'легко записать, но сложно конвертировать'.">Without L2B, D Cold captures leads with low B2Att AND low Att2S — but some of these still register (L2B avg 43.0%). The D Cold floor is higher because moderate-registration leads are no longer dragged down by low L2B. The formula is less discriminating for leads that are 'easy to book but hard to convert'.</span>
+</div>
+
+<div class="section-title"><span class="s-num">2.2</span> <span data-en="Final Tier Boundaries vs Full Formula" data-ru="Финальные границы тиров vs полная формула">Final Tier Boundaries vs Full Formula</span></div>
+
+<div class="cards">
+  <div class="card aa">
+    <div class="card-label">A★ Star</div>
+    <div class="card-val" style="color:var(--blue);">20.21%</div>
+    <div class="card-sub">L2S · N=5,606 (5.0%)<br><span class="vs worse">vs full: 24.85% (−4.64pp)</span></div>
+  </div>
+  <div class="card ab">
+    <div class="card-label">B Hot</div>
+    <div class="card-val">6.02%</div>
+    <div class="card-sub">L2S · N=33,627 (30.0%)<br><span class="vs worse">vs full: 7.15% (−1.13pp)</span></div>
+  </div>
+  <div class="card ac">
+    <div class="card-label">C Warm</div>
+    <div class="card-val">3.49%</div>
+    <div class="card-sub">L2S · N=39,222 (35.0%)<br><span class="vs better">vs full: 3.34% (+0.15pp)</span></div>
+  </div>
+  <div class="card ad">
+    <div class="card-label">D Cold</div>
+    <div class="card-val down">1.58%</div>
+    <div class="card-sub">L2S · N=33,624 (30.0%)<br><span class="vs worse">vs full: 1.00% (+0.58pp ↑ floor)</span></div>
+  </div>
+</div>
+
+<div class="tbl-wrap">
+  <table>
+    <thead><tr>
+      <th data-en="Tier" data-ru="Тир">Tier</th>
+      <th class="c" data-en="Score range" data-ru="Диапазон">Score range</th>
+      <th class="c">N (%)</th>
+      <th class="c">L2B</th><th class="c">B2Att</th><th class="c">L2A</th><th class="c">Att2S</th><th class="c">L2S</th>
+      <th class="c" data-en="vs full L2S" data-ru="vs full L2S">vs full L2S</th>
+    </tr></thead>
+    <tbody>
+      <tr>
+        <td><span class="pill pa">A★ Star</span></td>
+        <td class="c mono">≥ 0.205036</td><td class="c bold">5,606 (5.0%)</td>
+        <td class="c mono">70.2%</td><td class="c mono">61.4%</td><td class="c mono">43.2%</td><td class="c mono">46.5%</td>
+        <td class="c bold up mono">20.21%</td><td class="c"><span class="vs worse">−4.64pp</span></td>
+      </tr>
+      <tr>
+        <td><span class="pill pb">B Hot</span></td>
+        <td class="c mono">0.090–0.205</td><td class="c bold">33,627 (30.0%)</td>
+        <td class="c mono">68.5%</td><td class="c mono">39.9%</td><td class="c mono">27.3%</td><td class="c mono">22.0%</td>
+        <td class="c bold mono">6.02%</td><td class="c"><span class="vs worse">−1.13pp</span></td>
+      </tr>
+      <tr>
+        <td><span class="pill pc">C Warm</span></td>
+        <td class="c mono">0.043–0.090</td><td class="c bold">39,222 (35.0%)</td>
+        <td class="c mono">59.5%</td><td class="c mono">30.0%</td><td class="c mono">17.9%</td><td class="c mono">19.5%</td>
+        <td class="c mono">3.49%</td><td class="c"><span class="vs better">+0.15pp</span></td>
+      </tr>
+      <tr>
+        <td><span class="pill pd">D Cold</span></td>
+        <td class="c mono">&lt; 0.042546</td><td class="c bold">33,624 (30.0%)</td>
+        <td class="c mono">43.0%</td><td class="c mono">19.5%</td><td class="c mono">8.4%</td><td class="c mono">18.7%</td>
+        <td class="c down mono">1.58%</td><td class="c"><span class="vs worse">+0.58pp ↑</span></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="insight purple">
+  <div class="insight-title" data-en="Critical: 44.9% of leads change segment vs full formula" data-ru="Критично: 44.9% лидов меняют сегмент относительно полной формулы">Critical: 44.9% of leads change segment vs full formula</div>
+  <span data-en="Cross-tab analysis of the reclassification: 38.5% of old A★ become B Hot in the new formula (their L2B was inflating their score). 30.4% of old C Warm become D Cold (they registered okay but had low B2Att×Att2S). 26.9% of old D Cold become C Warm (they had low L2B but decent B2Att×Att2S). The new formula reshuffles the middle tiers most significantly." data-ru="Анализ перераспределения: 38.5% старых A★ становятся B Hot (их L2B завышал скор). 30.4% старых C Warm уходят в D Cold (они регистрировались нормально, но имели низкий B2Att×Att2S). 26.9% старых D Cold переходят в C Warm (низкий L2B, но приличный B2Att×Att2S). Новая формула наиболее сильно перетасовывает средние тиры.">Cross-tab analysis of the reclassification: 38.5% of old A★ become B Hot in the new formula (their L2B was inflating their score). 30.4% of old C Warm become D Cold (they registered okay but had low B2Att×Att2S). 26.9% of old D Cold become C Warm (they had low L2B but decent B2Att×Att2S). The new formula reshuffles the middle tiers most significantly.</span>
+</div>
+
+<div class="tbl-wrap" style="margin-top:14px;">
+  <table>
+    <thead><tr>
+      <th colspan="2" style="border-right:2px solid var(--border-strong);" data-en="Segment migration — L×B×A → B×A" data-ru="Миграция сегментов — L×B×A → B×A">Segment migration — L×B×A → B×A (% of old segment row)</th>
+      <th class="c" colspan="4" data-en="New segment (B×A)" data-ru="Новый сегмент (B×A)">New segment (B×A)</th>
+    </tr>
+    <tr>
+      <th colspan="2" style="border-right:2px solid var(--border-strong);"></th>
+      <th class="c">A★ Star</th><th class="c">B Hot</th><th class="c">C Warm</th><th class="c">D Cold</th>
+    </tr></thead>
+    <tbody>
+      <tr><td colspan="2" class="bold" data-en="Old segment (L×B×A)" data-ru="Старый сегмент (L×B×A)"><span class="pill pa">A★ Star</span> (old)</td><td class="c bold up mono">61.5%</td><td class="c mono">38.5%</td><td class="c mono">0.0%</td><td class="c mono">0.0%</td></tr>
+      <tr><td colspan="2" class="bold"><span class="pill pb">B Hot</span> (old)</td><td class="c mono">3.1%</td><td class="c bold up mono">58.0%</td><td class="c mono">38.9%</td><td class="c mono">0.0%</td></tr>
+      <tr><td colspan="2" class="bold"><span class="pill pc">C Warm</span> (old)</td><td class="c mono">1.9%</td><td class="c mono">24.1%</td><td class="c bold mono">43.6%</td><td class="c down mono">30.4%</td></tr>
+      <tr><td colspan="2" class="bold"><span class="pill pd">D Cold</span> (old)</td><td class="c mono">1.1%</td><td class="c mono">7.4%</td><td class="c up mono">26.9%</td><td class="c bold mono">64.6%</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- PART 3 -->
+<div class="part-header">
+  <span class="part-num" data-en="Part 3" data-ru="Часть 3">Part 3</span>
+  <span class="part-title" data-en="Tier Distribution Across Channels" data-ru="Распределение тиров по каналам">Tier Distribution Across Channels</span>
+</div>
+
+<div class="tbl-wrap">
+  <table>
+    <thead><tr>
+      <th data-en="Channel" data-ru="Канал">Channel</th><th class="c">N</th>
+      <th class="c">D Cold %</th><th class="c">C Warm %</th><th class="c">B Hot %</th>
+      <th class="c">A★ %</th><th class="c">Overall L2S</th>
+    </tr></thead>
+    <tbody>
+      <tr><td class="bold">Instagram / SMM</td><td class="c mono">7,543</td><td class="c up mono">7.8%</td><td class="c mono">23.2%</td><td class="c bold mono">51.5%</td><td class="c bold up mono">17.5%</td><td class="c bold up mono">9.81%</td></tr>
+      <tr><td class="bold">FB Purchase</td><td class="c mono">43,650</td><td class="c mono">18.4%</td><td class="c mono">36.9%</td><td class="c mono">40.0%</td><td class="c mono">4.8%</td><td class="c bold mono">5.42%</td></tr>
+      <tr><td class="bold">FB RegisteredMK</td><td class="c mono">46,238</td><td class="c down mono">46.9%</td><td class="c mono">35.2%</td><td class="c mono">15.9%</td><td class="c mono">1.9%</td><td class="c down mono">2.57%</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="insight">
+  <div class="insight-title" data-en="D Cold shifts for RegMK: 56.5% → 46.9%" data-ru="D Cold смещается для RegMK: 56.5% → 46.9%">D Cold shifts for RegMK: 56.5% → 46.9%</div>
+  <span data-en="Removing L2B improves RegMK's apparent D Cold share by −9.6pp — because RegMK leads that registered easily (high L2B) but had low B2Att×Att2S were previously penalised by the full formula's L2B term. Without it, some moderate-quality RegMK leads move from D Cold to C Warm. This is a scoring artefact, not real quality improvement." data-ru="Исключение L2B улучшает кажущуюся долю D Cold у RegMK на −9.6pp — потому что лиды RegMK, которые легко регистрировались (высокий L2B), но имели низкий B2Att×Att2S, ранее штрафовались L2B-компонентом. Без него часть умеренно-качественных лидов RegMK перемещается из D Cold в C Warm. Это артефакт скоринга, а не реальное улучшение качества.">Removing L2B improves RegMK's apparent D Cold share by −9.6pp — because RegMK leads that registered easily (high L2B) but had low B2Att×Att2S were previously penalised by the full formula's L2B term. Without it, some moderate-quality RegMK leads move from D Cold to C Warm. This is a scoring artefact, not real quality improvement.</span>
+</div>
+
+<div class="section-title"><span class="s-num">3.1</span><span data-en="Full Funnel by Channel × Tier" data-ru="Полная воронка: Канал × Тир"> Full Funnel by Channel × Tier</span></div>
+
+<div class="ch-header">FB Purchase (N=43,650 · L2S=5.42%)</div>
+<div class="tbl-wrap">
+  <table>
+    <thead><tr><th data-en="Tier" data-ru="Тир">Tier</th><th class="c">% ch.</th><th class="c">L2B</th><th class="c">B2Att</th><th class="c">L2A</th><th class="c">Att2S</th><th class="c">L2S</th></tr></thead>
+    <tbody>
+      <tr><td><span class="pill pd">D Cold</span></td><td class="c mono">18.4%</td><td class="c mono">59.7%</td><td class="c mono">19.2%</td><td class="c mono">11.5%</td><td class="c mono">22.4%</td><td class="c down mono">2.58%</td></tr>
+      <tr><td><span class="pill pc">C Warm</span></td><td class="c mono">36.9%</td><td class="c mono">67.2%</td><td class="c mono">29.7%</td><td class="c mono">19.9%</td><td class="c mono">19.6%</td><td class="c mono">3.90%</td></tr>
+      <tr><td><span class="pill pb">B Hot</span></td><td class="c mono">40.0%</td><td class="c mono">72.7%</td><td class="c mono">39.2%</td><td class="c mono">28.5%</td><td class="c mono">22.1%</td><td class="c bold mono">6.29%</td></tr>
+      <tr><td><span class="pill pa">A★ Star</span></td><td class="c mono">4.8%</td><td class="c mono">75.7%</td><td class="c mono">59.6%</td><td class="c mono">45.1%</td><td class="c mono">46.0%</td><td class="c bold up mono">20.76%</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="ch-header">FB RegisteredMK (N=46,238 · L2S=2.57%)</div>
+<div class="tbl-wrap">
+  <table>
+    <thead><tr><th>Tier</th><th class="c">% ch.</th><th class="c">L2B</th><th class="c">B2Att</th><th class="c">L2A</th><th class="c">Att2S</th><th class="c">L2S</th></tr></thead>
+    <tbody>
+      <tr><td><span class="pill pd">D Cold</span></td><td class="c mono down bold">46.9%</td><td class="c mono">37.1%</td><td class="c mono">18.8%</td><td class="c mono">7.0%</td><td class="c mono">15.0%</td><td class="c down mono">1.05%</td></tr>
+      <tr><td><span class="pill pc">C Warm</span></td><td class="c mono">35.2%</td><td class="c mono">54.9%</td><td class="c mono">29.6%</td><td class="c mono">16.3%</td><td class="c mono">16.8%</td><td class="c mono">2.74%</td></tr>
+      <tr><td><span class="pill pb">B Hot</span></td><td class="c mono">15.9%</td><td class="c mono">65.2%</td><td class="c mono">39.9%</td><td class="c mono">26.0%</td><td class="c mono">17.5%</td><td class="c mono">4.56%</td></tr>
+      <tr><td><span class="pill pa">A★ Star</span></td><td class="c mono">1.9%</td><td class="c mono">65.2%</td><td class="c mono">60.7%</td><td class="c mono">39.7%</td><td class="c bold up mono">50.9%</td><td class="c bold up mono">20.20%</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="ch-header">Instagram / SMM (N=7,543 · L2S=9.81%)</div>
+<div class="tbl-wrap">
+  <table>
+    <thead><tr><th>Tier</th><th class="c">% ch.</th><th class="c">L2B</th><th class="c">B2Att</th><th class="c">L2A</th><th class="c">Att2S</th><th class="c">L2S</th></tr></thead>
+    <tbody>
+      <tr><td><span class="pill pd">D Cold</span></td><td class="c mono up">7.8%</td><td class="c mono">60.6%</td><td class="c mono">32.4%</td><td class="c mono">19.6%</td><td class="c mono">32.8%</td><td class="c mono">6.43%</td></tr>
+      <tr><td><span class="pill pc">C Warm</span></td><td class="c mono">23.2%</td><td class="c mono">65.3%</td><td class="c mono">31.8%</td><td class="c mono">20.7%</td><td class="c mono">30.3%</td><td class="c mono">6.29%</td></tr>
+      <tr><td><span class="pill pb">B Hot</span></td><td class="c mono bold">51.5%</td><td class="c mono">76.2%</td><td class="c mono">41.9%</td><td class="c mono">31.9%</td><td class="c mono">25.5%</td><td class="c bold mono">8.13%</td></tr>
+      <tr><td><span class="pill pa">A★ Star</span></td><td class="c mono bold up">17.5%</td><td class="c mono">85.8%</td><td class="c mono">61.5%</td><td class="c mono">52.8%</td><td class="c mono">39.7%</td><td class="c bold up mono">20.96%</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- PART 4 -->
+<div class="part-header">
+  <span class="part-num" data-en="Part 4" data-ru="Часть 4">Part 4</span>
+  <span class="part-title" data-en="Cross-Channel Tier Comparison" data-ru="Сравнение тиров между каналами">Cross-Channel Tier Comparison</span>
+</div>
+
+<div class="section-title"><span class="s-num">4.1</span><span data-en=" B Hot — L2B impact on channel comparison" data-ru=" B Hot — влияние исключения L2B на сравнение каналов"> B Hot — L2B impact on channel comparison</span></div>
+<div class="tbl-wrap">
+  <table>
+    <thead><tr><th>Channel</th><th class="c">% ch.</th><th class="c">L2B</th><th class="c">B2Att</th><th class="c">L2A</th><th class="c">Att2S</th><th class="c">L2S</th></tr></thead>
+    <tbody>
+      <tr><td class="bold">FB Purchase</td><td class="c mono">40.0%</td><td class="c mono">72.7%</td><td class="c mono">39.2%</td><td class="c mono">28.5%</td><td class="c mono">22.1%</td><td class="c bold mono">6.29%</td></tr>
+      <tr><td class="bold">FB RegisteredMK</td><td class="c mono">15.9%</td><td class="c mono">65.2%</td><td class="c mono">39.9%</td><td class="c mono">26.0%</td><td class="c mono">17.5%</td><td class="c mono">4.56%</td></tr>
+      <tr><td class="bold">Instagram/SMM</td><td class="c mono bold up">51.5%</td><td class="c mono">76.2%</td><td class="c mono">41.9%</td><td class="c mono">31.9%</td><td class="c bold up mono">25.5%</td><td class="c bold up mono">8.13%</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="section-title"><span class="s-num">4.2</span><span data-en=" A★ Star — channel comparison" data-ru=" A★ Star — сравнение каналов"> A★ Star — channel comparison</span></div>
+<div class="tbl-wrap">
+  <table>
+    <thead><tr><th>Channel</th><th class="c">% ch.</th><th class="c">L2B</th><th class="c">B2Att</th><th class="c">L2A</th><th class="c">Att2S</th><th class="c">L2S</th></tr></thead>
+    <tbody>
+      <tr><td class="bold">FB Purchase</td><td class="c mono">4.8%</td><td class="c mono">75.7%</td><td class="c mono">59.6%</td><td class="c mono">45.1%</td><td class="c mono">46.0%</td><td class="c bold mono">20.76%</td></tr>
+      <tr><td class="bold">FB RegisteredMK</td><td class="c mono">1.9%</td><td class="c mono">65.2%</td><td class="c mono">60.7%</td><td class="c mono">39.7%</td><td class="c bold up mono">50.9%</td><td class="c bold up mono">20.20%</td></tr>
+      <tr><td class="bold">Instagram/SMM</td><td class="c mono bold up">17.5%</td><td class="c mono">85.8%</td><td class="c mono">61.5%</td><td class="c mono">52.8%</td><td class="c mono">39.7%</td><td class="c mono">20.96%</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="insight ok">
+  <div class="insight-title" data-en="A★ L2S converges across all channels: 20.2–21.0%" data-ru="L2S A★ сходится по всем каналам: 20.2–21.0%">A★ L2S converges across all channels: 20.2–21.0%</div>
+  <span data-en="Without L2B in the score, A★ leads from all channels show nearly identical L2S (20.2–21.0%). The channel no longer differentiates A★ quality. The key differentiator shifts to Att2S: RegMK A★ converts at 50.9% post-MK — the highest of all three channels — confirming that once a lead is correctly identified by B×A score, channel doesn't matter." data-ru="Без L2B в скоре, A★ лиды по всем каналам показывают почти идентичный L2S (20.2–21.0%). Канал больше не дифференцирует качество A★. Ключевой дифференциатор смещается к Att2S: RegMK A★ конвертирует в 50.9% после МК — наибольший из трёх каналов — подтверждая, что когда лид правильно идентифицирован по скору B×A, канал не имеет значения.">Without L2B in the score, A★ leads from all channels show nearly identical L2S (20.2–21.0%). The channel no longer differentiates A★ quality. The key differentiator shifts to Att2S: RegMK A★ converts at 50.9% post-MK — the highest of all three channels — confirming that once a lead is correctly identified by B×A score, channel doesn't matter.</span>
+</div>
+
+<!-- PART 5 -->
+<div class="part-header">
+  <span class="part-num" data-en="Part 5" data-ru="Часть 5">Part 5</span>
+  <span class="part-title" data-en="Profiling Code &amp; Financial Strength by Channel" data-ru="Профайлинг код и финансовый статус по каналам">Profiling Code &amp; Financial Strength by Channel</span>
+</div>
+
+<div class="section-title"><span class="s-num">5.1</span><span data-en=" Profiling Code Distribution by Channel × Tier" data-ru=" Профайлинг код: Канал × Тир"> Profiling Code Distribution by Channel × Tier</span></div>
+
+<div class="ch-header">FB Purchase</div>
+<div class="tbl-wrap">
+  <table>
+    <thead><tr><th>Tier</th><th class="c">CAN</th><th class="c">MSG</th><th class="c">DGT</th><th class="c">N coded</th><th class="c">DGT/CAN</th></tr></thead>
+    <tbody>
+      <tr><td><span class="pill pa">A★ Star</span></td><td class="c bold up mono">51.8%</td><td class="c mono">35.9%</td><td class="c mono">12.3%</td><td class="c mono">1,609</td><td class="c bold up mono">0.24</td></tr>
+      <tr><td><span class="pill pb">B Hot</span></td><td class="c bold mono">46.2%</td><td class="c mono">37.2%</td><td class="c mono">16.6%</td><td class="c mono">13,159</td><td class="c mono">0.36</td></tr>
+      <tr><td><span class="pill pc">C Warm</span></td><td class="c mono">43.1%</td><td class="c mono">37.6%</td><td class="c mono">19.2%</td><td class="c mono">11,284</td><td class="c mono">0.45</td></tr>
+      <tr><td><span class="pill pd">D Cold</span></td><td class="c mono">43.4%</td><td class="c mono">34.8%</td><td class="c down mono">21.8%</td><td class="c mono">5,030</td><td class="c down mono">0.50</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="ch-header">FB RegisteredMK</div>
+<div class="tbl-wrap">
+  <table>
+    <thead><tr><th>Tier</th><th class="c">CAN</th><th class="c">MSG</th><th class="c">DGT</th><th class="c">N coded</th><th class="c">DGT/CAN</th></tr></thead>
+    <tbody>
+      <tr><td><span class="pill pa">A★ Star</span></td><td class="c bold up mono">60.8%</td><td class="c mono">28.6%</td><td class="c mono">10.6%</td><td class="c mono">650</td><td class="c bold up mono">0.17</td></tr>
+      <tr><td><span class="pill pb">B Hot</span></td><td class="c bold mono">53.7%</td><td class="c mono">35.4%</td><td class="c mono">10.9%</td><td class="c mono">5,387</td><td class="c mono">0.20</td></tr>
+      <tr><td><span class="pill pc">C Warm</span></td><td class="c mono">47.5%</td><td class="c mono">34.9%</td><td class="c mono">17.6%</td><td class="c mono">10,426</td><td class="c mono">0.37</td></tr>
+      <tr><td><span class="pill pd">D Cold</span></td><td class="c mono">41.1%</td><td class="c mono">31.7%</td><td class="c down mono">27.2%</td><td class="c mono">9,792</td><td class="c down mono">0.66</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="ch-header">Instagram / SMM</div>
+<div class="tbl-wrap">
+  <table>
+    <thead><tr><th>Tier</th><th class="c">CAN</th><th class="c">MSG</th><th class="c">DGT</th><th class="c">N coded</th><th class="c">DGT/CAN</th></tr></thead>
+    <tbody>
+      <tr><td><span class="pill pa">A★ Star</span></td><td class="c bold up mono">54.9%</td><td class="c mono">35.6%</td><td class="c mono">9.5%</td><td class="c mono">1,146</td><td class="c bold up mono">0.17</td></tr>
+      <tr><td><span class="pill pb">B Hot</span></td><td class="c bold mono">43.3%</td><td class="c mono">40.8%</td><td class="c mono">15.9%</td><td class="c mono">3,064</td><td class="c mono">0.37</td></tr>
+      <tr><td><span class="pill pc">C Warm</span></td><td class="c mono">42.0%</td><td class="c mono">38.4%</td><td class="c mono">19.6%</td><td class="c mono">1,207</td><td class="c mono">0.47</td></tr>
+      <tr><td><span class="pill pd">D Cold</span></td><td class="c mono">38.3%</td><td class="c mono">42.3%</td><td class="c mono">19.4%</td><td class="c mono">381</td><td class="c mono">0.51</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="insight amber">
+  <div class="insight-title" data-en="RegMK D Cold reachability improves: DGT/CAN 1.16 → 0.66" data-ru="Доступность RegMK D Cold улучшается: DGT/CAN 1.16 → 0.66">RegMK D Cold reachability improves: DGT/CAN 1.16 → 0.66</div>
+  <span data-en="In the full formula, RegMK D Cold had DGT/CAN=1.16 (more unreachable than reachable). In the B×A formula, D Cold DGT/CAN falls to 0.66 — because leads with low L2B (who were hard to reach) have been reclassified into C Warm. The D Cold pool now contains leads that are somewhat more reachable but still have low B2Att×Att2S. Again — scoring artefact, not quality gain." data-ru="В полной формуле RegMK D Cold имел DGT/CAN=1.16 (недоступных больше, чем доступных). В формуле B×A, D Cold DGT/CAN падает до 0.66 — потому что лиды с низким L2B (которых было трудно достать) перераспределились в C Warm. Пул D Cold теперь содержит более доступных лидов, но с низким B2Att×Att2S. Снова — артефакт скоринга, не реальное улучшение.">In the full formula, RegMK D Cold had DGT/CAN=1.16 (more unreachable than reachable). In the B×A formula, D Cold DGT/CAN falls to 0.66 — because leads with low L2B (who were hard to reach) have been reclassified into C Warm. The D Cold pool now contains leads that are somewhat more reachable but still have low B2Att×Att2S. Again — scoring artefact, not quality gain.</span>
+</div>
+
+<div class="section-title"><span class="s-num">5.2</span><span data-en=" Financial Strength × Tier Att2S — by Channel" data-ru=" Финансовый статус × Тир Att2S — по каналам"> Financial Strength × Tier Att2S — by Channel</span></div>
+
+<div class="ch-header">FB Purchase — Att2S by Tier × Financial Strength (N att.=10,047)</div>
+<div class="tbl-wrap">
+  <table>
+    <thead><tr><th>Tier</th><th class="c">High %</th><th class="c">High A2S</th><th class="c">Mid %</th><th class="c">Mid A2S</th><th class="c">Low %</th><th class="c">Low A2S</th></tr></thead>
+    <tbody>
+      <tr><td><span class="pill pa">A★ Star</span></td><td class="c mono">14.2%</td><td class="c bold up mono">60.2%</td><td class="c mono">47.4%</td><td class="c bold mono">49.5%</td><td class="c mono">38.1%</td><td class="c mono">36.4%</td></tr>
+      <tr><td><span class="pill pb">B Hot</span></td><td class="c mono">8.4%</td><td class="c bold mono">40.9%</td><td class="c mono">41.7%</td><td class="c mono">27.8%</td><td class="c mono">49.8%</td><td class="c neutral mono">14.2%</td></tr>
+      <tr><td><span class="pill pc">C Warm</span></td><td class="c mono">6.7%</td><td class="c bold mono">41.6%</td><td class="c mono">40.3%</td><td class="c mono">23.3%</td><td class="c mono">52.6%</td><td class="c neutral mono">14.0%</td></tr>
+      <tr><td><span class="pill pd">D Cold</span></td><td class="c mono">5.9%</td><td class="c mono">44.4%</td><td class="c mono">39.0%</td><td class="c mono">28.8%</td><td class="c mono">54.2%</td><td class="c neutral mono">15.7%</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="ch-header">FB RegisteredMK — Att2S by Tier × Financial Strength (N att.=6,427)</div>
+<div class="tbl-wrap">
+  <table>
+    <thead><tr><th>Tier</th><th class="c">High %</th><th class="c">High A2S</th><th class="c">Mid %</th><th class="c">Mid A2S</th><th class="c">Low %</th><th class="c">Low A2S</th></tr></thead>
+    <tbody>
+      <tr><td><span class="pill pa">A★ Star</span></td><td class="c mono">5.4%</td><td class="c bold up mono">73.7%</td><td class="c mono">41.2%</td><td class="c bold up mono">61.4%</td><td class="c mono">52.3%</td><td class="c mono">39.1%</td></tr>
+      <tr><td><span class="pill pb">B Hot</span></td><td class="c mono">3.5%</td><td class="c mono">29.9%</td><td class="c mono">25.8%</td><td class="c mono">26.1%</td><td class="c down mono">70.3%</td><td class="c neutral mono">13.9%</td></tr>
+      <tr><td><span class="pill pc">C Warm</span></td><td class="c mono">2.8%</td><td class="c mono">31.5%</td><td class="c mono">22.9%</td><td class="c mono">25.9%</td><td class="c down mono">74.1%</td><td class="c neutral mono">13.6%</td></tr>
+      <tr><td><span class="pill pd">D Cold</span></td><td class="c mono">2.9%</td><td class="c mono">47.7%</td><td class="c mono">22.5%</td><td class="c mono">20.9%</td><td class="c down mono">74.4%</td><td class="c neutral mono">12.0%</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="ch-header">Instagram / SMM — Att2S by Tier × Financial Strength (N att.=2,414)</div>
+<div class="tbl-wrap">
+  <table>
+    <thead><tr><th>Tier</th><th class="c">High %</th><th class="c">High A2S</th><th class="c">Mid %</th><th class="c">Mid A2S</th><th class="c">Low %</th><th class="c">Low A2S</th></tr></thead>
+    <tbody>
+      <tr><td><span class="pill pa">A★ Star</span></td><td class="c mono">15.7%</td><td class="c bold up mono">56.9%</td><td class="c mono">48.2%</td><td class="c bold mono">46.9%</td><td class="c mono">35.8%</td><td class="c mono">22.1%</td></tr>
+      <tr><td><span class="pill pb">B Hot</span></td><td class="c mono">10.6%</td><td class="c bold mono">47.0%</td><td class="c mono">46.8%</td><td class="c mono">30.5%</td><td class="c mono">42.5%</td><td class="c neutral mono">14.6%</td></tr>
+      <tr><td><span class="pill pc">C Warm</span></td><td class="c mono">8.3%</td><td class="c bold mono">53.3%</td><td class="c mono">43.3%</td><td class="c mono">32.5%</td><td class="c mono">47.9%</td><td class="c mono">23.6%</td></tr>
+      <tr><td><span class="pill pd">D Cold</span></td><td class="c mono">7.8%</td><td class="c mono">33.3%</td><td class="c mono">34.5%</td><td class="c mono">37.5%</td><td class="c mono">57.8%</td><td class="c mono">29.9%</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="insight gold">
+  <div class="insight-title" data-en="Universal patterns hold — but A★ Mid Class signal weakens" data-ru="Универсальные паттерны сохраняются — но сигнал A★ Mid Class слабеет">Universal patterns hold — but A★ Mid Class signal weakens</div>
+  <span data-en="Three patterns remain consistent: 1) High Class converts 44–74% across all tiers/channels. 2) Low Class converts 12–39% — wider range without L2B. 3) Mid Class differentiates by tier, but the gap narrows: A★ Mid converges with B Hot Mid more than in the full formula. The loss of L2B means some A★ leads that were strong buyers (high L2B + high B2Att + high Att2S) are now mixed with moderate-L2B leads who share similar B×A scores." data-ru="Три паттерна остаются неизменными: 1) High Class конвертирует в 44–74% во всех тирах/каналах. 2) Low Class конвертирует в 12–39% — более широкий разброс без L2B. 3) Mid Class дифференцируется по тирам, но разрыв сужается: A★ Mid сближается с B Hot Mid сильнее, чем в полной формуле. Потеря L2B означает, что часть A★ лидов — сильных покупателей (высокий L2B + высокий B2Att + высокий Att2S) — теперь смешана с умеренно-L2B лидами, имеющими схожие скоры B×A.">Three patterns remain consistent: 1) High Class converts 44–74% across all tiers/channels. 2) Low Class converts 12–39% — wider range without L2B. 3) Mid Class differentiates by tier, but the gap narrows: A★ Mid converges with B Hot Mid more than in the full formula. The loss of L2B means some A★ leads that were strong buyers (high L2B + high B2Att + high Att2S) are now mixed with moderate-L2B leads who share similar B×A scores.</span>
+</div>
+
+<div class="footer">
+  <span data-en="Algonova ASEAN · Lead Scoring B×A Report · Dec 2025–May 2026" data-ru="Algonova ASEAN · Lead Scoring B×A · Дек 2025–Май 2026">Algonova ASEAN · Lead Scoring B×A Report · Dec 2025–May 2026</span>
+  <span data-en="N=112,079 · L2B excluded · Bundling / Primary / Additional excluded" data-ru="N=112,079 · L2B исключён · Бандлинги исключены">N=112,079 · L2B excluded · Bundling / Primary / Additional excluded</span>
+</div>
+
+</div>
+<script>
+function setLang(lang){
+  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.textContent.trim()===lang.toUpperCase()));
+  document.querySelectorAll('[data-en]').forEach(el=>{
+    const v=el.getAttribute('data-'+lang)||el.getAttribute('data-en');
+    if(v)el.textContent=v;
+  });
+}
+</script>
+</body>
+</html>

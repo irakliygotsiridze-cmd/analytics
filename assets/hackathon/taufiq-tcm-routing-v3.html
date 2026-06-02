@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TCM Assignment Optimization — Board Brief v3</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#1a1a1a;--ink-2:#555;--ink-3:#999;--bg:#fff;--bg-2:#f7f6f3;--bg-warm:#faf8f5;--accent:#3d2b87;--accent-lt:#eeebfa;--red:#c0392b;--red-bg:#fef0ee;--green:#1a7a4c;--green-bg:#edf7f1;--amber:#9a6b13;--amber-bg:#fdf6e7;--blue:#1a5fa5;--blue-bg:#eef4fc;--border:#e4e2dc;--serif:'DM Serif Display',Georgia,serif;--sans:'DM Sans',-apple-system,sans-serif;--mono:'JetBrains Mono',monospace}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:var(--sans);color:var(--ink);background:var(--bg);font-size:15px;line-height:1.7;-webkit-font-smoothing:antialiased}
+.page{max-width:840px;margin:0 auto;padding:60px 40px 80px}
+.hdr{border-bottom:3px solid var(--ink);padding-bottom:24px;margin-bottom:36px}
+.tag{display:inline-block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;color:var(--accent);background:var(--accent-lt);padding:4px 12px;border-radius:3px;margin-bottom:14px}
+.hdr h1{font-family:var(--serif);font-size:32px;font-weight:400;line-height:1.2;margin-bottom:10px}
+.hdr .sub{font-size:15px;color:var(--ink-2)}.hdr .meta{font-size:12px;color:var(--ink-3);margin-top:10px}
+.exec{background:var(--bg-warm);border-left:4px solid var(--accent);padding:22px 26px;margin-bottom:36px;border-radius:0 8px 8px 0}
+.exec h2{font-family:var(--serif);font-size:20px;font-weight:400;margin-bottom:8px}.exec p{font-size:14px;color:var(--ink-2);margin-bottom:6px}
+.krow{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:16px}
+.kc{background:var(--bg);border:.5px solid var(--border);border-radius:8px;padding:12px 14px;text-align:center}
+.kc .n{font-family:var(--mono);font-size:22px}.kc .n.g{color:var(--green)}.kc .n.a{color:var(--accent)}.kc .n.r{color:var(--red)}
+.kc .l{font-size:11px;text-transform:uppercase;letter-spacing:.7px;color:var(--ink-3);margin-top:2px}
+.sec{margin-bottom:42px}.sl{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;color:var(--accent);margin-bottom:6px}
+.sec h2{font-family:var(--serif);font-size:24px;font-weight:400;margin-bottom:4px}.sec .d{font-size:14px;color:var(--ink-2);margin-bottom:18px}
+.dn{display:inline-flex;align-items:center;gap:6px;font-size:12px;background:var(--blue-bg);color:var(--blue);padding:4px 12px;border-radius:4px;margin-bottom:14px;font-weight:500}
+table.dt{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:14px}
+table.dt th{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;color:var(--ink-3);padding:7px 11px;border-bottom:2px solid var(--border);text-align:left}
+table.dt td{padding:9px 11px;border-bottom:1px solid var(--border)}table.dt tr:last-child td{border-bottom:none}
+table.dt .m{font-family:var(--mono);font-size:12px}table.dt tr.hi{background:#f0faf5}table.dt tr.lo{color:var(--ink-3)}
+.ft{display:grid;grid-template-columns:1fr 32px 1fr;gap:0;align-items:stretch;margin:14px 0 18px}
+.fb,.tb{padding:14px 18px;font-size:13px}.fb{background:var(--red-bg);border:1px solid #f0c8c3;border-radius:8px 0 0 8px}.tb{background:var(--green-bg);border:1px solid #b8dcc8;border-radius:0 8px 8px 0}
+.fl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}.fb .fl{color:var(--red)}.tb .fl{color:var(--green)}
+.ac{display:flex;align-items:center;justify-content:center;background:#f0f0ee;font-size:18px;color:var(--ink-3)}
+.imp{display:inline-flex;gap:6px;font-size:13px;font-weight:600;padding:5px 12px;border-radius:5px;margin-bottom:14px}
+.ig{background:var(--green-bg);color:var(--green)}.ia{background:var(--amber-bg);color:var(--amber)}.ib{background:var(--blue-bg);color:var(--blue)}.ir{background:var(--red-bg);color:var(--red)}
+.cav{background:var(--bg-2);border-radius:8px;padding:16px 20px;font-size:13px;color:var(--ink-2);margin-top:10px}.cav strong{color:var(--ink)}
+.rec{border:1px solid var(--border);border-radius:10px;padding:22px 26px;margin-bottom:16px}
+.rec.r1{border-left:4px solid var(--green)}.rec.r2{border-left:4px solid var(--amber)}.rec.r3{border-left:4px solid var(--blue)}
+.rh{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}.rec h3{font-size:15px;font-weight:600}
+.tl{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;padding:3px 10px;border-radius:4px}
+.tn{background:var(--green-bg);color:var(--green)}.ts{background:var(--amber-bg);color:var(--amber)}.tm{background:var(--blue-bg);color:var(--blue)}
+.rec p{font-size:13px;color:var(--ink-2);margin-bottom:6px}
+.rm{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);font-size:12px}
+.rm .ml{font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--ink-3)}.rm .mv{font-weight:600;margin-top:1px}
+.hb{background:var(--accent-lt);border-radius:10px;padding:24px 30px}
+.hb .hl{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;color:var(--accent);margin-bottom:10px}
+.hb .hg{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;text-align:center}
+.hb .hn{font-size:30px;font-weight:600}.hb .ht{font-size:12px;color:var(--ink-2);margin-top:3px}
+.killed{background:#fff8e1;border:1px solid #f0c040;border-radius:8px;padding:14px 18px;margin-bottom:16px;font-size:13px}
+.killed .kt{font-weight:600;color:#7a5500;margin-bottom:4px}.killed p{color:var(--ink-2)}
+.meth{border:.5px solid var(--border);border-radius:8px;padding:18px 22px;font-size:13px;margin-top:14px}.meth h3{font-size:14px;font-weight:600;margin-bottom:8px}
+.meth li{margin-left:18px;color:var(--ink-2);margin-bottom:4px}
+</style>
+</head>
+<body>
+<div class="page">
+
+<div class="hdr">
+  <div class="tag">Analytics Hackathon — Board Brief v3 (final corrected)</div>
+  <h1>TCM-to-Masterclass Assignment:<br>One Proven Pattern, Verified Impact</h1>
+  <div class="sub">ABCD segmentation used as the routing signal (known before attendance). All prior proxies corrected.</div>
+  <div class="meta">Data: Apr–May 2026 (segment-tagged period) &middot; 4,208 attended sessions with ABCD segment &middot; 19 active Prio TCMs &middot; Generated 29 May 2026</div>
+</div>
+
+<!-- CORRECTIONS BANNER -->
+<div class="killed">
+  <div class="kt">What changed from v1 and v2</div>
+  <p><strong>v1 error:</strong> Used <code>status_tcm</code> (unreliable) to define Prio group. Only captured 6 of 22+ actual Prio TCMs. Fixed: now using TCM Lifetime sheet names.</p>
+  <p><strong>v2 error:</strong> Used Financial_Strength (High/Middle/Low Class) as client quality proxy. Problem: Financial_Strength is only known <em>after</em> attendance — unusable for routing decisions. Fixed: now using ABCD segmentation (known at booking stage).</p>
+  <p><strong>v2 dropped:</strong> Pattern 5 (day-of-week scheduling) and Pattern 1 (lobby waste) — both findings disappeared when tested with correct ABCD segment data.</p>
+</div>
+
+<!-- EXEC SUMMARY -->
+<div class="exec">
+  <h2>Executive summary</h2>
+  <p>One routing pattern confirmed with correct pre-attendance data. Prio TCMs convert A+B (Hot) clients at 44.1% vs 29.7% for Non-Prio — a 14.4 percentage-point gap — and close 11% larger packages ($259 vs $233 AOV). The system currently routes 283 A+B clients per week to Non-Prio TCMs while Prio TCMs run at 43% scheduling utilisation. Redirecting A+B to Prio first is a pure routing rule change worth $257K–$503K per year depending on the capacity model applied.</p>
+  <div class="krow">
+    <div class="kc"><div class="n a">14.4pp</div><div class="l">Prio A2S advantage<br>on A+B clients</div></div>
+    <div class="kc"><div class="n a">$45.0</div><div class="l">Revenue gap per<br>A+B session</div></div>
+    <div class="kc"><div class="n g">$257K</div><div class="l">Conservative<br>annual gain</div></div>
+    <div class="kc"><div class="n a">43%</div><div class="l">Prio scheduling<br>utilisation</div></div>
+  </div>
+</div>
+
+<!-- CORE FINDING -->
+<div class="sec">
+  <div class="sl">Core Finding</div>
+  <h2>Prio TCMs dramatically outperform on A+B (Hot) clients — but most A+B go to Non-Prio</h2>
+  <div class="d">4,208 attended sessions with ABCD segment tagging (Apr–May 2026). Prio defined by name match to TCM Lifetime sheet (22 confirmed names, 19 active in period). Conversion = payment_day present.</div>
+
+  <div class="dn">ABCD segment known at booking stage — valid for routing decisions</div>
+
+  <table class="dt">
+    <thead><tr><th>Segment</th><th>TCM tier</th><th class="m">Attended</th><th class="m">Paid</th><th class="m">A2S %</th><th class="m">Est. rev / session</th><th class="m">Gap vs Prio</th></tr></thead>
+    <tbody>
+      <tr class="hi"><td><strong>A★ Star</strong></td><td><strong>Prio</strong></td><td class="m">105</td><td class="m">70</td><td class="m"><strong>66.7%</strong></td><td class="m"><strong>$172.7</strong></td><td class="m">—</td></tr>
+      <tr><td>A★ Star</td><td>Non-Prio</td><td class="m">399</td><td class="m">213</td><td class="m">53.4%</td><td class="m">$124.4</td><td class="m" style="color:var(--red)">−$48.3</td></tr>
+      <tr class="hi"><td><strong>B Hot</strong></td><td><strong>Prio</strong></td><td class="m">304</td><td class="m">110</td><td class="m"><strong>36.2%</strong></td><td class="m"><strong>$93.7</strong></td><td class="m">—</td></tr>
+      <tr><td>B Hot</td><td>Non-Prio</td><td class="m">1,902</td><td class="m">473</td><td class="m">24.9%</td><td class="m">$58.0</td><td class="m" style="color:var(--red)">−$35.7</td></tr>
+      <tr class="hi"><td><strong>C Warm</strong></td><td><strong>Prio</strong></td><td class="m">122</td><td class="m">47</td><td class="m"><strong>38.5%</strong></td><td class="m"><strong>$99.8</strong></td><td class="m">—</td></tr>
+      <tr><td>C Warm</td><td>Non-Prio</td><td class="m">750</td><td class="m">204</td><td class="m">27.2%</td><td class="m">$63.4</td><td class="m" style="color:var(--red)">−$36.4</td></tr>
+      <tr class="hi"><td><strong>D Cold</strong></td><td><strong>Prio</strong></td><td class="m">83</td><td class="m">31</td><td class="m"><strong>37.3%</strong></td><td class="m"><strong>$96.6</strong></td><td class="m">—</td></tr>
+      <tr><td>D Cold</td><td>Non-Prio</td><td class="m">543</td><td class="m">125</td><td class="m">23.0%</td><td class="m">$53.6</td><td class="m" style="color:var(--red)">−$43.0</td></tr>
+    </tbody>
+  </table>
+
+  <p style="font-size:13px;color:var(--ink-2);">Note: Est. revenue per session = A2S% × AOV (Prio AOV = $259, Non-Prio AOV = $233 — from full 17-month dataset). Prio outperforms Non-Prio on <strong>every segment</strong>, with the A★ Star gap largest at $48.3/session. The advantage is both in conversion rate (+14.4pp on A+B) and package size (+$26 AOV).</p>
+</div>
+
+<!-- COUNTERFACTUAL -->
+<div class="sec">
+  <div class="sl">Counterfactual</div>
+  <h2>Route A+B clients to Prio first — they have the capacity</h2>
+  <div class="d">Currently 283 A+B attended sessions per week go to Non-Prio TCMs while 19 active Prio TCMs run at 43% scheduling utilisation. Two scenarios based on how much spare capacity is realistically usable.</div>
+
+  <div class="ft">
+    <div class="fb">
+      <div class="fl">Current state (Apr–May 2026)</div>
+      <p><strong>283 A+B (Hot)</strong> attended sessions/week handled by Non-Prio TCMs at $69.3 revenue per session.</p>
+      <p style="margin-top:6px;">Prio TCMs handle 165 attended sessions/week — only <strong>43%</strong> of their 380 scheduled slot capacity (19 TCMs × 20 slots). User-stated utilisation: 60%.</p>
+      <p style="margin-top:6px;">Auto-distribution currently prioritises by source but does not fully differentiate by ABCD segment when routing to Prio.</p>
+    </div>
+    <div class="ac">&rarr;</div>
+    <div class="tb">
+      <div class="fl">Proposed: A+B → Prio queue first</div>
+      <p>Route all A★ Star and B Hot confirmed clients to Prio TCM queue before Non-Prio. Prio revenue per session on A+B = <strong>$114.3</strong> (vs $69.3 for Non-Prio).</p>
+      <p style="margin-top:6px;">Gap per redirected session: <strong>$45.0</strong>.</p>
+      <p style="margin-top:6px;">No displacement of existing clients — uses spare Prio capacity only.</p>
+    </div>
+  </div>
+
+  <table class="dt">
+    <thead><tr><th>Scenario</th><th>Capacity assumption</th><th class="m">A+B redirected / week</th><th class="m">Monthly gain</th><th class="m">Annual gain</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Conservative</strong></td><td>60% utilisation cap (user-stated), 110 spare attended/week</td><td class="m">110</td><td class="m"><strong>$21,431</strong></td><td class="m"><strong>$257,168</strong></td></tr>
+      <tr><td>Aggressive</td><td>Fill to 20-slot/week cap, 215 spare attended/week</td><td class="m">215</td><td class="m">$41,888</td><td class="m">$502,656</td></tr>
+    </tbody>
+  </table>
+
+  <div class="cav">
+    <strong>Why two scenarios:</strong> The 20-slot-per-TCM max yields 380 scheduled slots/week. Currently 165 are used. But the user-stated 60% utilisation rate implies a practical ceiling of ~275 attended/week (spare = 110). The aggressive scenario assumes the 60% utilisation can be pushed higher with better scheduling. We recommend starting with the conservative target and measuring real utilisation after 4 weeks.
+  </div>
+</div>
+
+<!-- KILLED PATTERNS -->
+<div class="sec">
+  <div class="sl">Patterns tested and dropped</div>
+  <h2>Intellectual honesty: what didn't survive verification</h2>
+
+  <div class="killed">
+    <div class="kt">Pattern 5 (Day-of-week scheduling) — DROPPED</div>
+    <p>v1/v2 found Monday and Friday to be highest-yield Prio days ($78/slot vs $42 on Wed-Thu). This finding was driven entirely by Financial_Strength — a post-attendance variable that correlates with day-of-week for confounding reasons. When re-tested with ABCD segment data, Tuesday-Thursday actually <em>outperform</em> Monday-Friday for Prio TCMs. The pattern was an artifact, not a signal.</p>
+  </div>
+  <div class="killed">
+    <div class="kt">Pattern 1 (Lobby waste — Low Class clients filling Prio slots) — DROPPED</div>
+    <p>v1/v2 claimed 47% of Prio sessions went to Low Class clients with $7.6 revenue. Re-tested with ABCD segment + autodis lobby data: only 613 Prio rows have both ABCD and lobby data. Lobby visit rates are 90%+ across <em>all</em> segments (A★ Star 90.5%, B Hot 94.0%, C Warm 92.7%, D Cold 91.6%). No segment-based lobby waste exists for Prio TCMs.</p>
+  </div>
+</div>
+
+<!-- RECOMMENDATIONS -->
+<div class="sec">
+  <div class="sl">Action plan</div>
+  <h2>Three recommendations</h2>
+
+  <div class="rec r1">
+    <div class="rh">
+      <h3>1. Add ABCD segment as primary routing signal in auto-distribution</h3>
+      <span class="tl tn">Week 1</span>
+    </div>
+    <p>Current system prioritises by source (hot source → Prio TCM). Layer ABCD segment as the primary routing criterion: A★ Star and B Hot → Prio TCM queue first, regardless of source. C Warm and D Cold → Non-Prio queue. This captures the full $45/session gap on every redirected A+B client.</p>
+    <p>Prerequisite: ABCD segment must be available in the CRM at the Confirmed_2 stage before auto-distribution runs. Verify with Elly's segmentation pipeline that this is the case.</p>
+    <div class="rm">
+      <div><div class="ml">Annual impact (conservative)</div><div class="mv" style="color:var(--green);">+$257K</div></div>
+      <div><div class="ml">Owner</div><div class="mv">CRM + Autodis team</div></div>
+      <div><div class="ml">Effort</div><div class="mv">Routing rule update</div></div>
+    </div>
+  </div>
+
+  <div class="rec r2">
+    <div class="rh">
+      <h3>2. Invest in growing the Prio TCM pool through targeted coaching</h3>
+      <span class="tl ts">Quarter 1–2</span>
+    </div>
+    <p>The routing optimisation is capacity-limited — Prio TCMs can absorb ~110 extra A+B sessions/week at current utilisation. The bigger lever is expanding the pool. The data shows Prio advantage is in both A2S (+14.4pp) <em>and</em> AOV (+$26). Identify what Prio TCMs do differently (package pitch, objection handling, urgency framing) and codify into training for Mid-tier TCMs.</p>
+    <p>Each Mid TCM promoted to Prio-equivalent performance handles ~600 attended sessions/year. At the observed $45/session gap, that's ~$27K incremental revenue per promoted TCM per year.</p>
+    <div class="rm">
+      <div><div class="ml">Impact per promoted TCM</div><div class="mv" style="color:var(--green);">~$27K / year</div></div>
+      <div><div class="ml">Owner</div><div class="mv">Team Leads + Training</div></div>
+      <div><div class="ml">Effort</div><div class="mv">Coaching program design</div></div>
+    </div>
+  </div>
+
+  <div class="rec r3">
+    <div class="rh">
+      <h3>3. Measure and push Prio utilisation past 60%</h3>
+      <span class="tl tm">Ongoing</span>
+    </div>
+    <p>Current Prio scheduling utilisation is 43% of max capacity (165 of 380 possible scheduled slots/week). User-stated overall utilisation is 60%. Every 10pp increase in Prio utilisation frees ~38 additional attended slots/week. At $114.3 revenue per A+B session, that's an additional $4,344/week = $226K/year in Prio capacity made available. Root causes of low utilisation (slot preparation, overbooking ratios, TCM availability) should be investigated as a separate workstream.</p>
+    <div class="rm">
+      <div><div class="ml">Impact per 10pp util increase</div><div class="mv" style="color:var(--green);">~$226K / year</div></div>
+      <div><div class="ml">Owner</div><div class="mv">Operations</div></div>
+      <div><div class="ml">Effort</div><div class="mv">Ops process review</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- COMBINED -->
+<div class="sec">
+  <div class="hb">
+    <div class="hl">Verified impact — conservative scenario</div>
+    <div class="hg">
+      <div><div class="hn" style="color:var(--green);">$257K</div><div class="ht">Annual from routing A+B → Prio<br>(110 sessions/week, 60% util cap)</div></div>
+      <div><div class="hn" style="color:var(--accent);">$503K</div><div class="ht">Annual if Prio utilisation<br>pushed to 20-slot max</div></div>
+      <div><div class="hn" style="color:var(--ink);">1</div><div class="ht">Routing rule change required<br>No product or hiring changes</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- METHODOLOGY -->
+<div class="sec">
+  <div class="sl">Data methodology</div>
+  <h2>How these numbers were derived</h2>
+  <div class="meth">
+    <h3>What the data confirms</h3>
+    <ul>
+      <li><strong>Segment source:</strong> ABCD segment_type field, available from Oct 2025 but substantively populated only from Apr 2026. Analysis uses Apr–May 2026 data (4,208 attended sessions with ABCD tag).</li>
+      <li><strong>TCM tier:</strong> Prio defined by TCM name match to the TCM Lifetime sheet (Sheet14: "Performance by Team Mei"). 22 confirmed names; 19 active in Apr–May 2026.</li>
+      <li><strong>Conversion signal:</strong> payment_day present = sale made. Revenue_USD is mostly sub-$1 for segment-tagged rows (revenue not yet fully attributed), so A2S is based on payment_day, and AOV uses the 17-month historical average by tier ($259 Prio, $233 Non-Prio).</li>
+      <li><strong>Capacity:</strong> 19 active Prio TCMs × 20 max slots/week = 380 max scheduled. 165 observed attended/week = 43% utilisation. User-stated overall utilisation = 60%.</li>
+      <li><strong>Counterfactual:</strong> Revenue per redirected A+B session = (Prio A2S on A+B × Prio AOV) − (Non-Prio A2S on A+B × Non-Prio AOV) = $114.3 − $69.3 = $45.0. Multiplied by redirectable sessions per week × 52 weeks.</li>
+    </ul>
+    <h3 style="margin-top:14px;">Known limitations</h3>
+    <ul>
+      <li><strong>Short observation window:</strong> ABCD segment data covers only ~2 months (Apr–May 2026). Seasonal effects (Eid, school breaks) may not be captured. Recommend re-running after 6 months of segment-tagged data.</li>
+      <li><strong>AOV estimated from historical:</strong> Prio AOV ($259) and Non-Prio AOV ($233) are from the full Jan 2025–May 2026 dataset. If the AOV gap changes, the counterfactual scales proportionally.</li>
+      <li><strong>Causation vs selection:</strong> Prio TCMs may already receive slightly better leads through existing routing logic. The 14.4pp A2S gap could partially be a selection effect. A controlled A/B test (random assignment for 4 weeks) would isolate the true causal TCM effect.</li>
+      <li><strong>Capacity model depends on util assumptions:</strong> The conservative $257K assumes the 60% utilisation cap is real. The aggressive $503K assumes it can be pushed to ~87%. The true answer is likely in between.</li>
+    </ul>
+    <h3 style="margin-top:14px;">Required sign-off</h3>
+    <ul>
+      <li>All findings must be reviewed by <strong>Danila</strong> (Analyst) and <strong>Irakly</strong> (Analytics Lead) before any operational change.</li>
+      <li>Verify with Elly that ABCD segmentation is available at Confirmed_2 stage in the CRM before implementing the routing rule.</li>
+    </ul>
+  </div>
+</div>
+
+</div>
+</body>
+</html>

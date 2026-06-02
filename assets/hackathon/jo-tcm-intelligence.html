@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TCM Intelligence Reports — Algonova Indonesia</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=IBM+Plex+Mono:wght@300;400;500;600&family=Cabinet+Grotesk:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* ============================
+   SHELL — Navigation & Layout
+   ============================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  background: #080a0e;
+  color: #e2e8f0;
+  font-family: 'Syne', sans-serif;
+  min-height: 100vh;
+}
+
+/* NAV */
+.shell-nav {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: rgba(8,10,14,0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid #1a1f2e;
+  padding: 0 40px;
+  display: flex;
+  align-items: center;
+  height: 56px;
+  gap: 0;
+}
+
+.shell-logo {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #4a5568;
+  margin-right: 32px;
+  white-space: nowrap;
+}
+
+.shell-tabs {
+  display: flex;
+  gap: 0;
+  height: 100%;
+}
+
+.shell-tab {
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #4a5568;
+  cursor: pointer;
+  border: none;
+  background: none;
+  border-bottom: 2px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
+  white-space: nowrap;
+  height: 100%;
+}
+
+.shell-tab:hover { color: #94a3b8; }
+
+.shell-tab.active-1 {
+  color: #00e5a0;
+  border-bottom-color: #00e5a0;
+}
+
+.shell-tab.active-2 {
+  color: #a78bfa;
+  border-bottom-color: #a78bfa;
+}
+
+.shell-tab-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+
+.dot-1 { background: #00e5a0; }
+.dot-2 { background: #a78bfa; }
+
+/* REPORT PANELS */
+.report-panel {
+  display: none;
+  min-height: calc(100vh - 56px);
+}
+.report-panel.visible { display: block; }
+
+/* ============================
+   REPORT 1 — SCOPED STYLES
+   ============================ */
+#report1 {
+    --r1-bg: #0a0c10;
+    --r1-surface: #111318;
+    --r1-surface2: #181b22;
+    --r1-border: #1f2330;
+    --r1-accent: #00e5a0;
+    --r1-accent2: #ff6b35;
+    --r1-accent3: #4fc3f7;
+    --r1-text: #e8eaf0;
+    --r1-muted: #6b7280;
+    --r1-warn: #fbbf24;
+    --r1-danger: #f87171;
+  }
+#report1 { box-sizing: border-box; margin: 0; padding: 0; }
+#report1 { background: var(--r1-bg); color: var(--r1-text); font-family: 'Syne', sans-serif; min-height: 100vh; }
+#report1 /* NOISE TEXTURE OVERLAY */
+  body::before {
+    content: ''; position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 0; opacity: 0.4;
+  }
+#report1 .container { max-width: 1280px; margin: 0 auto; padding: 0 32px; position: relative; z-index: 1; }
+#report1 /* HEADER */
+  header {
+    padding: 48px 0 32px;
+    border-bottom: 1px solid var(--r1-border);
+    margin-bottom: 48px;
+  }
+#report1 .header-inner { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 24px; }
+#report1 .header-left .tag {
+    display: inline-block; background: rgba(0,229,160,0.1); color: var(--r1-accent);
+    border: 1px solid rgba(0,229,160,0.25); border-radius: 4px;
+    padding: 4px 12px; font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+    font-family: 'DM Mono', monospace; margin-bottom: 16px;
+  }
+#report1 h1 { font-size: clamp(28px, 4vw, 48px); font-weight: 800; line-height: 1.1; letter-spacing: -1px; }
+#report1 h1 span { color: var(--r1-accent); }
+#report1 .subtitle { color: var(--r1-muted); font-size: 14px; margin-top: 10px; font-family: 'DM Mono', monospace; }
+#report1 .header-meta {
+    display: flex; flex-direction: column; gap: 6px; align-items: flex-end;
+    font-family: 'DM Mono', monospace; font-size: 12px; color: var(--r1-muted);
+  }
+#report1 .header-meta span { display: flex; align-items: center; gap: 8px; }
+#report1 .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--r1-accent); display: inline-block; animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+#report1 /* SECTION TITLES */
+  .section-title {
+    font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
+    color: var(--r1-muted); font-family: 'DM Mono', monospace; margin-bottom: 24px;
+    display: flex; align-items: center; gap: 12px;
+  }
+#report1 .section-title::after { content: ''; flex: 1; height: 1px; background: var(--r1-border); }
+#report1 section { margin-bottom: 64px; }
+#report1 /* HERO KPI CARDS */
+  .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 48px; }
+#report1 .kpi-card {
+    background: var(--r1-surface); border: 1px solid var(--r1-border); border-radius: 12px;
+    padding: 24px; position: relative; overflow: hidden;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+#report1 .kpi-card:hover { border-color: var(--r1-accent); transform: translateY(-2px); }
+#report1 .kpi-card.hero { border-color: rgba(0,229,160,0.3); background: linear-gradient(135deg, rgba(0,229,160,0.05) 0%, var(--r1-surface) 60%); }
+#report1 .kpi-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--r1-accent), transparent); opacity: 0; transition: opacity 0.2s; }
+#report1 .kpi-card:hover::before, #report1 .kpi-card.hero::before { opacity: 1; }
+#report1 .kpi-label { font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--r1-muted); font-family: 'DM Mono', monospace; margin-bottom: 12px; }
+#report1 .kpi-value { font-size: 42px; font-weight: 800; letter-spacing: -2px; line-height: 1; }
+#report1 .kpi-value.green { color: var(--r1-accent); }
+#report1 .kpi-value.orange { color: var(--r1-accent2); }
+#report1 .kpi-value.blue { color: var(--r1-accent3); }
+#report1 .kpi-value.warn { color: var(--r1-warn); }
+#report1 .kpi-sub { font-size: 12px; color: var(--r1-muted); margin-top: 8px; font-family: 'DM Mono', monospace; }
+#report1 .kpi-badge { display: inline-block; background: rgba(0,229,160,0.15); color: var(--r1-accent); padding: 3px 8px; border-radius: 4px; font-size: 11px; font-family: 'DM Mono', monospace; margin-top: 8px; }
+#report1 /* DISCLAIMER BOX */
+  .disclaimer {
+    background: rgba(251,191,36,0.06); border: 1px solid rgba(251,191,36,0.2);
+    border-radius: 10px; padding: 16px 20px; margin-bottom: 48px;
+    font-size: 13px; color: var(--r1-warn); font-family: 'DM Mono', monospace; line-height: 1.7;
+  }
+#report1 .disclaimer strong { color: var(--r1-warn); }
+#report1 /* COURSE CARDS */
+  .course-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 20px; }
+#report1 .course-card {
+    background: var(--r1-surface); border: 1px solid var(--r1-border); border-radius: 14px;
+    padding: 24px; transition: border-color 0.2s;
+    cursor: pointer;
+  }
+#report1 .course-card:hover { border-color: rgba(0,229,160,0.3); }
+#report1 .course-card.active { border-color: var(--r1-accent); }
+#report1 .course-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
+#report1 .course-name { font-size: 16px; font-weight: 700; }
+#report1 .tier-badge {
+    font-size: 10px; font-family: 'DM Mono', monospace; letter-spacing: 1px;
+    padding: 3px 8px; border-radius: 4px;
+  }
+#report1 .tier-badge.t1 { background: rgba(0,229,160,0.1); color: var(--r1-accent); border: 1px solid rgba(0,229,160,0.2); }
+#report1 .tier-badge.t2 { background: rgba(79,195,247,0.1); color: var(--r1-accent3); border: 1px solid rgba(79,195,247,0.2); }
+#report1 /* DUAL BAR (current vs optimized) */
+  .metric-row { margin-bottom: 14px; }
+#report1 .metric-label { font-size: 11px; color: var(--r1-muted); font-family: 'DM Mono', monospace; margin-bottom: 6px; display: flex; justify-content: space-between; }
+#report1 .bar-track { background: var(--r1-border); border-radius: 4px; height: 8px; position: relative; overflow: hidden; }
+#report1 .bar-fill { height: 100%; border-radius: 4px; transition: width 1s cubic-bezier(0.4,0,0.2,1); }
+#report1 .bar-fill.current { background: var(--r1-muted); }
+#report1 .bar-fill.optimized { background: var(--r1-accent); }
+#report1 .bar-stack { display: flex; flex-direction: column; gap: 4px; }
+#report1 .bar-labels { display: flex; justify-content: space-between; font-size: 11px; font-family: 'DM Mono', monospace; }
+#report1 .bar-labels .curr { color: var(--r1-muted); }
+#report1 .bar-labels .opt { color: var(--r1-accent); font-weight: 600; }
+#report1 .uplift-pill {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: rgba(0,229,160,0.12); color: var(--r1-accent);
+    border-radius: 20px; padding: 4px 10px; font-size: 12px;
+    font-family: 'DM Mono', monospace; font-weight: 600;
+    margin-top: 12px;
+  }
+#report1 .uplift-pill.zero { background: rgba(107,114,128,0.12); color: var(--r1-muted); }
+#report1 .rev-delta { font-size: 13px; font-family: 'DM Mono', monospace; color: var(--r1-accent); margin-top: 8px; }
+#report1 .attended-note { font-size: 11px; color: var(--r1-muted); font-family: 'DM Mono', monospace; margin-top: 4px; }
+#report1 /* LEADERBOARD TABLE */
+  .leaderboard-wrap { background: var(--r1-surface); border: 1px solid var(--r1-border); border-radius: 14px; overflow: hidden; margin-top: 32px; }
+#report1 .leaderboard-tabs { display: flex; border-bottom: 1px solid var(--r1-border); overflow-x: auto; }
+#report1 .leaderboard-tab {
+    padding: 14px 20px; font-size: 12px; font-family: 'DM Mono', monospace; cursor: pointer;
+    color: var(--r1-muted); white-space: nowrap; border-bottom: 2px solid transparent;
+    transition: color 0.2s, border-color 0.2s; background: none; border-top: none; border-left: none; border-right: none;
+  }
+#report1 .leaderboard-tab:hover { color: var(--r1-text); }
+#report1 .leaderboard-tab.active { color: var(--r1-accent); border-bottom-color: var(--r1-accent); }
+#report1 .leaderboard-body { padding: 0; }
+#report1 table { width: 100%; border-collapse: collapse; }
+#report1 thead tr { background: var(--r1-surface2); }
+#report1 th { padding: 12px 20px; text-align: left; font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--r1-muted); font-family: 'DM Mono', monospace; font-weight: 400; }
+#report1 td { padding: 14px 20px; font-size: 13px; border-top: 1px solid var(--r1-border); }
+#report1 tr:hover td { background: rgba(255,255,255,0.02); }
+#report1 .rank { color: var(--r1-muted); font-family: 'DM Mono', monospace; font-size: 12px; }
+#report1 .rank.top { color: var(--r1-accent); font-weight: 600; }
+#report1 .tcm-name { font-weight: 700; letter-spacing: 0.5px; }
+#report1 .a2s-bar { display: flex; align-items: center; gap: 10px; }
+#report1 .a2s-mini { flex: 1; background: var(--r1-border); border-radius: 3px; height: 6px; }
+#report1 .a2s-mini-fill { height: 100%; border-radius: 3px; background: var(--r1-accent); }
+#report1 .a2s-val { font-family: 'DM Mono', monospace; font-size: 13px; min-width: 44px; color: var(--r1-accent); font-weight: 600; }
+#report1 .exp-rev { font-family: 'DM Mono', monospace; color: var(--r1-accent3); font-size: 13px; }
+#report1 .n-obs { font-family: 'DM Mono', monospace; color: var(--r1-muted); font-size: 12px; }
+#report1 /* DISTRIBUTION CHART */
+  .dist-section { margin-top: 48px; }
+#report1 .dist-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 20px; }
+#report1 .dist-card { background: var(--r1-surface); border: 1px solid var(--r1-border); border-radius: 14px; padding: 24px; }
+#report1 .dist-card-title { font-size: 13px; font-weight: 700; margin-bottom: 20px; }
+#report1 .dist-bars { display: flex; align-items: flex-end; gap: 6px; height: 80px; }
+#report1 .dist-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+#report1 .dist-bar-wrap { width: 100%; display: flex; align-items: flex-end; height: 64px; }
+#report1 .dist-bar { width: 100%; border-radius: 3px 3px 0 0; background: var(--r1-accent); opacity: 0.6; transition: opacity 0.2s; min-height: 2px; }
+#report1 .dist-bar:hover { opacity: 1; }
+#report1 .dist-bar-label { font-size: 8px; color: var(--r1-muted); font-family: 'DM Mono', monospace; text-align: center; }
+#report1 /* METHODOLOGY */
+  .method-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+#report1 .method-card { background: var(--r1-surface); border: 1px solid var(--r1-border); border-radius: 12px; padding: 20px; }
+#report1 .method-num { font-size: 32px; font-weight: 800; color: var(--r1-border); font-family: 'DM Mono', monospace; margin-bottom: 8px; }
+#report1 .method-title { font-size: 14px; font-weight: 700; margin-bottom: 8px; }
+#report1 .method-desc { font-size: 13px; color: var(--r1-muted); line-height: 1.6; }
+#report1 .method-desc code { font-family: 'DM Mono', monospace; color: var(--r1-accent); background: rgba(0,229,160,0.08); padding: 1px 5px; border-radius: 3px; font-size: 12px; }
+#report1 /* FOOTER */
+  footer { border-top: 1px solid var(--r1-border); padding: 32px 0; margin-top: 64px; }
+#report1 .footer-inner { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
+#report1 .footer-left { font-size: 12px; color: var(--r1-muted); font-family: 'DM Mono', monospace; line-height: 1.8; }
+#report1 .footer-right { font-size: 11px; color: var(--r1-border); font-family: 'DM Mono', monospace; }
+#report1 /* ANIMATIONS */
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+#report1 .fade-up { animation: fadeUp 0.5s ease both; }
+#report1 .fade-up:nth-child(1) { animation-delay: 0.05s; }
+#report1 .fade-up:nth-child(2) { animation-delay: 0.1s; }
+#report1 .fade-up:nth-child(3) { animation-delay: 0.15s; }
+#report1 .fade-up:nth-child(4) { animation-delay: 0.2s; }
+#report1 .fade-up:nth-child(5) { animation-delay: 0.25s; }
+#report1 /* FORMULA BOX */
+  .formula-box {
+    background: var(--r1-surface2); border: 1px solid var(--r1-border); border-radius: 10px;
+    padding: 20px 24px; font-family: 'DM Mono', monospace; font-size: 14px;
+    color: var(--r1-accent3); margin: 24px 0; letter-spacing: 0.5px;
+  }
+#report1 .formula-box .comment { color: var(--r1-muted); font-size: 12px; }
+#report1 /* MATH MASTER FLAG */
+  .no-uplift-note {
+    font-size: 12px; font-family: 'DM Mono', monospace; color: var(--r1-muted);
+    background: rgba(107,114,128,0.06); border: 1px solid var(--r1-border);
+    border-radius: 8px; padding: 10px 14px; margin-top: 12px;
+  }
+@media (max-width: 600px) {
+    .container { padding: 0 16px; }
+    .kpi-value { font-size: 32px; }
+  }
+
+/* ============================
+   REPORT 2 — SCOPED STYLES
+   ============================ */
+#report2 {
+  --r2-bg: #0d0f14;
+  --r2-surface: #131620;
+  --r2-surface2: #1a1e2e;
+  --r2-border: #222638;
+  --r2-border2: #2d3348;
+  --r2-elite: #a78bfa;
+  --r2-elite-bg: rgba(167,139,250,0.08);
+  --r2-elite-border: rgba(167,139,250,0.2);
+  --r2-solid: #34d399;
+  --r2-solid-bg: rgba(52,211,153,0.08);
+  --r2-solid-border: rgba(52,211,153,0.2);
+  --r2-developing: #fb923c;
+  --r2-developing-bg: rgba(251,146,60,0.08);
+  --r2-developing-border: rgba(251,146,60,0.2);
+  --r2-text: #e2e8f0;
+  --r2-muted: #64748b;
+  --r2-muted2: #94a3b8;
+  --r2-high-conf: #60a5fa;
+  --r2-med-conf: #fbbf24;
+  --r2-low-conf: #6b7280;
+  --r2-accent: #818cf8;
+}
+#report2 {box-sizing:border-box;margin:0;padding:0}
+#report2 {background:var(--r2-bg);color:var(--r2-text);font-family:'Cabinet Grotesk',sans-serif;min-height:100vh;overflow-x:hidden}
+#report2 /* GRID LINES */
+body::before {
+  content:'';position:fixed;inset:0;
+  background-image:linear-gradient(var(--r2-border) 1px,transparent 1px),linear-gradient(90deg,var(--r2-border) 1px,transparent 1px);
+  background-size:60px 60px;opacity:0.3;pointer-events:none;z-index:0;
+}
+#report2 .container {max-width:1400px;margin:0 auto;padding:0 40px;position:relative;z-index:1}
+#report2 /* HEADER */
+header {padding:56px 0 40px;border-bottom:1px solid var(--r2-border2);margin-bottom:56px}
+#report2 .header-top {display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:24px}
+#report2 .eyebrow {font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:3px;color:var(--r2-accent);text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+#report2 .eyebrow::before {content:'';width:24px;height:1px;background:var(--r2-accent)}
+#report2 h1 {font-size:clamp(32px,5vw,60px);font-weight:900;letter-spacing:-2px;line-height:1.0}
+#report2 h1 .line2 {color:var(--r2-accent)}
+#report2 .header-sub {font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--r2-muted);margin-top:12px;line-height:1.8}
+#report2 .header-meta {display:flex;flex-direction:column;gap:8px;align-items:flex-end;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--r2-muted)}
+#report2 .live-badge {display:flex;align-items:center;gap:6px;background:var(--r2-surface2);border:1px solid var(--r2-border2);padding:6px 12px;border-radius:4px;font-size:11px;letter-spacing:1px}
+#report2 .pulse {width:6px;height:6px;border-radius:50%;background:var(--r2-solid);animation:pulse 1.5s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.4;transform:scale(0.8)}}
+#report2 /* SECTION */
+section {margin-bottom:72px}
+#report2 .section-label {font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--r2-muted);display:flex;align-items:center;gap:16px;margin-bottom:32px}
+#report2 .section-label::before {content:'';width:4px;height:4px;background:var(--r2-accent);border-radius:50%;flex-shrink:0}
+#report2 .section-label::after {content:'';flex:1;height:1px;background:var(--r2-border)}
+#report2 /* KPI ROW */
+.kpi-row {display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1px;background:var(--r2-border2);border:1px solid var(--r2-border2);border-radius:12px;overflow:hidden;margin-bottom:48px}
+#report2 .kpi-cell {background:var(--r2-surface);padding:28px 24px}
+#report2 .kpi-cell:hover {background:var(--r2-surface2)}
+#report2 .kpi-cell-label {font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--r2-muted);margin-bottom:10px}
+#report2 .kpi-cell-value {font-size:40px;font-weight:900;letter-spacing:-2px;line-height:1}
+#report2 .kpi-cell-value.purple {color:var(--r2-elite)}
+#report2 .kpi-cell-value.green {color:var(--r2-solid)}
+#report2 .kpi-cell-value.orange {color:var(--r2-developing)}
+#report2 .kpi-cell-value.blue {color:var(--r2-high-conf)}
+#report2 .kpi-cell-sub {font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--r2-muted);margin-top:6px}
+#report2 /* DISCLAIMER */
+.notice {background:rgba(251,146,60,0.05);border:1px solid rgba(251,146,60,0.15);border-radius:10px;padding:16px 20px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#fb923c;line-height:1.8;margin-bottom:48px}
+#report2 /* FORMULA CARD */
+.formula-grid {display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-bottom:40px}
+#report2 .formula-card {background:var(--r2-surface);border:1px solid var(--r2-border2);border-radius:10px;padding:20px}
+#report2 .fc-weight {font-family:'IBM Plex Mono',monospace;font-size:28px;font-weight:600;margin-bottom:8px}
+#report2 .fc-weight.w1 {color:var(--r2-elite)}
+#report2 .fc-weight.w2 {color:var(--r2-solid)}
+#report2 .fc-weight.w3 {color:var(--r2-high-conf)}
+#report2 .fc-name {font-size:14px;font-weight:700;margin-bottom:6px}
+#report2 .fc-desc {font-size:12px;color:var(--r2-muted);line-height:1.6}
+#report2 .fc-bar {height:3px;border-radius:2px;margin-top:12px}
+#report2 .fc-bar.b1 {background:var(--r2-elite)}
+#report2 .fc-bar.b2 {background:var(--r2-solid);width:87.5%}
+#report2 .fc-bar.b3 {background:var(--r2-high-conf);width:62.5%}
+#report2 /* CONTROLS */
+.controls {display:flex;flex-wrap:wrap;gap:12px;margin-bottom:28px;align-items:center}
+#report2 .search-box {background:var(--r2-surface);border:1px solid var(--r2-border2);border-radius:8px;padding:10px 16px;color:var(--r2-text);font-family:'IBM Plex Mono',monospace;font-size:13px;width:220px;outline:none}
+#report2 .search-box:focus {border-color:var(--r2-accent)}
+#report2 .search-box::placeholder {color:var(--r2-muted)}
+#report2 .filter-btn {background:var(--r2-surface);border:1px solid var(--r2-border2);border-radius:8px;padding:8px 14px;color:var(--r2-muted);font-family:'IBM Plex Mono',monospace;font-size:11px;cursor:pointer;letter-spacing:1px;transition:all 0.15s}
+#report2 .filter-btn:hover, #report2 .filter-btn.active {color:var(--r2-text);border-color:var(--r2-accent);background:rgba(129,140,248,0.06)}
+#report2 .filter-btn.f-elite.active {border-color:var(--r2-elite);color:var(--r2-elite);background:var(--r2-elite-bg)}
+#report2 .filter-btn.f-solid.active {border-color:var(--r2-solid);color:var(--r2-solid);background:var(--r2-solid-bg)}
+#report2 .filter-btn.f-developing.active {border-color:var(--r2-developing);color:var(--r2-developing);background:var(--r2-developing-bg)}
+#report2 .sort-select {background:var(--r2-surface);border:1px solid var(--r2-border2);border-radius:8px;padding:8px 14px;color:var(--r2-text);font-family:'IBM Plex Mono',monospace;font-size:11px;cursor:pointer;outline:none}
+#report2 .results-count {font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--r2-muted);margin-left:auto}
+#report2 /* TCM TABLE */
+.tcm-table-wrap {background:var(--r2-surface);border:1px solid var(--r2-border2);border-radius:12px;overflow:hidden}
+#report2 table {width:100%;border-collapse:collapse}
+#report2 thead tr {background:var(--r2-surface2)}
+#report2 th {padding:13px 20px;text-align:left;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--r2-muted);font-weight:400;cursor:pointer;user-select:none;white-space:nowrap}
+#report2 th:hover {color:var(--r2-text)}
+#report2 th .sort-arrow {display:inline-block;margin-left:4px;opacity:0.4}
+#report2 th.sorted .sort-arrow {opacity:1;color:var(--r2-accent)}
+#report2 tbody tr {transition:background 0.1s;cursor:pointer}
+#report2 tbody tr:hover td {background:rgba(255,255,255,0.02)}
+#report2 tbody tr.expanded td {background:rgba(129,140,248,0.04)}
+#report2 td {padding:14px 20px;border-top:1px solid var(--r2-border);font-size:13px;vertical-align:middle}
+#report2 .rank-num {font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--r2-muted);width:36px}
+#report2 .rank-num.top3 {color:var(--r2-elite);font-weight:600}
+#report2 .tcm-name-cell {font-weight:700;font-size:14px;letter-spacing:0.3px}
+#report2 /* SCORE GAUGE */
+.score-gauge {display:flex;align-items:center;gap:10px}
+#report2 .gauge-track {flex:1;background:var(--r2-border);border-radius:3px;height:6px;min-width:80px}
+#report2 .gauge-fill {height:100%;border-radius:3px;transition:width 0.8s cubic-bezier(0.4,0,0.2,1)}
+#report2 .gauge-fill.elite {background:linear-gradient(90deg,#7c3aed,#a78bfa)}
+#report2 .gauge-fill.solid {background:linear-gradient(90deg,#059669,#34d399)}
+#report2 .gauge-fill.developing {background:linear-gradient(90deg,#c2410c,#fb923c)}
+#report2 .score-num {font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;min-width:40px;text-align:right}
+#report2 .score-num.elite {color:var(--r2-elite)}
+#report2 .score-num.solid {color:var(--r2-solid)}
+#report2 .score-num.developing {color:var(--r2-developing)}
+#report2 /* TIER BADGE */
+.tier-badge {display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1px;padding:3px 9px;border-radius:4px;font-weight:500}
+#report2 .tier-badge.elite {background:var(--r2-elite-bg);color:var(--r2-elite);border:1px solid var(--r2-elite-border)}
+#report2 .tier-badge.solid {background:var(--r2-solid-bg);color:var(--r2-solid);border:1px solid var(--r2-solid-border)}
+#report2 .tier-badge.developing {background:var(--r2-developing-bg);color:var(--r2-developing);border:1px solid var(--r2-developing-border)}
+#report2 /* CONFIDENCE BADGE */
+.conf-badge {display:inline-flex;align-items:center;gap:4px;font-family:'IBM Plex Mono',monospace;font-size:10px;padding:2px 7px;border-radius:3px}
+#report2 .conf-badge.High {color:var(--r2-high-conf)}
+#report2 .conf-badge.Medium {color:var(--r2-med-conf)}
+#report2 .conf-badge.Low {color:var(--r2-low-conf)}
+#report2 .conf-dot {width:5px;height:5px;border-radius:50%;flex-shrink:0}
+#report2 .conf-badge.High .conf-dot {background:var(--r2-high-conf)}
+#report2 .conf-badge.Medium .conf-dot {background:var(--r2-med-conf)}
+#report2 .conf-badge.Low .conf-dot {background:var(--r2-low-conf)}
+#report2 /* MINI STAT */
+.mini-stat {font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--r2-muted2)}
+#report2 /* EXPAND ROW */
+.expand-row {display:none}
+#report2 .expand-row.visible {display:table-row}
+#report2 .expand-content {padding:20px 20px 20px 76px;background:rgba(129,140,248,0.03);border-top:1px solid var(--r2-border)}
+#report2 .component-breakdown {display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+#report2 .comp-card {background:var(--r2-surface2);border:1px solid var(--r2-border2);border-radius:8px;padding:16px}
+#report2 .comp-card-label {font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1px;color:var(--r2-muted);text-transform:uppercase;margin-bottom:10px}
+#report2 .comp-card-value {font-size:24px;font-weight:800;letter-spacing:-1px}
+#report2 .comp-card-value.c1 {color:var(--r2-elite)}
+#report2 .comp-card-value.c2 {color:var(--r2-solid)}
+#report2 .comp-card-value.c3 {color:var(--r2-high-conf)}
+#report2 .comp-card-sub {font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--r2-muted);margin-top:4px}
+#report2 .comp-bar {height:4px;border-radius:2px;margin-top:10px;background:var(--r2-border)}
+#report2 .comp-bar-fill {height:100%;border-radius:2px}
+#report2 .comp-bar-fill.c1 {background:var(--r2-elite)}
+#report2 .comp-bar-fill.c2 {background:var(--r2-solid)}
+#report2 .comp-bar-fill.c3 {background:var(--r2-high-conf)}
+#report2 .sparkline-section {margin-top:16px}
+#report2 .sparkline-label {font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--r2-muted);margin-bottom:8px;letter-spacing:1px}
+#report2 .sparkline-wrap {display:flex;align-items:flex-end;gap:4px;height:40px}
+#report2 .spark-bar-group {display:flex;gap:1px;align-items:flex-end}
+#report2 .spark-bar {width:8px;border-radius:2px 2px 0 0;transition:opacity 0.2s}
+#report2 .spark-bar:hover {opacity:0.8}
+#report2 .spark-month {font-family:'IBM Plex Mono',monospace;font-size:8px;color:var(--r2-muted);text-align:center;margin-top:3px}
+#report2 /* DISTRIBUTION */
+.dist-row {display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-bottom:40px}
+#report2 .dist-card {background:var(--r2-surface);border:1px solid var(--r2-border2);border-radius:12px;padding:24px}
+#report2 .dist-title {font-size:14px;font-weight:700;margin-bottom:20px}
+#report2 .dist-bars-horiz {display:flex;flex-direction:column;gap:10px}
+#report2 .dist-bar-row {display:flex;align-items:center;gap:12px}
+#report2 .dist-bar-label {font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--r2-muted);width:60px;text-align:right;flex-shrink:0}
+#report2 .dist-bar-track {flex:1;background:var(--r2-border);border-radius:3px;height:10px}
+#report2 .dist-bar-fill {height:100%;border-radius:3px;background:var(--r2-accent)}
+#report2 .dist-bar-count {font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--r2-muted2);width:28px}
+#report2 .tier-dist-row {display:flex;align-items:center;gap:10px;padding:14px 0;border-bottom:1px solid var(--r2-border)}
+#report2 .tier-dist-row:last-child {border-bottom:none}
+#report2 .tier-dist-name {width:100px}
+#report2 .tier-dist-bar-track {flex:1;background:var(--r2-border);border-radius:3px;height:8px}
+#report2 .tier-dist-count {font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--r2-muted2);width:32px;text-align:right}
+#report2 /* FOOTER */
+footer {border-top:1px solid var(--r2-border2);padding:32px 0;margin-top:64px}
+#report2 .footer-grid {display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
+#report2 .footer-left {font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--r2-muted);line-height:2}
+#report2 .footer-right {font-size:11px;color:var(--r2-border2);font-family:'IBM Plex Mono',monospace}
+#report2 /* SCROLL */
+.table-scroll {max-height:660px;overflow-y:auto}
+#report2 .table-scroll::-webkit-scrollbar {width:4px}
+#report2 .table-scroll::-webkit-scrollbar-track {background:var(--r2-surface)}
+#report2 .table-scroll::-webkit-scrollbar-thumb {background:var(--r2-border2);border-radius:2px}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+#report2 .fade-in {animation:fadeIn 0.4s ease both}
+@media(max-width:768px){
+  .container{padding:0 20px}
+  .component-breakdown{grid-template-columns:1fr}
+  .dist-row{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- SHELL NAVIGATION -->
+<nav class="shell-nav">
+  <div class="shell-logo">Algonova · TCM Intelligence</div>
+  <div class="shell-tabs">
+    <button class="shell-tab active-1" id="tab1" onclick="switchReport(1)">
+      <span class="shell-tab-dot dot-1"></span>Assignment Optimization
+    </button>
+    <button class="shell-tab" id="tab2" onclick="switchReport(2)">
+      <span class="shell-tab-dot dot-2"></span>Reliability Score
+    </button>
+  </div>
+</nav>
+
+<!-- REPORT 1: TCM ASSIGNMENT OPTIMIZATION -->
+<div class="report-panel visible" id="panel1">
+  <div id="report1">
+    <div class="container">
+
+  <!-- HEADER -->
+  <header>
+    <div class="header-inner">
+      <div class="header-left">
+        <div class="tag">Algonova Indonesia · Operations Intelligence</div>
+        <h1>TCM Assignment<br><span>Optimization Model</span></h1>
+        <p class="subtitle">Expected Revenue per Lead = P(conversion | TCM × Course) × E(AOV | TCM × Course)</p>
+      </div>
+      <div class="header-meta">
+        <span><span class="dot"></span> Live Analysis</span>
+        <span>Data: Jan 2025 – May 2026</span>
+        <span>63,814 attended sessions</span>
+        <span>Generated: May 28, 2026</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- IMPACT SUMMARY KPIs -->
+  <section>
+    <div class="section-title">Impact Simulation Summary</div>
+    <div class="kpi-grid">
+      <div class="kpi-card hero fade-up">
+        <div class="kpi-label">Revenue Uplift (YTD 2026 Base)</div>
+        <div class="kpi-value green">+$761K</div>
+        <div class="kpi-sub">$1.44M → $2.20M on covered courses</div>
+        <div class="kpi-badge">+53.0% uplift</div>
+      </div>
+      <div class="kpi-card fade-up">
+        <div class="kpi-label">A2S Conversion Rate</div>
+        <div class="kpi-value orange">28.3%</div>
+        <div class="kpi-sub">Current weighted avg across 7 courses</div>
+        <div class="kpi-badge" style="background:rgba(255,107,53,0.12);color:var(--r1-accent2);">→ 42.5% optimized</div>
+      </div>
+      <div class="kpi-card fade-up">
+        <div class="kpi-label">A2S Uplift</div>
+        <div class="kpi-value green">+14.2pp</div>
+        <div class="kpi-sub">Percentage point improvement in conversion</div>
+        <div class="kpi-badge">Across 7 courses</div>
+      </div>
+      <div class="kpi-card fade-up">
+        <div class="kpi-label">Overall 2026 A2S (Baseline)</div>
+        <div class="kpi-value blue">31.1%</div>
+        <div class="kpi-sub">All courses, 19,175 attended leads</div>
+        <div class="kpi-badge" style="background:rgba(79,195,247,0.12);color:var(--r1-accent3);">5,965 sales</div>
+      </div>
+      <div class="kpi-card fade-up">
+        <div class="kpi-label">TCMs Profiled</div>
+        <div class="kpi-value warn">373</div>
+        <div class="kpi-sub">Active TCMs with 2026 sessions</div>
+        <div class="kpi-badge" style="background:rgba(251,191,36,0.12);color:var(--r1-warn);">136 fully reliable</div>
+      </div>
+      <div class="kpi-card fade-up">
+        <div class="kpi-label">Courses in Model</div>
+        <div class="kpi-value">7</div>
+        <div class="kpi-sub">5 Tier 1 · 2 Tier 2 · 5 fallback</div>
+        <div class="kpi-badge" style="background:rgba(255,255,255,0.05);color:var(--r1-muted);">n ≥ 30 threshold</div>
+      </div>
+    </div>
+
+    <div class="disclaimer">
+      <strong>⚠ Simulation methodology:</strong> Optimized A2S is modelled as the average A2S of the top-25% TCMs (by expected revenue) per course, based on 2025–2026 historical data with n≥30 per TCM×Course combination. AOV is sourced from pre-2026 Revenue_USD (2026 AOV data has a known field quality issue). Impact is simulated against 2026 YTD attended volume. Math Master shows 0% uplift — the top-25% profile from full history matches current 2026 performance, suggesting no improvement opportunity with current TCM pool on this course. These are projections, not guarantees — actual gains depend on TCM availability, scheduling constraints, and recency drift.
+    </div>
+  </section>
+
+  <!-- COURSE-BY-COURSE SIMULATION -->
+  <section>
+    <div class="section-title">Per-Course Impact Breakdown</div>
+    <div class="course-grid" id="courseGrid"></div>
+  </section>
+
+  <!-- TCM LEADERBOARD -->
+  <section>
+    <div class="section-title">TCM Leaderboard by Course</div>
+    <p style="font-size:13px;color:var(--r1-muted);margin-bottom:20px;font-family:'DM Mono',monospace;">Top 10 TCMs ranked by Expected Revenue per Attended Lead. Minimum 30 sessions (2025–2026). AOV fixed per course.</p>
+    <div class="leaderboard-wrap">
+      <div class="leaderboard-tabs" id="leaderboardTabs"></div>
+      <div class="leaderboard-body" id="leaderboardBody"></div>
+    </div>
+  </section>
+
+  <!-- A2S DISTRIBUTION -->
+  <section>
+    <div class="section-title">A2S Distribution Across TCMs</div>
+    <p style="font-size:13px;color:var(--r1-muted);margin-bottom:24px;font-family:'DM Mono',monospace;">How conversion rates are spread across all TCMs with ≥30 sessions per course. Wide spreads = high assignment value.</p>
+    <div class="dist-grid" id="distGrid"></div>
+  </section>
+
+  <!-- METHODOLOGY -->
+  <section>
+    <div class="section-title">Model Methodology</div>
+    <div class="formula-box">
+      <span>Expected Revenue per Lead</span> = <span style="color:var(--r1-accent)">P(conversion | TCM × Course)</span> × <span style="color:var(--r1-accent2)">E(AOV | TCM × Course)</span><br>
+      <br>
+      <span class="comment">// P(conversion) = TCM's historical A2S1 rate on this course (min 30 sessions)</span><br>
+      <span class="comment">// E(AOV) = average order value for this course (from 2025 baseline data)</span><br>
+      <span class="comment">// Assignment rule: route lead to TCM in top-25% of expected revenue for that course</span>
+    </div>
+    <div class="method-grid">
+      <div class="method-card">
+        <div class="method-num">01</div>
+        <div class="method-title">Data Period</div>
+        <div class="method-desc">2025-01-01 to 2026-05-28. All TCMs active in 2026 are included. Historical 2025 data provides volume for reliable estimates. <code>n ≥ 30</code> per TCM×Course is required for inclusion.</div>
+      </div>
+      <div class="method-card">
+        <div class="method-num">02</div>
+        <div class="method-title">Tiering Logic</div>
+        <div class="method-desc"><strong>Tier 1</strong> (full model): Math Tutoring, Visual Programming, Coding Knight, Graphic Design, Math Master — ≥50 TCMs with reliable data. <strong>Tier 2</strong> (marginal): Digital Literacy, Python Start. <strong>Fallback</strong>: overall TCM A2S used for remaining courses.</div>
+      </div>
+      <div class="method-card">
+        <div class="method-num">03</div>
+        <div class="method-title">AOV Source</div>
+        <div class="method-desc">Revenue_USD from pre-2026 data used as AOV baseline (2026 Revenue fields have a known data quality issue). AOV is fixed per course in the model — not per-TCM, since package upselling variance is absorbed into A2S signal.</div>
+      </div>
+      <div class="method-card">
+        <div class="method-num">04</div>
+        <div class="method-title">Uplift Calculation</div>
+        <div class="method-desc">Uplift = <code>(optimized_a2s − current_a2s) × AOV × attended_volume</code>. Optimized A2S never set below current (floors at baseline). Math Master shows 0% — top-quartile 2025+2026 profile already matches current 2026 performance.</div>
+      </div>
+      <div class="method-card">
+        <div class="method-num">05</div>
+        <div class="method-title">Known Limitations</div>
+        <div class="method-desc">Model assumes TCM performance is stable over time. Does not account for TCM scheduling availability, concurrent session capacity, or new-hire ramp-up curves. Recommend applying recency weighting (2026 data weighted 2×) in production.</div>
+      </div>
+      <div class="method-card">
+        <div class="method-num">06</div>
+        <div class="method-title">Next Steps</div>
+        <div class="method-desc">Integrate with autodistribution system: at lobby entry, route lead to available TCM with highest expected revenue for their enrolled course. Monitor A2S weekly by course. Re-train profiles monthly with rolling 3-month window.</div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-left">
+        Algonova Indonesia · B2C EdTech Operations · TCM Assignment Intelligence<br>
+        Analysis based on 63,814 attended master class sessions · Jan 2025 – May 2026<br>
+        Model: Expected Revenue per Lead = P(conversion | TCM × Course) × E(AOV | Course)
+      </div>
+      <div class="footer-right">CONFIDENTIAL · INTERNAL USE ONLY</div>
+    </div>
+  </footer>
+
+</div>
+
+<script>
+const DATA = {"simulation": [{"course": "Math Tutoring", "attended": 8491, "current_a2s": 0.27122835943940643, "optimized_a2s": 0.4368237132904658, "a2s_uplift_pp": 16.6, "a2s_uplift_pct": 61.1, "aov": 385.1577393943761, "current_rev": 887018, "optimized_rev": 1428577, "rev_uplift": 541559, "n_top_tcms": 30, "n_all_tcms": 117, "tier": "Tier 1"}, {"course": "Visual programming", "attended": 2822, "current_a2s": 0.30758327427356486, "optimized_a2s": 0.429371393953996, "a2s_uplift_pp": 12.2, "a2s_uplift_pct": 39.6, "aov": 215.90659362145954, "current_rev": 187407, "optimized_rev": 261611, "rev_uplift": 74204, "n_top_tcms": 27, "n_all_tcms": 106, "tier": "Tier 1"}, {"course": "The Coding Knight", "attended": 1325, "current_a2s": 0.24226415094339623, "optimized_a2s": 0.31554398748909457, "a2s_uplift_pp": 7.3, "a2s_uplift_pct": 30.2, "aov": 190.35912843229463, "current_rev": 61105, "optimized_rev": 79588, "rev_uplift": 18483, "n_top_tcms": 15, "n_all_tcms": 58, "tier": "Tier 1"}, {"course": "Graphic design", "attended": 1800, "current_a2s": 0.3511111111111111, "optimized_a2s": 0.5675906055013162, "a2s_uplift_pp": 21.6, "a2s_uplift_pct": 61.7, "aov": 200.53379033190578, "current_rev": 126737, "optimized_rev": 204878, "rev_uplift": 78141, "n_top_tcms": 13, "n_all_tcms": 50, "tier": "Tier 1"}, {"course": "Math Master", "attended": 1108, "current_a2s": 0.20126353790613719, "optimized_a2s": 0.20126353790613719, "a2s_uplift_pp": 0.0, "a2s_uplift_pct": 0.0, "aov": 198.43843738064518, "current_rev": 44252, "optimized_rev": 44252, "rev_uplift": 0, "n_top_tcms": 13, "n_all_tcms": 49, "tier": "Tier 1"}, {"course": "Digital Literacy", "attended": 667, "current_a2s": 0.32233883058470764, "optimized_a2s": 0.43515645574469103, "a2s_uplift_pp": 11.3, "a2s_uplift_pct": 35.0, "aov": 221.52471264562502, "current_rev": 47628, "optimized_rev": 64297, "rev_uplift": 16670, "n_top_tcms": 7, "n_all_tcms": 28, "tier": "Tier 2"}, {"course": "Python Start", "attended": 876, "current_a2s": 0.319634703196347, "optimized_a2s": 0.4444266074159495, "a2s_uplift_pp": 12.5, "a2s_uplift_pct": 39.0, "aov": 293.26166308376474, "current_rev": 82113, "optimized_rev": 114172, "rev_uplift": 32059, "n_top_tcms": 7, "n_all_tcms": 27, "tier": "Tier 2"}], "leaderboard": {"Math Tutoring": [{"tcm": "RAYHANA", "n": 54, "a2s": 66.7, "aov": 385.0, "expected_rev": 256.8}, {"tcm": "Jaelani", "n": 56, "a2s": 62.5, "aov": 385.0, "expected_rev": 240.7}, {"tcm": "ELLIN", "n": 66, "a2s": 54.5, "aov": 385.0, "expected_rev": 210.1}, {"tcm": "MISSEL", "n": 93, "a2s": 52.7, "aov": 385.0, "expected_rev": 202.9}, {"tcm": "FRISCA", "n": 71, "a2s": 49.3, "aov": 385.0, "expected_rev": 189.9}, {"tcm": "Mi Raj", "n": 71, "a2s": 49.3, "aov": 385.0, "expected_rev": 189.9}, {"tcm": "FELI", "n": 33, "a2s": 48.5, "aov": 385.0, "expected_rev": 186.7}, {"tcm": "RIZKY", "n": 61, "a2s": 45.9, "aov": 385.0, "expected_rev": 176.8}, {"tcm": "JASON", "n": 57, "a2s": 43.9, "aov": 385.0, "expected_rev": 168.9}, {"tcm": "ADEL", "n": 37, "a2s": 43.2, "aov": 385.0, "expected_rev": 166.6}], "Visual programming": [{"tcm": "IRA", "n": 91, "a2s": 51.6, "aov": 216.0, "expected_rev": 111.5}, {"tcm": "JESSICA", "n": 52, "a2s": 50.0, "aov": 216.0, "expected_rev": 108.0}, {"tcm": "RETNO", "n": 54, "a2s": 50.0, "aov": 216.0, "expected_rev": 108.0}, {"tcm": "MISSEL", "n": 58, "a2s": 48.3, "aov": 216.0, "expected_rev": 104.2}, {"tcm": "MAE", "n": 47, "a2s": 46.8, "aov": 216.0, "expected_rev": 101.1}, {"tcm": "JASON", "n": 56, "a2s": 46.4, "aov": 216.0, "expected_rev": 100.2}, {"tcm": "DIANA", "n": 110, "a2s": 45.5, "aov": 216.0, "expected_rev": 98.1}, {"tcm": "FEBI", "n": 43, "a2s": 44.2, "aov": 216.0, "expected_rev": 95.4}, {"tcm": "ELLIN", "n": 110, "a2s": 43.6, "aov": 216.0, "expected_rev": 94.2}, {"tcm": "RARA", "n": 147, "a2s": 42.9, "aov": 216.0, "expected_rev": 92.5}], "The Coding Knight": [{"tcm": "RAYHANA", "n": 36, "a2s": 41.7, "aov": 190.0, "expected_rev": 79.3}, {"tcm": "BALQIES", "n": 31, "a2s": 35.5, "aov": 190.0, "expected_rev": 67.5}, {"tcm": "ELLIN", "n": 69, "a2s": 34.8, "aov": 190.0, "expected_rev": 66.2}, {"tcm": "IRA", "n": 55, "a2s": 32.7, "aov": 190.0, "expected_rev": 62.3}, {"tcm": "Jaelani", "n": 55, "a2s": 32.7, "aov": 190.0, "expected_rev": 62.3}, {"tcm": "April", "n": 31, "a2s": 32.3, "aov": 190.0, "expected_rev": 61.4}, {"tcm": "NAILUL", "n": 45, "a2s": 31.1, "aov": 190.0, "expected_rev": 59.2}, {"tcm": "RARA", "n": 70, "a2s": 30.0, "aov": 190.0, "expected_rev": 57.1}, {"tcm": "RIZKY", "n": 30, "a2s": 30.0, "aov": 190.0, "expected_rev": 57.1}, {"tcm": "APRIL", "n": 41, "a2s": 29.3, "aov": 190.0, "expected_rev": 55.7}], "Graphic design": [{"tcm": "ELLIN", "n": 33, "a2s": 78.8, "aov": 201.0, "expected_rev": 158.0}, {"tcm": "Tiffany", "n": 34, "a2s": 64.7, "aov": 201.0, "expected_rev": 129.8}, {"tcm": "JESSICA", "n": 48, "a2s": 60.4, "aov": 201.0, "expected_rev": 121.2}, {"tcm": "RIZKY", "n": 60, "a2s": 58.3, "aov": 201.0, "expected_rev": 117.0}, {"tcm": "IKO", "n": 38, "a2s": 57.9, "aov": 201.0, "expected_rev": 116.1}, {"tcm": "FATIYYAH", "n": 39, "a2s": 53.8, "aov": 201.0, "expected_rev": 108.0}, {"tcm": "NANA", "n": 52, "a2s": 53.8, "aov": 201.0, "expected_rev": 108.0}, {"tcm": "RETNO", "n": 47, "a2s": 53.2, "aov": 201.0, "expected_rev": 106.7}, {"tcm": "RAYHANA", "n": 59, "a2s": 52.5, "aov": 201.0, "expected_rev": 105.4}, {"tcm": "HISYAM", "n": 58, "a2s": 51.7, "aov": 201.0, "expected_rev": 103.7}], "Math Master": [{"tcm": "JESSICA", "n": 40, "a2s": 20.0, "aov": 198.0, "expected_rev": 39.7}, {"tcm": "DIANA", "n": 37, "a2s": 18.9, "aov": 198.0, "expected_rev": 37.5}, {"tcm": "RARA", "n": 54, "a2s": 16.7, "aov": 198.0, "expected_rev": 33.1}, {"tcm": "IMA", "n": 46, "a2s": 15.2, "aov": 198.0, "expected_rev": 30.2}, {"tcm": "ELLIN", "n": 47, "a2s": 14.9, "aov": 198.0, "expected_rev": 29.6}, {"tcm": "LUIS", "n": 35, "a2s": 14.3, "aov": 198.0, "expected_rev": 28.3}, {"tcm": "ISWAN", "n": 43, "a2s": 14.0, "aov": 198.0, "expected_rev": 27.7}, {"tcm": "NANA", "n": 30, "a2s": 13.3, "aov": 198.0, "expected_rev": 26.5}, {"tcm": "ADE", "n": 55, "a2s": 12.7, "aov": 198.0, "expected_rev": 25.3}, {"tcm": "LISA", "n": 76, "a2s": 11.8, "aov": 198.0, "expected_rev": 23.5}], "Digital Literacy": [{"tcm": "ADEL", "n": 39, "a2s": 48.7, "aov": 222.0, "expected_rev": 107.9}, {"tcm": "FATIYYAH", "n": 30, "a2s": 46.7, "aov": 222.0, "expected_rev": 103.4}, {"tcm": "ELLIN", "n": 39, "a2s": 43.6, "aov": 222.0, "expected_rev": 96.6}, {"tcm": "NANA", "n": 30, "a2s": 43.3, "aov": 222.0, "expected_rev": 96.0}, {"tcm": "WIKA", "n": 34, "a2s": 41.2, "aov": 222.0, "expected_rev": 91.2}, {"tcm": "Jaelani", "n": 54, "a2s": 40.7, "aov": 222.0, "expected_rev": 90.3}, {"tcm": "IRA", "n": 52, "a2s": 40.4, "aov": 222.0, "expected_rev": 89.5}, {"tcm": "RAYHANA", "n": 35, "a2s": 40.0, "aov": 222.0, "expected_rev": 88.6}, {"tcm": "NURUL", "n": 39, "a2s": 38.5, "aov": 222.0, "expected_rev": 85.2}, {"tcm": "DIANA", "n": 37, "a2s": 37.8, "aov": 222.0, "expected_rev": 83.8}], "Python Start": [{"tcm": "ADEL", "n": 34, "a2s": 47.1, "aov": 293.0, "expected_rev": 138.0}, {"tcm": "BALQIES", "n": 35, "a2s": 45.7, "aov": 293.0, "expected_rev": 134.1}, {"tcm": "NAFIS", "n": 41, "a2s": 43.9, "aov": 293.0, "expected_rev": 128.7}, {"tcm": "SHELY", "n": 32, "a2s": 43.8, "aov": 293.0, "expected_rev": 128.3}, {"tcm": "Tiffany", "n": 32, "a2s": 43.8, "aov": 293.0, "expected_rev": 128.3}, {"tcm": "LUIS", "n": 39, "a2s": 43.6, "aov": 293.0, "expected_rev": 127.8}, {"tcm": "WIKA", "n": 30, "a2s": 43.3, "aov": 293.0, "expected_rev": 127.1}, {"tcm": "JUMA", "n": 32, "a2s": 40.6, "aov": 293.0, "expected_rev": 119.1}, {"tcm": "MONDI", "n": 38, "a2s": 39.5, "aov": 293.0, "expected_rev": 115.8}, {"tcm": "DIANA", "n": 33, "a2s": 39.4, "aov": 293.0, "expected_rev": 115.5}]}, "a2s_dist": {"Math Tutoring": [{"label": "0-10%", "count": 1}, {"label": "10-20%", "count": 22}, {"label": "20-30%", "count": 47}, {"label": "30-40%", "count": 29}, {"label": "40-50%", "count": 14}, {"label": "50-60%", "count": 2}, {"label": "60-70%", "count": 2}, {"label": "70%+", "count": 0}], "Visual programming": [{"label": "0-10%", "count": 0}, {"label": "10-20%", "count": 8}, {"label": "20-30%", "count": 38}, {"label": "30-40%", "count": 38}, {"label": "40-50%", "count": 19}, {"label": "50-60%", "count": 3}, {"label": "60-70%", "count": 0}, {"label": "70%+", "count": 0}], "The Coding Knight": [{"label": "0-10%", "count": 1}, {"label": "10-20%", "count": 18}, {"label": "20-30%", "count": 30}, {"label": "30-40%", "count": 8}, {"label": "40-50%", "count": 1}, {"label": "50-60%", "count": 0}, {"label": "60-70%", "count": 0}, {"label": "70%+", "count": 0}], "Graphic design": [{"label": "0-10%", "count": 0}, {"label": "10-20%", "count": 2}, {"label": "20-30%", "count": 8}, {"label": "30-40%", "count": 14}, {"label": "40-50%", "count": 13}, {"label": "50-60%", "count": 10}, {"label": "60-70%", "count": 2}, {"label": "70%+", "count": 1}], "Math Master": [{"label": "0-10%", "count": 38}, {"label": "10-20%", "count": 10}, {"label": "20-30%", "count": 1}, {"label": "30-40%", "count": 0}, {"label": "40-50%", "count": 0}, {"label": "50-60%", "count": 0}, {"label": "60-70%", "count": 0}, {"label": "70%+", "count": 0}], "Digital Literacy": [{"label": "0-10%", "count": 0}, {"label": "10-20%", "count": 2}, {"label": "20-30%", "count": 8}, {"label": "30-40%", "count": 10}, {"label": "40-50%", "count": 8}, {"label": "50-60%", "count": 0}, {"label": "60-70%", "count": 0}, {"label": "70%+", "count": 0}], "Python Start": [{"label": "0-10%", "count": 0}, {"label": "10-20%", "count": 3}, {"label": "20-30%", "count": 5}, {"label": "30-40%", "count": 11}, {"label": "40-50%", "count": 8}, {"label": "50-60%", "count": 0}, {"label": "60-70%", "count": 0}, {"label": "70%+", "count": 0}]}};
+
+function fmt(n) { return n.toLocaleString('en-US', {maximumFractionDigits:0}); }
+function fmtPct(n) { return (n*100).toFixed(1)+'%'; }
+
+// COURSE CARDS
+const courseGrid = document.getElementById('courseGrid');
+DATA.simulation.forEach(d => {
+  const hasUplift = d.a2s_uplift_pp > 0;
+  const card = document.createElement('div');
+  card.className = 'course-card';
+  const maxRev = Math.max(...DATA.simulation.map(x=>x.optimized_rev));
+  const currW = (d.current_rev/maxRev*100).toFixed(1);
+  const optW = (d.optimized_rev/maxRev*100).toFixed(1);
+  const maxA2s = Math.max(...DATA.simulation.map(x=>x.optimized_a2s));
+  const currA = (d.current_a2s/maxA2s*100).toFixed(1);
+  const optA = (d.optimized_a2s/maxA2s*100).toFixed(1);
+
+  card.innerHTML = `
+    <div class="course-header">
+      <div class="course-name">${d.course}</div>
+      <span class="tier-badge ${d.tier==='Tier 1'?'t1':'t2'}">${d.tier}</span>
+    </div>
+
+    <div class="metric-row">
+      <div class="metric-label"><span>A2S Rate</span></div>
+      <div class="bar-stack">
+        <div class="bar-track"><div class="bar-fill current" style="width:${currA}%"></div></div>
+        <div class="bar-track"><div class="bar-fill optimized" style="width:${optA}%"></div></div>
+      </div>
+      <div class="bar-labels">
+        <span class="curr">Current: ${fmtPct(d.current_a2s)}</span>
+        <span class="opt">Optimized: ${fmtPct(d.optimized_a2s)}</span>
+      </div>
+    </div>
+
+    <div class="metric-row" style="margin-top:12px">
+      <div class="metric-label"><span>Revenue (YTD 2026)</span></div>
+      <div class="bar-stack">
+        <div class="bar-track"><div class="bar-fill current" style="width:${currW}%"></div></div>
+        <div class="bar-track"><div class="bar-fill optimized" style="width:${optW}%"></div></div>
+      </div>
+      <div class="bar-labels">
+        <span class="curr">$${fmt(d.current_rev)}</span>
+        <span class="opt">$${fmt(d.optimized_rev)}</span>
+      </div>
+    </div>
+
+    ${hasUplift
+      ? `<div class="uplift-pill">▲ +${d.a2s_uplift_pp}pp A2S &nbsp;·&nbsp; +$${fmt(d.rev_uplift)} revenue</div>`
+      : `<div class="uplift-pill zero">— No uplift modelled</div>`
+    }
+    ${!hasUplift ? `<div class="no-uplift-note">Top-quartile TCM profile (2025–2026) matches current 2026 performance. Course may need product review or fresh TCM development.</div>` : ''}
+    <div class="attended-note">${fmt(d.attended)} attended · ${d.n_all_tcms} TCMs profiled · AOV $${fmt(d.aov)}</div>
+  `;
+  courseGrid.appendChild(card);
+});
+
+// LEADERBOARD
+const courses = Object.keys(DATA.leaderboard);
+const tabs = document.getElementById('leaderboardTabs');
+const body = document.getElementById('leaderboardBody');
+let activeTab = courses[0];
+
+function renderLeaderboard(course) {
+  const rows = DATA.leaderboard[course];
+  const maxER = rows[0].expected_rev;
+  body.innerHTML = `<table>
+    <thead><tr>
+      <th>#</th><th>TCM</th><th>A2S Rate</th><th>Expected Rev / Lead</th><th>Sessions</th>
+    </tr></thead>
+    <tbody>
+    ${rows.map((r,i) => `<tr>
+      <td><span class="rank ${i<3?'top':''}">${i+1}</span></td>
+      <td><span class="tcm-name">${r.tcm}</span></td>
+      <td>
+        <div class="a2s-bar">
+          <div class="a2s-mini"><div class="a2s-mini-fill" style="width:${(r.a2s/rows[0].a2s*100).toFixed(0)}%"></div></div>
+          <span class="a2s-val">${r.a2s}%</span>
+        </div>
+      </td>
+      <td><span class="exp-rev">$${r.expected_rev}</span></td>
+      <td><span class="n-obs">${r.n}</span></td>
+    </tr>`).join('')}
+    </tbody>
+  </table>`;
+}
+
+courses.forEach(c => {
+  const tab = document.createElement('button');
+  tab.className = 'leaderboard-tab' + (c === activeTab ? ' active' : '');
+  tab.textContent = c;
+  tab.onclick = () => {
+    document.querySelectorAll('.leaderboard-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    activeTab = c;
+    renderLeaderboard(c);
+  };
+  tabs.appendChild(tab);
+});
+renderLeaderboard(activeTab);
+
+// DISTRIBUTION
+const distGrid = document.getElementById('distGrid');
+Object.entries(DATA.a2s_dist).forEach(([course, dist]) => {
+  const maxCount = Math.max(...dist.map(d=>d.count));
+  const card = document.createElement('div');
+  card.className = 'dist-card';
+  card.innerHTML = `
+    <div class="dist-card-title">${course}</div>
+    <div class="dist-bars">
+      ${dist.map(d => `
+        <div class="dist-col">
+          <div class="dist-bar-wrap">
+            <div class="dist-bar" style="height:${maxCount>0?(d.count/maxCount*100).toFixed(0):0}%" title="${d.count} TCMs"></div>
+          </div>
+          <div class="dist-bar-label">${d.label.replace('%','')}</div>
+        </div>
+      `).join('')}
+    </div>
+    <div style="font-size:11px;color:var(--r1-muted);font-family:'DM Mono',monospace;margin-top:8px;">Distribution of A2S rates across TCMs (n≥30)</div>
+  `;
+  distGrid.appendChild(card);
+});
+
+// Animate bars on load
+setTimeout(() => {
+  document.querySelectorAll('.bar-fill').forEach(b => {
+    const w = b.style.width;
+    b.style.width = '0';
+    setTimeout(() => b.style.width = w, 100);
+  });
+}, 200);
+</script>
+  </div>
+</div>
+
+<!-- REPORT 2: TCM RELIABILITY SCORE -->
+<div class="report-panel" id="panel2">
+  <div id="report2">
+    <div class="container">
+
+<header>
+  <div class="header-top">
+    <div>
+      <div class="eyebrow">Algonova Indonesia · Operations</div>
+      <h1>TCM Reliability<br><span class="line2">Score Report</span></h1>
+      <p class="header-sub">
+        Composite operational reliability score per Trial Class Manager<br>
+        Data: Feb 2026 – May 2026 · 14,284 sessions · 154 TCMs profiled
+      </p>
+    </div>
+    <div class="header-meta">
+      <div class="live-badge"><span class="pulse"></span>EARLY SIGNAL</div>
+      <span>Score = Completion(40%) + Duration(35%) + Lobby(25%)</span>
+      <span>Min. 20 sessions threshold</span>
+      <span>Scored 0–100, percentile-normalized</span>
+    </div>
+  </div>
+</header>
+
+<!-- KPIs -->
+<section>
+  <div class="section-label">Fleet Overview</div>
+  <div class="kpi-row" id="kpiRow"></div>
+
+  <div class="notice">
+    ⚠ <strong>Data coverage note:</strong> Completion and lobby metrics are only reliably populated from Feb 2026 onwards — coverage before this date is near-zero. This report uses Feb–May 2026 (4 months). TCM join speed and no-show rate could not be computed from available data (see methodology). Scores should be treated as early signals; re-evaluate quarterly as data matures. System-level failures (autodistribution errors) may artificially lower some TCMs' scores — cross-reference with the tech issues log.
+  </div>
+</section>
+
+<!-- METHODOLOGY -->
+<section>
+  <div class="section-label">Score Components</div>
+  <div class="formula-grid">
+    <div class="formula-card">
+      <div class="fc-weight w1">40%</div>
+      <div class="fc-name">Session Completion Rate</div>
+      <div class="fc-desc">Share of assigned sessions with a recorded finish timestamp. Most directly TCM-controlled — measures whether the TCM ran the session to its natural end. Range in data: 0%–97.4%.</div>
+      <div class="fc-bar b1"></div>
+    </div>
+    <div class="formula-card">
+      <div class="fc-weight w2">35%</div>
+      <div class="fc-name">Session Duration Score</div>
+      <div class="fc-desc">Median session length normalized against the 90-minute class benchmark. Longer sessions proxy for engagement depth and full pitch delivery. Range: 79–190 min. Capped at 1.0 above 90 min.</div>
+      <div class="fc-bar b2"></div>
+    </div>
+    <div class="formula-card">
+      <div class="fc-weight w3">25%</div>
+      <div class="fc-name">Lobby Engagement Rate</div>
+      <div class="fc-desc">Share of assigned sessions where the student entered the lobby. Partially influenced by lead quality and time slot, not purely TCM behavior — hence lowest weight. Range: 54.5%–100%.</div>
+      <div class="fc-bar b3"></div>
+    </div>
+  </div>
+</section>
+
+<!-- DISTRIBUTION -->
+<section>
+  <div class="section-label">Score Distribution</div>
+  <div class="dist-row">
+    <div class="dist-card">
+      <div class="dist-title">Score Distribution (0–100)</div>
+      <div class="dist-bars-horiz" id="scoreDist"></div>
+    </div>
+    <div class="dist-card">
+      <div class="dist-title">Tier Breakdown</div>
+      <div id="tierDist"></div>
+    </div>
+  </div>
+</section>
+
+<!-- LEADERBOARD TABLE -->
+<section>
+  <div class="section-label">TCM Reliability Rankings</div>
+  <div class="controls">
+    <input class="search-box" type="text" placeholder="Search TCM name..." id="searchInput">
+    <button class="filter-btn active" id="btnAll" onclick="setFilter('all')">ALL</button>
+    <button class="filter-btn f-elite" id="btnElite" onclick="setFilter('Elite')">ELITE</button>
+    <button class="filter-btn f-solid" id="btnSolid" onclick="setFilter('Solid')">SOLID</button>
+    <button class="filter-btn f-developing" id="btnDeveloping" onclick="setFilter('Developing')">DEVELOPING</button>
+    <select class="sort-select" id="sortSelect" onchange="applySort()">
+      <option value="reliability_score">Sort: Reliability Score</option>
+      <option value="completion_rate">Sort: Completion Rate</option>
+      <option value="median_duration">Sort: Session Duration</option>
+      <option value="lobby_rate">Sort: Lobby Rate</option>
+      <option value="total_sessions">Sort: Sessions Count</option>
+    </select>
+    <span class="results-count" id="resultsCount"></span>
+  </div>
+  <div class="tcm-table-wrap">
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:40px">#</th>
+            <th>TCM</th>
+            <th>Reliability Score</th>
+            <th>Tier</th>
+            <th onclick="setSortCol('completion_rate')">Completion <span class="sort-arrow">↕</span></th>
+            <th onclick="setSortCol('median_duration')">Duration <span class="sort-arrow">↕</span></th>
+            <th onclick="setSortCol('lobby_rate')">Lobby <span class="sort-arrow">↕</span></th>
+            <th>Confidence</th>
+            <th onclick="setSortCol('total_sessions')">Sessions <span class="sort-arrow">↕</span></th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-grid">
+    <div class="footer-left">
+      Algonova Indonesia · B2C EdTech Operations · TCM Reliability Intelligence<br>
+      Based on 14,284 autodistribution sessions · Feb 2026 – May 2026 · 154 TCMs<br>
+      Score = Completion(40%) + Duration(35%) + Lobby Engagement(25%) · Normalized 0–100
+    </div>
+    <div class="footer-right">STANDALONE REPORT · NOT LINKED TO A2S MODEL</div>
+  </div>
+</footer>
+
+</div>
+
+<script>
+const DATA2 = {"tcms": [{"tcm": "WATI", "total_sessions": 38, "completion_rate": 97.4, "median_duration": 126.0, "lobby_rate": 100.0, "completion_score": 97.4, "duration_score": 100.0, "lobby_score": 100.0, "reliability_score": 100.0, "tier": "Elite", "confidence": "Low"}, {"tcm": "JOSEPH", "total_sessions": 20, "completion_rate": 95.0, "median_duration": 117.0, "lobby_rate": 100.0, "completion_score": 95.0, "duration_score": 100.0, "lobby_score": 100.0, "reliability_score": 97.9, "tier": "Elite", "confidence": "Low"}, {"tcm": "APRIL", "total_sessions": 38, "completion_rate": 89.5, "median_duration": 127.0, "lobby_rate": 100.0, "completion_score": 89.5, "duration_score": 100.0, "lobby_score": 100.0, "reliability_score": 93.1, "tier": "Elite", "confidence": "Low"}, {"tcm": "MIRANTI", "total_sessions": 35, "completion_rate": 88.6, "median_duration": 101.0, "lobby_rate": 100.0, "completion_score": 88.6, "duration_score": 100.0, "lobby_score": 100.0, "reliability_score": 92.3, "tier": "Elite", "confidence": "Low"}, {"tcm": "TOFFEL", "total_sessions": 41, "completion_rate": 87.8, "median_duration": 99.0, "lobby_rate": 100.0, "completion_score": 87.8, "duration_score": 100.0, "lobby_score": 100.0, "reliability_score": 91.6, "tier": "Elite", "confidence": "Low"}, {"tcm": "DIYAN", "total_sessions": 99, "completion_rate": 89.9, "median_duration": 120.0, "lobby_rate": 96.0, "completion_score": 89.9, "duration_score": 100.0, "lobby_score": 96.0, "reliability_score": 91.2, "tier": "Elite", "confidence": "Medium"}, {"tcm": "Marthalina", "total_sessions": 22, "completion_rate": 90.9, "median_duration": 116.0, "lobby_rate": 90.9, "completion_score": 90.9, "duration_score": 100.0, "lobby_score": 90.9, "reliability_score": 89.3, "tier": "Elite", "confidence": "Low"}, {"tcm": "SUGANDA", "total_sessions": 161, "completion_rate": 88.2, "median_duration": 113.0, "lobby_rate": 94.4, "completion_score": 88.2, "duration_score": 100.0, "lobby_score": 94.4, "reliability_score": 88.9, "tier": "Elite", "confidence": "High"}, {"tcm": "LUIS", "total_sessions": 113, "completion_rate": 86.7, "median_duration": 111.0, "lobby_rate": 96.5, "completion_score": 86.7, "duration_score": 100.0, "lobby_score": 96.5, "reliability_score": 88.7, "tier": "Elite", "confidence": "High"}, {"tcm": "LISA", "total_sessions": 96, "completion_rate": 86.5, "median_duration": 116.0, "lobby_rate": 94.8, "completion_score": 86.5, "duration_score": 100.0, "lobby_score": 94.8, "reliability_score": 87.5, "tier": "Elite", "confidence": "Medium"}, {"tcm": "IRNAA", "total_sessions": 94, "completion_rate": 86.2, "median_duration": 104.0, "lobby_rate": 94.7, "completion_score": 86.2, "duration_score": 100.0, "lobby_score": 94.7, "reliability_score": 87.2, "tier": "Elite", "confidence": "Medium"}, {"tcm": "PRAPTIWI", "total_sessions": 111, "completion_rate": 84.7, "median_duration": 99.0, "lobby_rate": 96.4, "completion_score": 84.7, "duration_score": 100.0, "lobby_score": 96.4, "reliability_score": 86.9, "tier": "Elite", "confidence": "High"}, {"tcm": "ICA", "total_sessions": 163, "completion_rate": 86.5, "median_duration": 129.0, "lobby_rate": 93.3, "completion_score": 86.5, "duration_score": 100.0, "lobby_score": 93.3, "reliability_score": 86.7, "tier": "Elite", "confidence": "High"}, {"tcm": "ANNISA", "total_sessions": 179, "completion_rate": 84.9, "median_duration": 94.0, "lobby_rate": 95.5, "completion_score": 84.9, "duration_score": 100.0, "lobby_score": 95.5, "reliability_score": 86.6, "tier": "Elite", "confidence": "High"}, {"tcm": "YESAYA", "total_sessions": 78, "completion_rate": 85.9, "median_duration": 91.0, "lobby_rate": 93.6, "completion_score": 85.9, "duration_score": 100.0, "lobby_score": 93.6, "reliability_score": 86.4, "tier": "Elite", "confidence": "Medium"}, {"tcm": "RATU", "total_sessions": 155, "completion_rate": 85.2, "median_duration": 116.0, "lobby_rate": 94.2, "completion_score": 85.2, "duration_score": 100.0, "lobby_score": 94.2, "reliability_score": 86.1, "tier": "Elite", "confidence": "High"}, {"tcm": "FEBYANA", "total_sessions": 156, "completion_rate": 87.2, "median_duration": 121.0, "lobby_rate": 91.0, "completion_score": 87.2, "duration_score": 100.0, "lobby_score": 91.0, "reliability_score": 86.1, "tier": "Elite", "confidence": "High"}, {"tcm": "RESINTA", "total_sessions": 116, "completion_rate": 83.6, "median_duration": 127.0, "lobby_rate": 96.6, "completion_score": 83.6, "duration_score": 100.0, "lobby_score": 96.6, "reliability_score": 86.0, "tier": "Elite", "confidence": "High"}, {"tcm": "AZHAR", "total_sessions": 94, "completion_rate": 85.1, "median_duration": 92.0, "lobby_rate": 92.6, "completion_score": 85.1, "duration_score": 100.0, "lobby_score": 92.6, "reliability_score": 85.1, "tier": "Elite", "confidence": "Medium"}, {"tcm": "ALIEF", "total_sessions": 143, "completion_rate": 83.2, "median_duration": 99.0, "lobby_rate": 95.1, "completion_score": 83.2, "duration_score": 100.0, "lobby_score": 95.1, "reliability_score": 84.9, "tier": "Elite", "confidence": "High"}, {"tcm": "RAYMOND", "total_sessions": 33, "completion_rate": 81.8, "median_duration": 104.0, "lobby_rate": 97.0, "completion_score": 81.8, "duration_score": 100.0, "lobby_score": 97.0, "reliability_score": 84.7, "tier": "Elite", "confidence": "Low"}, {"tcm": "ABIYU", "total_sessions": 23, "completion_rate": 82.6, "median_duration": 105.0, "lobby_rate": 95.7, "completion_score": 82.6, "duration_score": 100.0, "lobby_score": 95.7, "reliability_score": 84.6, "tier": "Elite", "confidence": "Low"}, {"tcm": "NAFIS", "total_sessions": 67, "completion_rate": 83.6, "median_duration": 116.0, "lobby_rate": 94.0, "completion_score": 83.6, "duration_score": 100.0, "lobby_score": 94.0, "reliability_score": 84.6, "tier": "Elite", "confidence": "Medium"}, {"tcm": "Resinta", "total_sessions": 45, "completion_rate": 86.7, "median_duration": 129.0, "lobby_rate": 88.9, "completion_score": 86.7, "duration_score": 100.0, "lobby_score": 88.9, "reliability_score": 84.5, "tier": "Elite", "confidence": "Low"}, {"tcm": "ZHAFIRA", "total_sessions": 60, "completion_rate": 81.7, "median_duration": 103.0, "lobby_rate": 96.7, "completion_score": 81.7, "duration_score": 100.0, "lobby_score": 96.7, "reliability_score": 84.4, "tier": "Elite", "confidence": "Medium"}, {"tcm": "IPON", "total_sessions": 113, "completion_rate": 85.0, "median_duration": 123.0, "lobby_rate": 91.2, "completion_score": 85.0, "duration_score": 100.0, "lobby_score": 91.2, "reliability_score": 84.2, "tier": "Elite", "confidence": "High"}, {"tcm": "lidia", "total_sessions": 32, "completion_rate": 81.2, "median_duration": 132.0, "lobby_rate": 96.9, "completion_score": 81.2, "duration_score": 100.0, "lobby_score": 96.9, "reliability_score": 84.1, "tier": "Elite", "confidence": "Low"}, {"tcm": "EVI", "total_sessions": 91, "completion_rate": 82.4, "median_duration": 111.0, "lobby_rate": 94.5, "completion_score": 82.4, "duration_score": 100.0, "lobby_score": 94.5, "reliability_score": 83.8, "tier": "Elite", "confidence": "Medium"}, {"tcm": "IKO", "total_sessions": 63, "completion_rate": 82.5, "median_duration": 98.0, "lobby_rate": 93.7, "completion_score": 82.5, "duration_score": 100.0, "lobby_score": 93.7, "reliability_score": 83.5, "tier": "Elite", "confidence": "Medium"}, {"tcm": "TARA", "total_sessions": 67, "completion_rate": 82.1, "median_duration": 110.0, "lobby_rate": 94.0, "completion_score": 82.1, "duration_score": 100.0, "lobby_score": 94.0, "reliability_score": 83.3, "tier": "Elite", "confidence": "Medium"}, {"tcm": "ARIE", "total_sessions": 120, "completion_rate": 82.5, "median_duration": 113.0, "lobby_rate": 93.3, "completion_score": 82.5, "duration_score": 100.0, "lobby_score": 93.3, "reliability_score": 83.3, "tier": "Elite", "confidence": "High"}, {"tcm": "NURUL", "total_sessions": 127, "completion_rate": 82.7, "median_duration": 123.0, "lobby_rate": 92.9, "completion_score": 82.7, "duration_score": 100.0, "lobby_score": 92.9, "reliability_score": 83.2, "tier": "Elite", "confidence": "High"}, {"tcm": "FITRI", "total_sessions": 53, "completion_rate": 83.0, "median_duration": 152.0, "lobby_rate": 92.5, "completion_score": 83.0, "duration_score": 100.0, "lobby_score": 92.5, "reliability_score": 83.2, "tier": "Elite", "confidence": "Medium"}, {"tcm": "JUN", "total_sessions": 149, "completion_rate": 83.2, "median_duration": 101.0, "lobby_rate": 91.3, "completion_score": 83.2, "duration_score": 100.0, "lobby_score": 91.3, "reliability_score": 82.8, "tier": "Elite", "confidence": "High"}, {"tcm": "DIAH", "total_sessions": 93, "completion_rate": 81.7, "median_duration": 115.0, "lobby_rate": 93.5, "completion_score": 81.7, "duration_score": 100.0, "lobby_score": 93.5, "reliability_score": 82.7, "tier": "Elite", "confidence": "Medium"}, {"tcm": "IRMAY", "total_sessions": 26, "completion_rate": 84.6, "median_duration": 97.0, "lobby_rate": 88.5, "completion_score": 84.6, "duration_score": 100.0, "lobby_score": 88.5, "reliability_score": 82.4, "tier": "Elite", "confidence": "Low"}, {"tcm": "FIKAR", "total_sessions": 35, "completion_rate": 80.0, "median_duration": 92.0, "lobby_rate": 94.3, "completion_score": 80.0, "duration_score": 100.0, "lobby_score": 94.3, "reliability_score": 81.6, "tier": "Elite", "confidence": "Low"}, {"tcm": "NADYA", "total_sessions": 122, "completion_rate": 82.0, "median_duration": 122.0, "lobby_rate": 91.0, "completion_score": 82.0, "duration_score": 100.0, "lobby_score": 91.0, "reliability_score": 81.5, "tier": "Elite", "confidence": "High"}, {"tcm": "NAILUL", "total_sessions": 102, "completion_rate": 82.4, "median_duration": 105.0, "lobby_rate": 90.2, "completion_score": 82.4, "duration_score": 100.0, "lobby_score": 90.2, "reliability_score": 81.4, "tier": "Elite", "confidence": "High"}, {"tcm": "EGITA", "total_sessions": 29, "completion_rate": 75.9, "median_duration": 116.0, "lobby_rate": 100.0, "completion_score": 75.9, "duration_score": 100.0, "lobby_score": 100.0, "reliability_score": 81.1, "tier": "Solid", "confidence": "Low"}, {"tcm": "MALAI", "total_sessions": 140, "completion_rate": 80.0, "median_duration": 89.0, "lobby_rate": 93.6, "completion_score": 80.0, "duration_score": 98.9, "lobby_score": 93.6, "reliability_score": 80.3, "tier": "Solid", "confidence": "High"}, {"tcm": "KIYA", "total_sessions": 79, "completion_rate": 81.0, "median_duration": 121.0, "lobby_rate": 89.9, "completion_score": 81.0, "duration_score": 100.0, "lobby_score": 89.9, "reliability_score": 80.0, "tier": "Solid", "confidence": "Medium"}, {"tcm": "LIA", "total_sessions": 32, "completion_rate": 78.1, "median_duration": 116.0, "lobby_rate": 93.8, "completion_score": 78.1, "duration_score": 100.0, "lobby_score": 93.8, "reliability_score": 79.6, "tier": "Solid", "confidence": "Low"}, {"tcm": "ILHAM", "total_sessions": 65, "completion_rate": 76.9, "median_duration": 118.0, "lobby_rate": 95.4, "completion_score": 76.9, "duration_score": 100.0, "lobby_score": 95.4, "reliability_score": 79.5, "tier": "Solid", "confidence": "Medium"}, {"tcm": "BALQIES", "total_sessions": 95, "completion_rate": 80.0, "median_duration": 91.0, "lobby_rate": 90.5, "completion_score": 80.0, "duration_score": 100.0, "lobby_score": 90.5, "reliability_score": 79.5, "tier": "Solid", "confidence": "Medium"}, {"tcm": "ADE", "total_sessions": 126, "completion_rate": 80.2, "median_duration": 117.0, "lobby_rate": 89.7, "completion_score": 80.2, "duration_score": 100.0, "lobby_score": 89.7, "reliability_score": 79.2, "tier": "Solid", "confidence": "High"}, {"tcm": "NURJANNAH", "total_sessions": 165, "completion_rate": 77.0, "median_duration": 137.0, "lobby_rate": 94.5, "completion_score": 77.0, "duration_score": 100.0, "lobby_score": 94.5, "reliability_score": 79.1, "tier": "Solid", "confidence": "High"}, {"tcm": "GRACE", "total_sessions": 134, "completion_rate": 79.1, "median_duration": 100.0, "lobby_rate": 91.0, "completion_score": 79.1, "duration_score": 100.0, "lobby_score": 91.0, "reliability_score": 79.0, "tier": "Solid", "confidence": "High"}, {"tcm": "DIANA", "total_sessions": 150, "completion_rate": 80.0, "median_duration": 111.0, "lobby_rate": 89.3, "completion_score": 80.0, "duration_score": 100.0, "lobby_score": 89.3, "reliability_score": 78.9, "tier": "Solid", "confidence": "High"}, {"tcm": "IRA", "total_sessions": 145, "completion_rate": 80.7, "median_duration": 86.0, "lobby_rate": 94.5, "completion_score": 80.7, "duration_score": 95.5, "lobby_score": 94.5, "reliability_score": 78.8, "tier": "Solid", "confidence": "High"}, {"tcm": "Jaelani", "total_sessions": 124, "completion_rate": 77.4, "median_duration": 91.0, "lobby_rate": 92.7, "completion_score": 77.4, "duration_score": 100.0, "lobby_score": 92.7, "reliability_score": 78.5, "tier": "Solid", "confidence": "High"}, {"tcm": "OKE", "total_sessions": 120, "completion_rate": 76.7, "median_duration": 89.0, "lobby_rate": 95.0, "completion_score": 76.7, "duration_score": 99.3, "lobby_score": 95.0, "reliability_score": 78.5, "tier": "Solid", "confidence": "High"}, {"tcm": "SUNAN", "total_sessions": 210, "completion_rate": 77.6, "median_duration": 130.0, "lobby_rate": 92.4, "completion_score": 77.6, "duration_score": 100.0, "lobby_score": 92.4, "reliability_score": 78.4, "tier": "Solid", "confidence": "High"}, {"tcm": "ANDI", "total_sessions": 85, "completion_rate": 76.5, "median_duration": 107.0, "lobby_rate": 94.1, "completion_score": 76.5, "duration_score": 100.0, "lobby_score": 94.1, "reliability_score": 78.4, "tier": "Solid", "confidence": "Medium"}, {"tcm": "WAHYUNI", "total_sessions": 89, "completion_rate": 75.3, "median_duration": 132.0, "lobby_rate": 94.4, "completion_score": 75.3, "duration_score": 100.0, "lobby_score": 94.4, "reliability_score": 77.5, "tier": "Solid", "confidence": "Medium"}, {"tcm": "SHELY", "total_sessions": 82, "completion_rate": 75.6, "median_duration": 140.0, "lobby_rate": 93.9, "completion_score": 75.6, "duration_score": 100.0, "lobby_score": 93.9, "reliability_score": 77.5, "tier": "Solid", "confidence": "Medium"}, {"tcm": "AMELIASARI", "total_sessions": 34, "completion_rate": 76.5, "median_duration": 135.0, "lobby_rate": 91.2, "completion_score": 76.5, "duration_score": 100.0, "lobby_score": 91.2, "reliability_score": 76.8, "tier": "Solid", "confidence": "Low"}, {"tcm": "KAMAL", "total_sessions": 75, "completion_rate": 74.7, "median_duration": 142.0, "lobby_rate": 93.3, "completion_score": 74.7, "duration_score": 100.0, "lobby_score": 93.3, "reliability_score": 76.4, "tier": "Solid", "confidence": "Medium"}, {"tcm": "BUNGA", "total_sessions": 99, "completion_rate": 76.8, "median_duration": 119.0, "lobby_rate": 89.9, "completion_score": 76.8, "duration_score": 100.0, "lobby_score": 89.9, "reliability_score": 76.3, "tier": "Solid", "confidence": "Medium"}, {"tcm": "NAOMI", "total_sessions": 73, "completion_rate": 75.3, "median_duration": 141.0, "lobby_rate": 91.8, "completion_score": 75.3, "duration_score": 100.0, "lobby_score": 91.8, "reliability_score": 76.1, "tier": "Solid", "confidence": "Medium"}, {"tcm": "RIKA", "total_sessions": 105, "completion_rate": 76.2, "median_duration": 126.0, "lobby_rate": 88.6, "completion_score": 76.2, "duration_score": 100.0, "lobby_score": 88.6, "reliability_score": 75.1, "tier": "Solid", "confidence": "High"}, {"tcm": "KHOLID", "total_sessions": 66, "completion_rate": 72.7, "median_duration": 123.0, "lobby_rate": 93.9, "completion_score": 72.7, "duration_score": 100.0, "lobby_score": 93.9, "reliability_score": 75.0, "tier": "Solid", "confidence": "Medium"}, {"tcm": "IMA", "total_sessions": 129, "completion_rate": 76.7, "median_duration": 122.0, "lobby_rate": 86.8, "completion_score": 76.7, "duration_score": 100.0, "lobby_score": 86.8, "reliability_score": 74.6, "tier": "Solid", "confidence": "High"}, {"tcm": "INDAH", "total_sessions": 97, "completion_rate": 74.2, "median_duration": 104.0, "lobby_rate": 90.7, "completion_score": 74.2, "duration_score": 100.0, "lobby_score": 90.7, "reliability_score": 74.5, "tier": "Solid", "confidence": "Medium"}, {"tcm": "WORO", "total_sessions": 95, "completion_rate": 73.7, "median_duration": 111.0, "lobby_rate": 91.6, "completion_score": 73.7, "duration_score": 100.0, "lobby_score": 91.6, "reliability_score": 74.5, "tier": "Solid", "confidence": "Medium"}, {"tcm": "STEPHEN", "total_sessions": 126, "completion_rate": 76.2, "median_duration": 101.0, "lobby_rate": 86.5, "completion_score": 76.2, "duration_score": 100.0, "lobby_score": 86.5, "reliability_score": 74.0, "tier": "Solid", "confidence": "High"}, {"tcm": "FARHAN", "total_sessions": 140, "completion_rate": 73.6, "median_duration": 131.0, "lobby_rate": 90.7, "completion_score": 73.6, "duration_score": 100.0, "lobby_score": 90.7, "reliability_score": 74.0, "tier": "Solid", "confidence": "High"}, {"tcm": "NIRWANA", "total_sessions": 82, "completion_rate": 68.3, "median_duration": 131.0, "lobby_rate": 98.8, "completion_score": 68.3, "duration_score": 100.0, "lobby_score": 98.8, "reliability_score": 73.8, "tier": "Solid", "confidence": "Medium"}, {"tcm": "Anazmita", "total_sessions": 27, "completion_rate": 74.1, "median_duration": 139.0, "lobby_rate": 88.9, "completion_score": 74.1, "duration_score": 100.0, "lobby_score": 88.9, "reliability_score": 73.4, "tier": "Solid", "confidence": "Low"}, {"tcm": "YOSI", "total_sessions": 47, "completion_rate": 72.3, "median_duration": 103.0, "lobby_rate": 91.5, "completion_score": 72.3, "duration_score": 100.0, "lobby_score": 91.5, "reliability_score": 73.3, "tier": "Solid", "confidence": "Low"}, {"tcm": "RISKA", "total_sessions": 159, "completion_rate": 74.2, "median_duration": 118.0, "lobby_rate": 88.1, "completion_score": 74.2, "duration_score": 100.0, "lobby_score": 88.1, "reliability_score": 73.1, "tier": "Solid", "confidence": "High"}, {"tcm": "ARTI", "total_sessions": 33, "completion_rate": 66.7, "median_duration": 96.0, "lobby_rate": 100.0, "completion_score": 66.7, "duration_score": 100.0, "lobby_score": 100.0, "reliability_score": 73.0, "tier": "Solid", "confidence": "Low"}, {"tcm": "NANA", "total_sessions": 98, "completion_rate": 73.5, "median_duration": 115.0, "lobby_rate": 88.8, "completion_score": 73.5, "duration_score": 100.0, "lobby_score": 88.8, "reliability_score": 72.8, "tier": "Solid", "confidence": "Medium"}, {"tcm": "HENDRA", "total_sessions": 149, "completion_rate": 71.1, "median_duration": 106.0, "lobby_rate": 91.9, "completion_score": 71.1, "duration_score": 100.0, "lobby_score": 91.9, "reliability_score": 72.5, "tier": "Solid", "confidence": "High"}, {"tcm": "KARINA", "total_sessions": 38, "completion_rate": 71.1, "median_duration": 131.0, "lobby_rate": 92.1, "completion_score": 71.1, "duration_score": 100.0, "lobby_score": 92.1, "reliability_score": 72.5, "tier": "Solid", "confidence": "Low"}, {"tcm": "VANI", "total_sessions": 103, "completion_rate": 72.8, "median_duration": 136.0, "lobby_rate": 89.3, "completion_score": 72.8, "duration_score": 100.0, "lobby_score": 89.3, "reliability_score": 72.5, "tier": "Solid", "confidence": "High"}, {"tcm": "SHAFA", "total_sessions": 88, "completion_rate": 75.0, "median_duration": 146.0, "lobby_rate": 85.2, "completion_score": 75.0, "duration_score": 100.0, "lobby_score": 85.2, "reliability_score": 72.2, "tier": "Solid", "confidence": "Medium"}, {"tcm": "FELI", "total_sessions": 78, "completion_rate": 71.8, "median_duration": 130.0, "lobby_rate": 89.7, "completion_score": 71.8, "duration_score": 100.0, "lobby_score": 89.7, "reliability_score": 71.9, "tier": "Solid", "confidence": "Medium"}, {"tcm": "Elina", "total_sessions": 32, "completion_rate": 68.8, "median_duration": 134.0, "lobby_rate": 93.8, "completion_score": 68.8, "duration_score": 100.0, "lobby_score": 93.8, "reliability_score": 71.4, "tier": "Solid", "confidence": "Low"}, {"tcm": "MAYANG", "total_sessions": 86, "completion_rate": 69.8, "median_duration": 121.0, "lobby_rate": 91.9, "completion_score": 69.8, "duration_score": 100.0, "lobby_score": 91.9, "reliability_score": 71.2, "tier": "Solid", "confidence": "Medium"}, {"tcm": "ESTER", "total_sessions": 139, "completion_rate": 74.8, "median_duration": 131.0, "lobby_rate": 83.5, "completion_score": 74.8, "duration_score": 100.0, "lobby_score": 83.5, "reliability_score": 71.1, "tier": "Solid", "confidence": "High"}, {"tcm": "FADHILAH", "total_sessions": 87, "completion_rate": 70.1, "median_duration": 140.0, "lobby_rate": 90.8, "completion_score": 70.1, "duration_score": 100.0, "lobby_score": 90.8, "reliability_score": 71.0, "tier": "Solid", "confidence": "Medium"}, {"tcm": "ISWAN", "total_sessions": 154, "completion_rate": 74.0, "median_duration": 123.0, "lobby_rate": 84.4, "completion_score": 74.0, "duration_score": 100.0, "lobby_score": 84.4, "reliability_score": 70.9, "tier": "Solid", "confidence": "High"}, {"tcm": "MUTIARA", "total_sessions": 69, "completion_rate": 72.5, "median_duration": 176.0, "lobby_rate": 87.0, "completion_score": 72.5, "duration_score": 100.0, "lobby_score": 87.0, "reliability_score": 70.9, "tier": "Solid", "confidence": "Medium"}, {"tcm": "DEBBIE", "total_sessions": 146, "completion_rate": 75.3, "median_duration": 119.0, "lobby_rate": 81.5, "completion_score": 75.3, "duration_score": 100.0, "lobby_score": 81.5, "reliability_score": 70.5, "tier": "Solid", "confidence": "High"}, {"tcm": "HANIN", "total_sessions": 79, "completion_rate": 68.4, "median_duration": 157.0, "lobby_rate": 92.4, "completion_score": 68.4, "duration_score": 100.0, "lobby_score": 92.4, "reliability_score": 70.3, "tier": "Solid", "confidence": "Medium"}, {"tcm": "JASON", "total_sessions": 133, "completion_rate": 74.4, "median_duration": 125.0, "lobby_rate": 82.7, "completion_score": 74.4, "duration_score": 100.0, "lobby_score": 82.7, "reliability_score": 70.3, "tier": "Solid", "confidence": "High"}, {"tcm": "ERIKA", "total_sessions": 28, "completion_rate": 67.9, "median_duration": 162.0, "lobby_rate": 92.9, "completion_score": 67.9, "duration_score": 100.0, "lobby_score": 92.9, "reliability_score": 70.1, "tier": "Solid", "confidence": "Low"}, {"tcm": "SARAH", "total_sessions": 144, "completion_rate": 71.5, "median_duration": 116.0, "lobby_rate": 86.1, "completion_score": 71.5, "duration_score": 100.0, "lobby_score": 86.1, "reliability_score": 69.6, "tier": "Solid", "confidence": "High"}, {"tcm": "ANASTASIA", "total_sessions": 82, "completion_rate": 65.9, "median_duration": 91.0, "lobby_rate": 95.1, "completion_score": 65.9, "duration_score": 100.0, "lobby_score": 95.1, "reliability_score": 69.6, "tier": "Solid", "confidence": "Medium"}, {"tcm": "WIKA", "total_sessions": 113, "completion_rate": 70.8, "median_duration": 129.0, "lobby_rate": 86.7, "completion_score": 70.8, "duration_score": 100.0, "lobby_score": 86.7, "reliability_score": 69.3, "tier": "Solid", "confidence": "High"}, {"tcm": "MUHAJIR", "total_sessions": 30, "completion_rate": 66.7, "median_duration": 143.0, "lobby_rate": 93.3, "completion_score": 66.7, "duration_score": 100.0, "lobby_score": 93.3, "reliability_score": 69.3, "tier": "Solid", "confidence": "Low"}, {"tcm": "RENI", "total_sessions": 77, "completion_rate": 68.8, "median_duration": 135.0, "lobby_rate": 89.6, "completion_score": 68.8, "duration_score": 100.0, "lobby_score": 89.6, "reliability_score": 69.2, "tier": "Solid", "confidence": "Medium"}, {"tcm": "SITA", "total_sessions": 135, "completion_rate": 68.9, "median_duration": 120.0, "lobby_rate": 89.6, "completion_score": 68.9, "duration_score": 100.0, "lobby_score": 89.6, "reliability_score": 69.2, "tier": "Solid", "confidence": "High"}, {"tcm": "DERA", "total_sessions": 27, "completion_rate": 70.4, "median_duration": 169.0, "lobby_rate": 85.2, "completion_score": 70.4, "duration_score": 100.0, "lobby_score": 85.2, "reliability_score": 68.1, "tier": "Solid", "confidence": "Low"}, {"tcm": "PRISKA", "total_sessions": 39, "completion_rate": 64.1, "median_duration": 169.0, "lobby_rate": 94.9, "completion_score": 64.1, "duration_score": 100.0, "lobby_score": 94.9, "reliability_score": 67.9, "tier": "Solid", "confidence": "Low"}, {"tcm": "UTARI", "total_sessions": 31, "completion_rate": 71.0, "median_duration": 113.0, "lobby_rate": 83.9, "completion_score": 71.0, "duration_score": 100.0, "lobby_score": 83.9, "reliability_score": 67.9, "tier": "Solid", "confidence": "Low"}, {"tcm": "LIDIA", "total_sessions": 53, "completion_rate": 66.0, "median_duration": 124.0, "lobby_rate": 90.6, "completion_score": 66.0, "duration_score": 100.0, "lobby_score": 90.6, "reliability_score": 67.3, "tier": "Solid", "confidence": "Medium"}, {"tcm": "HISYAM", "total_sessions": 78, "completion_rate": 70.5, "median_duration": 118.0, "lobby_rate": 83.3, "completion_score": 70.5, "duration_score": 100.0, "lobby_score": 83.3, "reliability_score": 67.2, "tier": "Solid", "confidence": "Medium"}, {"tcm": "RAYHANA", "total_sessions": 109, "completion_rate": 72.5, "median_duration": 113.0, "lobby_rate": 79.8, "completion_score": 72.5, "duration_score": 100.0, "lobby_score": 79.8, "reliability_score": 67.0, "tier": "Solid", "confidence": "High"}, {"tcm": "RIZKY", "total_sessions": 150, "completion_rate": 71.3, "median_duration": 125.0, "lobby_rate": 80.7, "completion_score": 71.3, "duration_score": 100.0, "lobby_score": 80.7, "reliability_score": 66.5, "tier": "Solid", "confidence": "High"}, {"tcm": "PEDRO", "total_sessions": 58, "completion_rate": 63.8, "median_duration": 149.0, "lobby_rate": 91.4, "completion_score": 63.8, "duration_score": 100.0, "lobby_score": 91.4, "reliability_score": 65.7, "tier": "Solid", "confidence": "Medium"}, {"tcm": "ERI", "total_sessions": 121, "completion_rate": 67.8, "median_duration": 124.0, "lobby_rate": 84.3, "completion_score": 67.8, "duration_score": 100.0, "lobby_score": 84.3, "reliability_score": 65.3, "tier": "Solid", "confidence": "High"}, {"tcm": "ADIARTI", "total_sessions": 46, "completion_rate": 63.0, "median_duration": 127.0, "lobby_rate": 91.3, "completion_score": 63.0, "duration_score": 100.0, "lobby_score": 91.3, "reliability_score": 65.0, "tier": "Solid", "confidence": "Low"}, {"tcm": "JHAIHAN", "total_sessions": 205, "completion_rate": 62.9, "median_duration": 96.0, "lobby_rate": 91.2, "completion_score": 62.9, "duration_score": 100.0, "lobby_score": 91.2, "reliability_score": 64.9, "tier": "Solid", "confidence": "High"}, {"tcm": "ADHIT", "total_sessions": 60, "completion_rate": 63.3, "median_duration": 121.0, "lobby_rate": 90.0, "completion_score": 63.3, "duration_score": 100.0, "lobby_score": 90.0, "reliability_score": 64.6, "tier": "Solid", "confidence": "Medium"}, {"tcm": "PUTNAB", "total_sessions": 53, "completion_rate": 64.2, "median_duration": 139.0, "lobby_rate": 88.7, "completion_score": 64.2, "duration_score": 100.0, "lobby_score": 88.7, "reliability_score": 64.6, "tier": "Solid", "confidence": "Medium"}, {"tcm": "RETNO", "total_sessions": 146, "completion_rate": 68.5, "median_duration": 136.0, "lobby_rate": 80.8, "completion_score": 68.5, "duration_score": 100.0, "lobby_score": 80.8, "reliability_score": 64.1, "tier": "Solid", "confidence": "High"}, {"tcm": "ACHMAT", "total_sessions": 35, "completion_rate": 60.0, "median_duration": 140.0, "lobby_rate": 94.3, "completion_score": 60.0, "duration_score": 100.0, "lobby_score": 94.3, "reliability_score": 64.0, "tier": "Solid", "confidence": "Low"}, {"tcm": "JESSICA", "total_sessions": 81, "completion_rate": 67.9, "median_duration": 113.0, "lobby_rate": 81.5, "completion_score": 67.9, "duration_score": 100.0, "lobby_score": 81.5, "reliability_score": 63.9, "tier": "Solid", "confidence": "Medium"}, {"tcm": "INNAH", "total_sessions": 153, "completion_rate": 68.0, "median_duration": 125.0, "lobby_rate": 80.4, "completion_score": 68.0, "duration_score": 100.0, "lobby_score": 80.4, "reliability_score": 63.4, "tier": "Solid", "confidence": "High"}, {"tcm": "FRISCA", "total_sessions": 143, "completion_rate": 69.9, "median_duration": 89.0, "lobby_rate": 77.6, "completion_score": 69.9, "duration_score": 99.4, "lobby_score": 77.6, "reliability_score": 63.1, "tier": "Solid", "confidence": "High"}, {"tcm": "YOHANA", "total_sessions": 26, "completion_rate": 69.2, "median_duration": 83.0, "lobby_rate": 88.5, "completion_score": 69.2, "duration_score": 91.9, "lobby_score": 88.5, "reliability_score": 62.7, "tier": "Solid", "confidence": "Low"}, {"tcm": "VERADIAS", "total_sessions": 94, "completion_rate": 56.4, "median_duration": 118.0, "lobby_rate": 94.7, "completion_score": 56.4, "duration_score": 100.0, "lobby_score": 94.7, "reliability_score": 61.0, "tier": "Solid", "confidence": "Medium"}, {"tcm": "KHAIRUNISSA", "total_sessions": 99, "completion_rate": 61.6, "median_duration": 126.0, "lobby_rate": 83.8, "completion_score": 61.6, "duration_score": 100.0, "lobby_score": 83.8, "reliability_score": 59.7, "tier": "Solid", "confidence": "Medium"}, {"tcm": "ELLIN", "total_sessions": 117, "completion_rate": 62.4, "median_duration": 104.0, "lobby_rate": 81.2, "completion_score": 62.4, "duration_score": 100.0, "lobby_score": 81.2, "reliability_score": 58.9, "tier": "Developing", "confidence": "High"}, {"tcm": "SORAYA", "total_sessions": 70, "completion_rate": 62.9, "median_duration": 150.0, "lobby_rate": 80.0, "completion_score": 62.9, "duration_score": 100.0, "lobby_score": 80.0, "reliability_score": 58.7, "tier": "Developing", "confidence": "Medium"}, {"tcm": "RARA", "total_sessions": 136, "completion_rate": 58.1, "median_duration": 131.0, "lobby_rate": 87.5, "completion_score": 58.1, "duration_score": 100.0, "lobby_score": 87.5, "reliability_score": 58.6, "tier": "Developing", "confidence": "High"}, {"tcm": "SURYA", "total_sessions": 179, "completion_rate": 56.4, "median_duration": 114.0, "lobby_rate": 89.9, "completion_score": 56.4, "duration_score": 100.0, "lobby_score": 89.9, "reliability_score": 58.5, "tier": "Developing", "confidence": "High"}, {"tcm": "HANAN", "total_sessions": 100, "completion_rate": 65.0, "median_duration": 123.0, "lobby_rate": 75.0, "completion_score": 65.0, "duration_score": 100.0, "lobby_score": 75.0, "reliability_score": 57.8, "tier": "Developing", "confidence": "High"}, {"tcm": "ALE", "total_sessions": 72, "completion_rate": 55.6, "median_duration": 149.0, "lobby_rate": 88.9, "completion_score": 55.6, "duration_score": 100.0, "lobby_score": 88.9, "reliability_score": 57.1, "tier": "Developing", "confidence": "Medium"}, {"tcm": "MISSEL", "total_sessions": 23, "completion_rate": 69.6, "median_duration": 79.0, "lobby_rate": 82.6, "completion_score": 69.6, "duration_score": 87.9, "lobby_score": 82.6, "reliability_score": 56.7, "tier": "Developing", "confidence": "Low"}, {"tcm": "VICKIE", "total_sessions": 24, "completion_rate": 58.3, "median_duration": 121.0, "lobby_rate": 83.3, "completion_score": 58.3, "duration_score": 100.0, "lobby_score": 83.3, "reliability_score": 56.5, "tier": "Developing", "confidence": "Low"}, {"tcm": "TSALTSA", "total_sessions": 25, "completion_rate": 60.0, "median_duration": 101.0, "lobby_rate": 80.0, "completion_score": 60.0, "duration_score": 100.0, "lobby_score": 80.0, "reliability_score": 56.1, "tier": "Developing", "confidence": "Low"}, {"tcm": "FATIYYAH", "total_sessions": 84, "completion_rate": 61.9, "median_duration": 96.0, "lobby_rate": 76.2, "completion_score": 61.9, "duration_score": 100.0, "lobby_score": 76.2, "reliability_score": 55.7, "tier": "Developing", "confidence": "Medium"}, {"tcm": "CANDA", "total_sessions": 37, "completion_rate": 56.8, "median_duration": 109.0, "lobby_rate": 83.8, "completion_score": 56.8, "duration_score": 100.0, "lobby_score": 83.8, "reliability_score": 55.4, "tier": "Developing", "confidence": "Low"}, {"tcm": "FIA", "total_sessions": 140, "completion_rate": 59.3, "median_duration": 142.0, "lobby_rate": 79.3, "completion_score": 59.3, "duration_score": 100.0, "lobby_score": 79.3, "reliability_score": 55.1, "tier": "Developing", "confidence": "High"}, {"tcm": "MAE", "total_sessions": 98, "completion_rate": 58.2, "median_duration": 143.0, "lobby_rate": 79.6, "completion_score": 58.2, "duration_score": 100.0, "lobby_score": 79.6, "reliability_score": 54.3, "tier": "Developing", "confidence": "Medium"}, {"tcm": "TRIFOSA", "total_sessions": 31, "completion_rate": 61.3, "median_duration": 115.0, "lobby_rate": 74.2, "completion_score": 61.3, "duration_score": 100.0, "lobby_score": 74.2, "reliability_score": 54.1, "tier": "Developing", "confidence": "Low"}, {"tcm": "UTI", "total_sessions": 36, "completion_rate": 50.0, "median_duration": 118.0, "lobby_rate": 88.9, "completion_score": 50.0, "duration_score": 100.0, "lobby_score": 88.9, "reliability_score": 52.2, "tier": "Developing", "confidence": "Low"}, {"tcm": "RAFIKA", "total_sessions": 44, "completion_rate": 45.5, "median_duration": 100.0, "lobby_rate": 95.5, "completion_score": 45.5, "duration_score": 100.0, "lobby_score": 95.5, "reliability_score": 51.8, "tier": "Developing", "confidence": "Low"}, {"tcm": "MERLYN", "total_sessions": 110, "completion_rate": 43.6, "median_duration": 182.0, "lobby_rate": 95.5, "completion_score": 43.6, "duration_score": 100.0, "lobby_score": 95.5, "reliability_score": 50.2, "tier": "Developing", "confidence": "High"}, {"tcm": "Dera", "total_sessions": 137, "completion_rate": 43.8, "median_duration": 150.0, "lobby_rate": 89.1, "completion_score": 43.8, "duration_score": 100.0, "lobby_score": 89.1, "reliability_score": 46.9, "tier": "Developing", "confidence": "High"}, {"tcm": "MAYA", "total_sessions": 96, "completion_rate": 53.1, "median_duration": 112.0, "lobby_rate": 74.0, "completion_score": 53.1, "duration_score": 100.0, "lobby_score": 74.0, "reliability_score": 46.8, "tier": "Developing", "confidence": "Medium"}, {"tcm": "DANI", "total_sessions": 25, "completion_rate": 36.0, "median_duration": 142.0, "lobby_rate": 100.0, "completion_score": 36.0, "duration_score": 100.0, "lobby_score": 100.0, "reliability_score": 46.0, "tier": "Developing", "confidence": "Low"}, {"tcm": "ISNA", "total_sessions": 20, "completion_rate": 45.0, "median_duration": 116.0, "lobby_rate": 85.0, "completion_score": 45.0, "duration_score": 100.0, "lobby_score": 85.0, "reliability_score": 45.7, "tier": "Developing", "confidence": "Low"}, {"tcm": "IWANDA", "total_sessions": 39, "completion_rate": 35.9, "median_duration": 137.0, "lobby_rate": 94.9, "completion_score": 35.9, "duration_score": 100.0, "lobby_score": 94.9, "reliability_score": 43.1, "tier": "Developing", "confidence": "Low"}, {"tcm": "MUFLIH", "total_sessions": 24, "completion_rate": 37.5, "median_duration": 114.0, "lobby_rate": 91.7, "completion_score": 37.5, "duration_score": 100.0, "lobby_score": 91.7, "reliability_score": 42.8, "tier": "Developing", "confidence": "Low"}, {"tcm": "WINDA", "total_sessions": 181, "completion_rate": 38.1, "median_duration": 121.0, "lobby_rate": 90.6, "completion_score": 38.1, "duration_score": 100.0, "lobby_score": 90.6, "reliability_score": 42.7, "tier": "Developing", "confidence": "High"}, {"tcm": "MARSHA", "total_sessions": 73, "completion_rate": 37.0, "median_duration": 190.0, "lobby_rate": 89.0, "completion_score": 37.0, "duration_score": 100.0, "lobby_score": 89.0, "reliability_score": 40.9, "tier": "Developing", "confidence": "Medium"}, {"tcm": "YASMIN", "total_sessions": 96, "completion_rate": 39.6, "median_duration": 128.0, "lobby_rate": 80.2, "completion_score": 39.6, "duration_score": 100.0, "lobby_score": 80.2, "reliability_score": 38.3, "tier": "Developing", "confidence": "Medium"}, {"tcm": "BIMA", "total_sessions": 84, "completion_rate": 47.6, "median_duration": 122.0, "lobby_rate": 60.7, "completion_score": 47.6, "duration_score": 100.0, "lobby_score": 60.7, "reliability_score": 34.6, "tier": "Developing", "confidence": "Medium"}, {"tcm": "FEBI", "total_sessions": 61, "completion_rate": 39.3, "median_duration": 85.0, "lobby_rate": 78.7, "completion_score": 39.3, "duration_score": 94.3, "lobby_score": 78.7, "reliability_score": 32.9, "tier": "Developing", "confidence": "Medium"}, {"tcm": "Mi Raj", "total_sessions": 33, "completion_rate": 45.5, "median_duration": 100.0, "lobby_rate": 54.5, "completion_score": 45.5, "duration_score": 100.0, "lobby_score": 54.5, "reliability_score": 29.4, "tier": "Developing", "confidence": "Low"}, {"tcm": "NATAN", "total_sessions": 69, "completion_rate": 23.2, "median_duration": 152.0, "lobby_rate": 85.5, "completion_score": 23.2, "duration_score": 100.0, "lobby_score": 85.5, "reliability_score": 26.8, "tier": "Developing", "confidence": "Medium"}, {"tcm": "Marsha", "total_sessions": 38, "completion_rate": 23.7, "median_duration": 190.0, "lobby_rate": 84.2, "completion_score": 23.7, "duration_score": 100.0, "lobby_score": 84.2, "reliability_score": 26.5, "tier": "Developing", "confidence": "Low"}, {"tcm": "KELVIN", "total_sessions": 97, "completion_rate": 29.9, "median_duration": 108.0, "lobby_rate": 72.2, "completion_score": 29.9, "duration_score": 100.0, "lobby_score": 72.2, "reliability_score": 25.4, "tier": "Developing", "confidence": "Medium"}, {"tcm": "ADIST", "total_sessions": 43, "completion_rate": 18.6, "median_duration": 157.0, "lobby_rate": 86.0, "completion_score": 18.6, "duration_score": 100.0, "lobby_score": 86.0, "reliability_score": 23.1, "tier": "Developing", "confidence": "Low"}, {"tcm": "ANGGI", "total_sessions": 52, "completion_rate": 11.5, "median_duration": 171.0, "lobby_rate": 90.4, "completion_score": 11.5, "duration_score": 100.0, "lobby_score": 90.4, "reliability_score": 19.2, "tier": "Developing", "confidence": "Medium"}, {"tcm": "RENDI", "total_sessions": 107, "completion_rate": 2.8, "median_duration": 164.0, "lobby_rate": 94.4, "completion_score": 2.8, "duration_score": 100.0, "lobby_score": 94.4, "reliability_score": 13.7, "tier": "Developing", "confidence": "High"}, {"tcm": "FAHIRA", "total_sessions": 130, "completion_rate": 0.8, "median_duration": 148.0, "lobby_rate": 95.4, "completion_score": 0.8, "duration_score": 100.0, "lobby_score": 95.4, "reliability_score": 12.5, "tier": "Developing", "confidence": "High"}, {"tcm": "anggi", "total_sessions": 91, "completion_rate": 1.1, "median_duration": 163.0, "lobby_rate": 94.5, "completion_score": 1.1, "duration_score": 100.0, "lobby_score": 94.5, "reliability_score": 12.3, "tier": "Developing", "confidence": "Medium"}, {"tcm": "AQILLA", "total_sessions": 71, "completion_rate": 0.0, "median_duration": null, "lobby_rate": 93.0, "completion_score": 0.0, "duration_score": 100.0, "lobby_score": 93.0, "reliability_score": 10.5, "tier": "Developing", "confidence": "Medium"}, {"tcm": "ANGELINA", "total_sessions": 27, "completion_rate": 3.7, "median_duration": 86.0, "lobby_rate": 74.1, "completion_score": 3.7, "duration_score": 95.6, "lobby_score": 74.1, "reliability_score": 0.0, "tier": "Developing", "confidence": "Low"}], "summary": {"total_tcms": 154, "elite_count": 39, "solid_count": 76, "developing_count": 39, "high_conf": 55, "avg_completion": 67.5, "avg_duration": 122.0, "avg_lobby": 89.5, "avg_score": 67.8, "data_period": "Feb 2026 \u2013 May 2026", "total_sessions": 14284, "p75": 81.3, "p25": 59.1}, "score_dist": [{"label": "0-20", "count": 5}, {"label": "20-40", "count": 8}, {"label": "40-60", "count": 26}, {"label": "60-70", "count": 26}, {"label": "70-80", "count": 47}, {"label": "80-90", "count": 35}, {"label": "90-100", "count": 6}], "sparklines": {"WATI": [{"month": "2026-02", "comp": 100.0, "lobby": 100.0}, {"month": "2026-03", "comp": 100.0, "lobby": 100.0}, {"month": "2026-04", "comp": 95.5, "lobby": 100.0}], "JOSEPH": [{"month": "2026-05", "comp": 95.0, "lobby": 100.0}], "APRIL": [{"month": "2026-02", "comp": 87.5, "lobby": 100.0}, {"month": "2026-03", "comp": 100.0, "lobby": 100.0}, {"month": "2026-04", "comp": 87.5, "lobby": 100.0}], "MIRANTI": [{"month": "2026-04", "comp": 100.0, "lobby": 100.0}, {"month": "2026-05", "comp": 86.7, "lobby": 100.0}], "TOFFEL": [{"month": "2026-03", "comp": 50.0, "lobby": 100.0}, {"month": "2026-04", "comp": 100.0, "lobby": 100.0}, {"month": "2026-05", "comp": 85.7, "lobby": 100.0}], "DIYAN": [{"month": "2026-02", "comp": 90.9, "lobby": 100.0}, {"month": "2026-03", "comp": 80.0, "lobby": 84.0}, {"month": "2026-04", "comp": 93.1, "lobby": 100.0}, {"month": "2026-05", "comp": 94.1, "lobby": 100.0}], "Marthalina": [{"month": "2026-04", "comp": 85.7, "lobby": 85.7}, {"month": "2026-05", "comp": 93.3, "lobby": 93.3}], "SUGANDA": [{"month": "2026-02", "comp": 86.1, "lobby": 91.7}, {"month": "2026-03", "comp": 90.0, "lobby": 100.0}, {"month": "2026-04", "comp": 84.9, "lobby": 92.5}, {"month": "2026-05", "comp": 92.9, "lobby": 95.2}], "LUIS": [{"month": "2026-02", "comp": 71.4, "lobby": 90.5}, {"month": "2026-03", "comp": 90.3, "lobby": 96.8}, {"month": "2026-04", "comp": 87.5, "lobby": 96.9}, {"month": "2026-05", "comp": 93.1, "lobby": 100.0}], "LISA": [{"month": "2026-02", "comp": 83.3, "lobby": 87.5}, {"month": "2026-03", "comp": 100.0, "lobby": 100.0}, {"month": "2026-04", "comp": 86.1, "lobby": 97.2}, {"month": "2026-05", "comp": 83.3, "lobby": 95.8}], "IRNAA": [{"month": "2026-02", "comp": 86.7, "lobby": 93.3}, {"month": "2026-03", "comp": 83.3, "lobby": 91.7}, {"month": "2026-04", "comp": 84.8, "lobby": 97.0}, {"month": "2026-05", "comp": 100.0, "lobby": 100.0}], "PRAPTIWI": [{"month": "2026-02", "comp": 83.3, "lobby": 94.4}, {"month": "2026-03", "comp": 94.1, "lobby": 94.1}, {"month": "2026-04", "comp": 78.0, "lobby": 95.1}, {"month": "2026-05", "comp": 88.6, "lobby": 100.0}], "ICA": [{"month": "2026-02", "comp": 80.4, "lobby": 82.4}, {"month": "2026-03", "comp": 94.6, "lobby": 97.3}, {"month": "2026-04", "comp": 86.0, "lobby": 97.7}, {"month": "2026-05", "comp": 87.5, "lobby": 100.0}], "ANNISA": [{"month": "2026-02", "comp": 82.9, "lobby": 90.2}, {"month": "2026-03", "comp": 90.9, "lobby": 95.5}, {"month": "2026-04", "comp": 77.6, "lobby": 95.9}, {"month": "2026-05", "comp": 88.9, "lobby": 100.0}], "YESAYA": [{"month": "2026-02", "comp": 77.8, "lobby": 88.9}, {"month": "2026-03", "comp": 71.4, "lobby": 85.7}, {"month": "2026-04", "comp": 86.4, "lobby": 86.4}, {"month": "2026-05", "comp": 90.0, "lobby": 100.0}], "RATU": [{"month": "2026-02", "comp": 76.3, "lobby": 86.8}, {"month": "2026-03", "comp": 94.4, "lobby": 97.2}, {"month": "2026-04", "comp": 83.3, "lobby": 93.8}, {"month": "2026-05", "comp": 87.9, "lobby": 100.0}], "FEBYANA": [{"month": "2026-02", "comp": 81.1, "lobby": 84.9}, {"month": "2026-03", "comp": 87.9, "lobby": 87.9}, {"month": "2026-04", "comp": 92.1, "lobby": 94.7}, {"month": "2026-05", "comp": 90.6, "lobby": 100.0}], "RESINTA": [{"month": "2026-02", "comp": 76.2, "lobby": 90.5}, {"month": "2026-03", "comp": 87.5, "lobby": 95.8}, {"month": "2026-04", "comp": 80.4, "lobby": 97.8}, {"month": "2026-05", "comp": 92.0, "lobby": 100.0}], "AZHAR": [{"month": "2026-02", "comp": 72.4, "lobby": 82.8}, {"month": "2026-03", "comp": 94.1, "lobby": 100.0}, {"month": "2026-04", "comp": 92.3, "lobby": 97.4}, {"month": "2026-05", "comp": 77.8, "lobby": 88.9}], "ALIEF": [{"month": "2026-02", "comp": 75.0, "lobby": 83.3}, {"month": "2026-03", "comp": 92.3, "lobby": 100.0}, {"month": "2026-04", "comp": 75.6, "lobby": 97.8}, {"month": "2026-05", "comp": 93.9, "lobby": 100.0}]}, "weights": {"completion": 40, "duration": 35, "lobby": 25}};
+
+const S2 = DATA2.summary;
+let currentFilter = 'all';
+let currentSort = 'reliability_score';
+let expandedRow = null;
+
+// KPIs
+document.getElementById('kpiRow').innerHTML = `
+  <div class="kpi-cell"><div class="kpi-cell-label">TCMs Profiled</div><div class="kpi-cell-value purple">${S2.total_tcms}</div><div class="kpi-cell-sub">${S2.data_period}</div></div>
+  <div class="kpi-cell"><div class="kpi-cell-label">Elite Tier</div><div class="kpi-cell-value purple">${S2.elite_count}</div><div class="kpi-cell-sub">Score ≥ ${S2.p75}</div></div>
+  <div class="kpi-cell"><div class="kpi-cell-label">Solid Tier</div><div class="kpi-cell-value green">${S2.solid_count}</div><div class="kpi-cell-sub">Score ${S2.p25}–${S2.p75}</div></div>
+  <div class="kpi-cell"><div class="kpi-cell-label">Developing</div><div class="kpi-cell-value orange">${S2.developing_count}</div><div class="kpi-cell-sub">Score < ${S2.p25}</div></div>
+  <div class="kpi-cell"><div class="kpi-cell-label">Avg Completion</div><div class="kpi-cell-value blue">${S2.avg_completion}%</div><div class="kpi-cell-sub">Fleet average</div></div>
+  <div class="kpi-cell"><div class="kpi-cell-label">Avg Session</div><div class="kpi-cell-value">${S2.avg_duration}<span style="font-size:20px;font-weight:400">min</span></div><div class="kpi-cell-sub">Median duration</div></div>
+  <div class="kpi-cell"><div class="kpi-cell-label">Avg Lobby Rate</div><div class="kpi-cell-value green">${S2.avg_lobby}%</div><div class="kpi-cell-sub">Student lobby entry</div></div>
+  <div class="kpi-cell"><div class="kpi-cell-label">High Confidence</div><div class="kpi-cell-value blue">${S2.high_conf}</div><div class="kpi-cell-sub">TCMs with ≥100 sessions</div></div>
+`;
+
+// Score distribution
+const maxDist = Math.max(...DATA2.score_dist.map(d=>d.count));
+document.getElementById('scoreDist').innerHTML = DATA2.score_dist.map(d => `
+  <div class="dist-bar-row">
+    <div class="dist-bar-label">${d.label}</div>
+    <div class="dist-bar-track"><div class="dist-bar-fill" style="width:${d.count/maxDist*100}%"></div></div>
+    <div class="dist-bar-count">${d.count}</div>
+  </div>
+`).join('');
+
+// Tier distribution
+const tierColors = {Elite:'var(--r2-elite)',Solid:'var(--r2-solid)',Developing:'var(--r2-developing)'};
+document.getElementById('tierDist').innerHTML = ['Elite','Solid','Developing'].map(t => {
+  const cnt = t==='Elite'?S2.elite_count:t==='Solid'?S2.solid_count:S2.developing_count;
+  const pct = cnt/S2.total_tcms*100;
+  return `<div class="tier-dist-row">
+    <div class="tier-dist-name"><span class="tier-badge ${t.toLowerCase()}">${t}</span></div>
+    <div class="tier-dist-bar-track"><div style="height:100%;width:${pct}%;background:${tierColors[t]};border-radius:3px"></div></div>
+    <div class="tier-dist-count">${cnt}</div>
+  </div>`;
+}).join('');
+
+// TABLE
+function setFilter(f) {
+  currentFilter = f;
+  ['btnAll','btnElite','btnSolid','btnDeveloping'].forEach(id=>document.getElementById(id).classList.remove('active'));
+  document.getElementById('btn'+(f==='all'?'All':f)).classList.add('active');
+  renderTable();
+}
+
+function applySort() {
+  currentSort = document.getElementById('sortSelect').value;
+  renderTable();
+}
+
+function setSortCol(col) {
+  currentSort = col;
+  document.getElementById('sortSelect').value = col;
+  renderTable();
+}
+
+function renderTable() {
+  let rows = [...DATA2.tcms];
+  const search = document.getElementById('searchInput').value.toLowerCase();
+  if (search) rows = rows.filter(r => r.tcm.toLowerCase().includes(search));
+  if (currentFilter !== 'all') rows = rows.filter(r => r.tier === currentFilter);
+  rows.sort((a,b) => (b[currentSort]||0) - (a[currentSort]||0));
+  document.getElementById('resultsCount').textContent = `${rows.length} TCMs`;
+
+  const tbody = document.getElementById('tableBody');
+  tbody.innerHTML = '';
+  rows.forEach((r, i) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><span class="rank-num ${i<3?'top3':''}">${i+1}</span></td>
+      <td><span class="tcm-name-cell">${r.tcm}</span></td>
+      <td>
+        <div class="score-gauge">
+          <div class="gauge-track"><div class="gauge-fill ${r.tier.toLowerCase()}" style="width:0%" data-w="${r.reliability_score}%"></div></div>
+          <span class="score-num ${r.tier.toLowerCase()}">${r.reliability_score}</span>
+        </div>
+      </td>
+      <td><span class="tier-badge ${r.tier.toLowerCase()}">${r.tier}</span></td>
+      <td><span class="mini-stat">${r.completion_rate}%</span></td>
+      <td><span class="mini-stat">${r.median_duration ? r.median_duration+'min' : '—'}</span></td>
+      <td><span class="mini-stat">${r.lobby_rate}%</span></td>
+      <td>
+        <span class="conf-badge ${r.confidence}">
+          <span class="conf-dot"></span>${r.confidence}
+        </span>
+      </td>
+      <td><span class="mini-stat">${r.total_sessions}</span></td>
+    `;
+    tr.onclick = () => toggleExpand(r, tr, expandRow);
+    tbody.appendChild(tr);
+
+    const expandRow = document.createElement('tr');
+    expandRow.className = 'expand-row';
+    const expandTd = document.createElement('td');
+    expandTd.colSpan = 9;
+    expandTd.className = 'expand-content';
+
+    const sparkData = DATA2.sparklines[r.tcm];
+    const sparkHtml = sparkData ? `
+      <div class="sparkline-section">
+        <div class="sparkline-label">MONTHLY TREND — COMPLETION (purple) · LOBBY (blue)</div>
+        <div style="display:flex;gap:12px;align-items:flex-end">
+          ${sparkData.map(m => `
+            <div>
+              <div class="spark-bar-group">
+                <div class="spark-bar" style="height:${m.comp*0.32}px;background:var(--r2-elite);opacity:0.8" title="${m.comp}% completion"></div>
+                <div class="spark-bar" style="height:${m.lobby*0.32}px;background:var(--r2-high-conf);opacity:0.8" title="${m.lobby}% lobby"></div>
+              </div>
+              <div class="spark-month">${m.month.replace('2026-','')}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    ` : '';
+
+    expandTd.innerHTML = `
+      <div class="component-breakdown">
+        <div class="comp-card">
+          <div class="comp-card-label">Session Completion · 40%</div>
+          <div class="comp-card-value c1">${r.completion_rate}%</div>
+          <div class="comp-card-sub">Fleet avg: ${S2.avg_completion}%</div>
+          <div class="comp-bar"><div class="comp-bar-fill c1" style="width:${r.completion_score}%"></div></div>
+        </div>
+        <div class="comp-card">
+          <div class="comp-card-label">Session Duration · 35%</div>
+          <div class="comp-card-value c2">${r.median_duration ? r.median_duration+'min' : '—'}</div>
+          <div class="comp-card-sub">Benchmark: 90min · Fleet avg: ${S2.avg_duration}min</div>
+          <div class="comp-bar"><div class="comp-bar-fill c2" style="width:${r.duration_score}%"></div></div>
+        </div>
+        <div class="comp-card">
+          <div class="comp-card-label">Lobby Engagement · 25%</div>
+          <div class="comp-card-value c3">${r.lobby_rate}%</div>
+          <div class="comp-card-sub">Fleet avg: ${S2.avg_lobby}%</div>
+          <div class="comp-bar"><div class="comp-bar-fill c3" style="width:${r.lobby_score}%"></div></div>
+        </div>
+      </div>
+      ${sparkHtml}
+    `;
+    expandRow.appendChild(expandTd);
+    tbody.appendChild(expandRow);
+
+    // Animate gauge
+    requestAnimationFrame(() => {
+      tr.querySelectorAll('.gauge-fill[data-w]').forEach(el => {
+        el.style.width = el.dataset.w;
+      });
+    });
+  });
+}
+
+function toggleExpand(r, tr, expandRow) {
+  if (expandedRow && expandedRow !== expandRow) {
+    expandedRow.classList.remove('visible');
+  }
+  const isOpen = expandRow.classList.contains('visible');
+  expandRow.classList.toggle('visible', !isOpen);
+  tr.classList.toggle('expanded', !isOpen);
+  expandedRow = isOpen ? null : expandRow;
+}
+
+document.getElementById('searchInput').addEventListener('input', renderTable);
+renderTable();
+</script>
+  </div>
+</div>
+
+<script>
+function switchReport(n) {
+  // Panels
+  document.getElementById('panel1').classList.toggle('visible', n === 1);
+  document.getElementById('panel2').classList.toggle('visible', n === 2);
+  // Tabs
+  document.getElementById('tab1').className = 'shell-tab' + (n === 1 ? ' active-1' : '');
+  document.getElementById('tab2').className = 'shell-tab' + (n === 2 ? ' active-2' : '');
+  // Scroll to top on switch
+  window.scrollTo({ top: 0, behavior: 'instant' });
+}
+</script>
+
+</body>
+</html>

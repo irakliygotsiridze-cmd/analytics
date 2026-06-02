@@ -918,8 +918,233 @@ window.Algonova = window.Algonova || {};
     summary:    t('Summary',       'Краткое содержание', 'Resumen',         'Ringkasan',        'Ringkasan'),
     tags:       t('Tags',          'Теги',               'Etiquetas',       'Tag',              'Tag'),
     findings:   t('Key findings',  'Ключевые выводы',    'Conclusiones',    'Temuan utama',     'Penemuan utama'),
-    open:       t('Open report',   'Открыть отчёт',      'Abrir informe',   'Buka laporan',     'Buka laporan')
+    open:       t('Open report',   'Открыть отчёт',      'Abrir informe',   'Buka laporan',     'Buka laporan'),
+    author:     t('Author',        'Автор',              'Autor',           'Penulis',          'Penulis'),
+    hackathons: t('Hackathons',    'Хакатоны',           'Hackathons',      'Hackathons',       'Hackathon'),
+    reports_n:  t('reports',       'отчётов',            'informes',        'laporan',          'laporan'),
+    coming_soon:t('Coming soon',   'Скоро будет',        'Próximamente',    'Segera hadir',     'Akan datang')
   };
+
+  // ── Hackathons (rendered above BU sections in /research) ─────
+  const HACKATHONS = [
+    {
+      slug: 'c-level',
+      title: t(
+        'C-level Hackathon',
+        'Хакатон C-level',
+        'Hackathon C-level',
+        'Hackathon C-level',
+        'Hackathon C-level'
+      ),
+      subtitle: t(
+        'Strategic challenges from leadership — drops coming soon',
+        'Стратегические задачи от руководства — материалы скоро',
+        'Retos estratégicos del liderazgo — materiales próximamente',
+        'Tantangan strategis dari leadership — materi segera hadir',
+        'Cabaran strategik daripada kepimpinan — bahan akan datang'
+      ),
+      items: []
+    },
+    {
+      slug: 'tcm-assignment',
+      title: t(
+        'Hackathon: "How can we operationally improve and more intelligently assign TCMs to master classes?"',
+        'Хакатон: «Как операционно улучшить и умнее распределять TCM на мастер-классы?»',
+        'Hackathon: «¿Cómo mejorar operativamente y asignar TCMs a las masterclasses con más inteligencia?»',
+        'Hackathon: «Bagaimana memperbaiki operasi dan menugaskan TCM ke master class secara lebih cerdas?»',
+        'Hackathon: «Bagaimana untuk memperbaiki operasi dan menetapkan TCM ke master class dengan lebih bijak?»'
+      ),
+      subtitle: t(
+        'Five reports investigating TCM grading, lead-scoring and assignment routing',
+        'Пять отчётов: грейдинг TCM, скоринг лидов и роутинг автодистрибуции',
+        'Cinco informes: grading de TCMs, scoring de leads y enrutamiento de auto-distribución',
+        'Lima laporan: grading TCM, scoring lead, dan routing autodistribusi',
+        'Lima laporan: penggredan TCM, pemarkahan lead, dan penghalaan autoagihan'
+      ),
+      items: [
+        {
+          file: 'boris-lead-scoring-bxa.html',
+          author: 'Boris',
+          title: 'Lead Scoring & Segmentation — B×A Formula (L2B Excluded)',
+          tags: ['Lead Scoring', 'ABCD Tiers', 'ASEAN', 'Indonesia', 'Model Validation'],
+          type: 'html',
+          summary: t(
+            'Tests a simplified two-signal lead scoring formula (B2Att × Att2S) without the L2B component for ASEAN/Indonesia B2C, comparing accuracy against the original three-signal formula and recalibrating the A/B/C/D tier thresholds.',
+            'Тестирует упрощённую формулу скоринга лидов из двух сигналов (B2Att × Att2S) без L2B для ASEAN/Indonesia B2C, сравнивает точность с исходной трёхсигнальной формулой и перекалибрует пороги A/B/C/D.',
+            'Prueba una fórmula simplificada de scoring de leads con dos señales (B2Att × Att2S) sin L2B para ASEAN/Indonesia B2C, comparando precisión vs la fórmula original de tres señales y recalibrando los umbrales A/B/C/D.',
+            'Menguji formula scoring lead dua-sinyal yang disederhanakan (B2Att × Att2S) tanpa komponen L2B untuk ASEAN/Indonesia B2C, membandingkan akurasi dengan formula tiga-sinyal asli dan merekalibrasi ambang tier A/B/C/D.',
+            'Menguji formula pemarkahan lead dua-isyarat yang dipermudahkan (B2Att × Att2S) tanpa komponen L2B untuk ASEAN/Indonesia B2C, membandingkan ketepatan dengan formula tiga-isyarat asal dan menentukur semula ambang tier A/B/C/D.'
+          ),
+          findings: [
+            t('N = 112,079 leads (Dec 2025 – May 2026); B×A combined score reaches PB-r = 0.322 vs paid, beating B2Att alone (0.193) and Att2S alone (0.182).',
+              'N = 112 079 лидов (дек 2025 – май 2026); комбинированный B×A даёт PB-r = 0,322 vs paid, обгоняя B2Att (0,193) и Att2S (0,182) по отдельности.',
+              'N = 112 079 leads (dic 2025 – may 2026); el score combinado B×A alcanza PB-r = 0,322 vs paid, superando B2Att solo (0,193) y Att2S solo (0,182).',
+              'N = 112.079 lead (Des 2025 – Mei 2026); skor gabungan B×A mencapai PB-r = 0,322 vs paid, mengalahkan B2Att sendiri (0,193) dan Att2S sendiri (0,182).',
+              'N = 112,079 lead (Dis 2025 – Mei 2026); skor gabungan B×A mencapai PB-r = 0.322 vs paid, mengalahkan B2Att sahaja (0.193) dan Att2S sahaja (0.182).'),
+            t('Buyers average B×A score 0.226 vs 0.080 for non-buyers — a +182% lift, ~3× larger than any single signal.',
+              'У покупателей средний B×A = 0,226 против 0,080 у некупивших — лифт +182%, ~3× больше любого одиночного сигнала.',
+              'Compradores promedio B×A 0,226 vs 0,080 de no compradores — lift +182%, ~3× mayor que cualquier señal individual.',
+              'Pembeli rata-rata skor B×A 0,226 vs 0,080 untuk non-pembeli — lift +182%, ~3× lebih besar dari sinyal tunggal mana pun.',
+              'Pembeli purata skor B×A 0.226 vs 0.080 untuk bukan-pembeli — lift +182%, ~3× lebih besar daripada mana-mana isyarat tunggal.'),
+            t('Trade-off: AUC falls from 0.767 (full L×B×A) to 0.709 (B×A only) — a −5.8pp gap; 44.9% of leads change segments vs the full formula.',
+              'Цена: AUC падает с 0,767 (полная L×B×A) до 0,709 (только B×A) — разрыв −5,8 п.п.; 44,9% лидов меняют сегмент против полной формулы.',
+              'Trade-off: AUC cae de 0,767 (L×B×A completo) a 0,709 (solo B×A) — brecha −5,8pp; 44,9% de leads cambia de segmento vs la fórmula completa.',
+              'Trade-off: AUC turun dari 0,767 (L×B×A penuh) ke 0,709 (B×A saja) — gap −5,8pp; 44,9% lead berpindah segmen vs formula penuh.',
+              'Trade-off: AUC jatuh daripada 0.767 (L×B×A penuh) ke 0.709 (B×A sahaja) — jurang −5.8pp; 44.9% lead bertukar segmen vs formula penuh.'),
+            t('New tier thresholds: D Cold <0.0425, C Warm <0.0900, B Hot <0.2050, A★ Star ≥0.2050; A★ Star L2S = 20.21% (vs 24.85% in full formula).',
+              'Новые пороги: D Cold <0,0425, C Warm <0,0900, B Hot <0,2050, A★ Star ≥0,2050; A★ Star L2S = 20,21% (vs 24,85% в полной формуле).',
+              'Nuevos umbrales: D Cold <0,0425, C Warm <0,0900, B Hot <0,2050, A★ Star ≥0,2050; A★ Star L2S = 20,21% (vs 24,85% en formula completa).',
+              'Ambang baru: D Cold <0,0425, C Warm <0,0900, B Hot <0,2050, A★ Star ≥0,2050; A★ Star L2S = 20,21% (vs 24,85% di formula penuh).',
+              'Ambang baharu: D Cold <0.0425, C Warm <0.0900, B Hot <0.2050, A★ Star ≥0.2050; A★ Star L2S = 20.21% (vs 24.85% dalam formula penuh).')
+          ]
+        },
+        {
+          file: 'jo-tcm-intelligence.html',
+          author: 'Jo',
+          title: 'TCM Intelligence Reports — Assignment Optimization + Reliability Score',
+          tags: ['TCM Assignment', 'Course Routing', 'Reliability Score', 'A2S', 'Indonesia', 'Expected Revenue'],
+          type: 'html',
+          summary: t(
+            'Two-panel dashboard for Algonova Indonesia: (1) a TCM×Course assignment optimization model projecting revenue uplift from routing leads to top-quartile TCMs, and (2) a composite TCM Reliability Score blending completion, session duration and lobby entry.',
+            'Двухпанельный дэшборд для Algonova Indonesia: (1) модель оптимизации назначения TCM×Курс с оценкой revenue uplift от роутинга лидов на топ-25% TCM, и (2) композитный TCM Reliability Score из completion, длительности сессии и захода в лобби.',
+            'Dashboard de dos paneles para Algonova Indonesia: (1) modelo de optimización de asignación TCM×Curso con uplift de ingresos al rutear leads a TCMs top-25%, y (2) puntaje compuesto TCM Reliability con completion, duración y entrada al lobby.',
+            'Dasbor dua panel untuk Algonova Indonesia: (1) model optimasi TCM×Course yang memproyeksikan uplift revenue dari routing lead ke top-25% TCM, dan (2) skor komposit TCM Reliability dari completion, durasi sesi, dan lobby entry.',
+            'Papan pemuka dua panel untuk Algonova Indonesia: (1) model pengoptimuman penugasan TCM×Course yang menjangka uplift hasil daripada penghalaan lead ke top-25% TCM, dan (2) skor komposit TCM Reliability daripada completion, tempoh sesi, dan masuk lobi.'
+          ),
+          findings: [
+            t('Optimization projects +$761K YTD uplift (+53.0%) — $1.44M → $2.20M across 7 covered courses; A2S would rise 28.3% → 42.5% (+14.2pp) if leads route to top-25% TCMs per course.',
+              'Модель прогнозирует +$761K YTD uplift (+53,0%) — $1,44M → $2,20M по 7 курсам; A2S вырос бы 28,3% → 42,5% (+14,2 п.п.) при роутинге на топ-25% TCM по каждому курсу.',
+              'Modelo proyecta +$761K YTD (+53,0%) — $1,44M → $2,20M en 7 cursos; A2S subiría 28,3% → 42,5% (+14,2pp) ruteando a top-25% TCMs por curso.',
+              'Model memproyeksikan +$761K YTD uplift (+53,0%) — $1,44jt → $2,20jt di 7 kursus; A2S naik 28,3% → 42,5% (+14,2pp) jika lead diarahkan ke top-25% TCM per kursus.',
+              'Model menjangka +$761K YTD uplift (+53.0%) — $1.44J → $2.20J merentas 7 kursus; A2S akan naik 28.3% → 42.5% (+14.2pp) jika lead dialihkan ke top-25% TCM setiap kursus.'),
+            t('Largest gains: Math Tutoring +$541K (A2S 27.1% → 43.7%), Graphic Design +$78K (35.1% → 56.8%), Visual Programming +$74K. Math Master = 0 uplift (top-quartile already matches current).',
+              'Главные приросты: Math Tutoring +$541K (A2S 27,1% → 43,7%), Graphic Design +$78K (35,1% → 56,8%), Visual Programming +$74K. Math Master = 0 (топ-квартиль уже совпадает с текущим).',
+              'Mayores ganancias: Math Tutoring +$541K (A2S 27,1% → 43,7%), Graphic Design +$78K (35,1% → 56,8%), Visual Programming +$74K. Math Master = 0 (top-quartil ya iguala el actual).',
+              'Gains terbesar: Math Tutoring +$541K (A2S 27,1% → 43,7%), Graphic Design +$78K (35,1% → 56,8%), Visual Programming +$74K. Math Master = 0 (top-quartile sudah sama dengan kondisi saat ini).',
+              'Keuntungan terbesar: Math Tutoring +$541K (A2S 27.1% → 43.7%), Graphic Design +$78K (35.1% → 56.8%), Visual Programming +$74K. Math Master = 0 (top-quartile sudah sepadan dengan keadaan semasa).'),
+            t('Model formula: Expected Revenue per Lead = P(conversion | TCM × Course) × E(AOV | Course); 63,814 attended sessions, 373 TCMs, n≥30 threshold per TCM×Course pair.',
+              'Формула: Expected Revenue per Lead = P(conversion | TCM × Course) × E(AOV | Course); 63 814 attended sessions, 373 TCM, порог n≥30 на пару TCM×Курс.',
+              'Fórmula: Revenue Esperado por Lead = P(conversión | TCM × Curso) × E(AOV | Curso); 63 814 sesiones atendidas, 373 TCMs, umbral n≥30 por par TCM×Curso.',
+              'Formula: Expected Revenue per Lead = P(konversi | TCM × Course) × E(AOV | Course); 63.814 sesi attended, 373 TCM, ambang n≥30 per pasangan TCM×Course.',
+              'Formula: Expected Revenue setiap Lead = P(penukaran | TCM × Course) × E(AOV | Course); 63,814 sesi hadir, 373 TCM, ambang n≥30 setiap pasangan TCM×Course.'),
+            t('Reliability Score (14,284 sessions, 154 TCMs, Feb–May 2026): weights Completion 40% + Duration vs 90-min 35% + Lobby Entry 25%; tiers Elite / Solid / Developing.',
+              'Reliability Score (14 284 сессий, 154 TCM, фев–май 2026): веса Completion 40% + Duration vs 90-мин 35% + Lobby Entry 25%; тиры Elite / Solid / Developing.',
+              'Reliability Score (14 284 sesiones, 154 TCMs, feb–may 2026): pesos Completion 40% + Duración vs 90 min 35% + Lobby Entry 25%; tiers Elite / Solid / Developing.',
+              'Reliability Score (14.284 sesi, 154 TCM, Feb–Mei 2026): bobot Completion 40% + Duration vs 90 menit 35% + Lobby Entry 25%; tier Elite / Solid / Developing.',
+              'Reliability Score (14,284 sesi, 154 TCM, Feb–Mei 2026): pemberat Completion 40% + Tempoh vs 90-min 35% + Masuk Lobi 25%; tier Elite / Solid / Developing.')
+          ]
+        },
+        {
+          file: 'matvey-confirmation2.pdf',
+          author: 'Matvey',
+          title: 'Confirmation 2 — Silent Failure, Every Week (Tech Issues Pattern)',
+          tags: ['Ops Incident', 'Confirmation 2', 'Lobby Failure', 'Tech Debt', 'Root Cause'],
+          type: 'pdf',
+          summary: t(
+            'Single-slide incident-pattern brief flagging a recurring weekly failure in the Confirmation 2 notification flow that causes master-class lobby links to die silently. Drawn from the Q2 2026 operational log; still ongoing.',
+            'Слайд-брифинг о рекуррентном недельном сбое в Confirmation 2: ссылки на лобби мастер-классов молча умирают. Основано на Q2 2026 ops-логе; до сих пор не исправлено.',
+            'Brief de patrón de incidente: fallo recurrente semanal en Confirmation 2 que mata silenciosamente los enlaces de lobby. Basado en log operacional Q2 2026; sigue activo.',
+            'Brief insiden satu slide: kegagalan mingguan berulang di Confirmation 2 yang mematikan link lobi secara diam. Berdasarkan log operasional Q2 2026; masih berlangsung.',
+            'Taklimat corak insiden satu slaid: kegagalan mingguan berulang dalam Confirmation 2 yang mematikan pautan lobi secara senyap. Berdasarkan log operasi Q2 2026; masih berlaku.'
+          ),
+          findings: [
+            t('3 consecutive Fridays in May (8, 15, 22) showed the same Conf2 silent failure across different MK slots; "Still Ongoing" since May 8 — never patched. Confidence 8/10.',
+              '3 пятницы подряд в мае (8, 15, 22) — один и тот же silent fail Conf2 на разных МК-слотах; «Still Ongoing» с 8 мая — не пофикшено. Уверенность 8/10.',
+              '3 viernes seguidos de mayo (8, 15, 22) con el mismo fallo silencioso Conf2 en distintos slots de MK; "Still Ongoing" desde 8 may — sin parchar. Confianza 8/10.',
+              '3 Jumat berturut-turut di Mei (8, 15, 22) menunjukkan kegagalan diam Conf2 yang sama di slot MK berbeda; "Still Ongoing" sejak 8 Mei — belum diperbaiki. Confidence 8/10.',
+              '3 Jumaat berturut-turut pada Mei (8, 15, 22) menunjukkan kegagalan senyap Conf2 yang sama merentas slot MK berbeza; "Still Ongoing" sejak 8 Mei — belum dipatch. Keyakinan 8/10.'),
+            t('Timeline: Apr 1 (W14) templates error → Apr 15 (W16) reschedule link + partial fail → Apr 24–26 (W17) full-day "EXPLOSION" with lobby links dead → recurring Fridays.',
+              'Хронология: 1 апр (W14) ошибка шаблонов → 15 апр (W16) reschedule link + частичный фейл → 24–26 апр (W17) full-day «EXPLOSION», ссылки на лобби мертвы → рекуррентные пятницы.',
+              'Cronología: 1 abr (W14) error de templates → 15 abr (W16) reschedule link + fallo parcial → 24–26 abr (W17) "EXPLOSION" de día completo, links de lobby muertos → viernes recurrentes.',
+              'Timeline: 1 Apr (W14) error template → 15 Apr (W16) reschedule link + gagal parsial → 24–26 Apr (W17) "EXPLOSION" sehari penuh, link lobi mati → Jumat berulang.',
+              'Garis masa: 1 Apr (W14) ralat templat → 15 Apr (W16) pautan jadual semula + gagal sebahagian → 24–26 Apr (W17) "EXPLOSION" sehari penuh, pautan lobi mati → Jumaat berulang.'),
+            t('Source: Tech Issues Operational Log Q2 2026 — 69 total incidents, 19 of them Conf2/lobby across 8 weeks.',
+              'Источник: Tech Issues Operational Log Q2 2026 — 69 инцидентов всего, из них 19 Conf2/lobby на 8 неделях.',
+              'Fuente: Tech Issues Operational Log Q2 2026 — 69 incidentes totales, 19 de ellos Conf2/lobby en 8 semanas.',
+              'Sumber: Tech Issues Operational Log Q2 2026 — 69 insiden total, 19 di antaranya Conf2/lobby di 8 minggu.',
+              'Sumber: Tech Issues Operational Log Q2 2026 — 69 insiden keseluruhan, 19 daripadanya Conf2/lobi merentas 8 minggu.'),
+            t('Recommended: NOW — dead-man switch auto-checking 60–90 min before each MK slot; Week 1 — cron/mapping audit of MK 15/MK 20; Week 2 — TCM-side fallback alert for missing Conf2.',
+              'Рекомендации: NOW — dead-man switch с проверкой за 60–90 мин до МК-слота; W1 — аудит cron/mapping для MK 15/MK 20; W2 — TCM-side fallback алерт при отсутствии Conf2.',
+              'Recomendaciones: AHORA — dead-man switch 60–90 min antes de cada slot; Semana 1 — auditoría cron/mapping MK 15/MK 20; Semana 2 — alerta de respaldo TCM para Conf2 faltante.',
+              'Rekomendasi: SEKARANG — dead-man switch otomatis 60–90 menit sebelum tiap slot MK; Minggu 1 — audit cron/mapping MK 15/MK 20; Minggu 2 — alert fallback sisi TCM untuk Conf2 yang hilang.',
+              'Disyorkan: SEKARANG — suis dead-man auto-semakan 60–90 min sebelum setiap slot MK; Minggu 1 — audit cron/mapping MK 15/MK 20; Minggu 2 — amaran sandaran sisi TCM untuk Conf2 yang hilang.')
+          ]
+        },
+        {
+          file: 'taufiq-tcm-monthly-grading.html',
+          author: 'Taufiq',
+          title: 'TCM Monthly Grading — May 2026 Performance Tiers',
+          tags: ['TCM Grading', 'Tier Assignment', 'Composite Score', 'Performance Review', 'Indonesia'],
+          type: 'html',
+          summary: t(
+            'Monthly composite scoring system for ranking and tiering Indonesia TCMs (Prio / Mid / Low / Probation) using a weighted blend of Total Sales, Revenue per Slot and Utilisation, with explicit promotion/demotion recommendations vs Sheet14.',
+            'Месячная композитная оценка для тиринга TCM в Индонезии (Prio / Mid / Low / Probation) — взвешенный микс Total Sales, Revenue per Slot и Utilisation, с явными рекомендациями повышений/понижений против Sheet14.',
+            'Sistema mensual de scoring compuesto para rankear y asignar tiers a TCMs de Indonesia (Prio / Mid / Low / Probation) — mezcla ponderada de Ventas, Ingresos por Slot y Utilización, con recomendaciones de promoción/democión vs Sheet14.',
+            'Sistem scoring komposit bulanan untuk merangking dan tiering TCM Indonesia (Prio / Mid / Low / Probation) — campuran berbobot Total Sales, Revenue per Slot, dan Utilisation, dengan rekomendasi promosi/demosi vs Sheet14.',
+            'Sistem pemarkahan komposit bulanan untuk meranking dan tier TCM Indonesia (Prio / Mid / Low / Probation) — campuran berwajaran Jumlah Jualan, Hasil per Slot, dan Penggunaan, dengan cadangan kenaikan/penurunan vs Sheet14.'
+          ),
+          findings: [
+            t('131 qualified TCMs (≥20 sessions, Apr 1 – May 28, 8.1 weeks): 27 Prio (≥75) / 39 Mid / 38 Low / 27 Probation (<25).',
+              '131 TCM прошли отбор (≥20 сессий, 1 апр – 28 мая, 8,1 недели): 27 Prio (≥75) / 39 Mid / 38 Low / 27 Probation (<25).',
+              '131 TCMs calificados (≥20 sesiones, 1 abr – 28 may, 8,1 semanas): 27 Prio (≥75) / 39 Mid / 38 Low / 27 Probation (<25).',
+              '131 TCM lolos kualifikasi (≥20 sesi, 1 Apr – 28 Mei, 8,1 minggu): 27 Prio (≥75) / 39 Mid / 38 Low / 27 Probation (<25).',
+              '131 TCM layak (≥20 sesi, 1 Apr – 28 Mei, 8.1 minggu): 27 Prio (≥75) / 39 Mid / 38 Low / 27 Probation (<25).'),
+            t('Composite Score = Percentile(Sales)×0.40 + Percentile(Rev/Slot)×0.35 + Percentile(Util)×0.25; argues A2S% alone rewards filtering (66%×7 slots = 39 sales loses to 38%×13 = 41).',
+              'Composite Score = Percentile(Sales)×0,40 + Percentile(Rev/Slot)×0,35 + Percentile(Util)×0,25; A2S% сам по себе поощряет фильтрацию (66%×7 слотов = 39 продаж проигрывает 38%×13 = 41).',
+              'Composite Score = Percentile(Ventas)×0,40 + Percentile(Rev/Slot)×0,35 + Percentile(Util)×0,25; A2S% solo premia filtrar (66%×7 slots = 39 ventas pierde vs 38%×13 = 41).',
+              'Composite Score = Percentile(Sales)×0,40 + Percentile(Rev/Slot)×0,35 + Percentile(Util)×0,25; A2S% saja memberi reward untuk filtering (66%×7 slot = 39 sales kalah vs 38%×13 = 41).',
+              'Composite Score = Percentile(Sales)×0.40 + Percentile(Rev/Slot)×0.35 + Percentile(Util)×0.25; A2S% sahaja memberi ganjaran kepada penapisan (66%×7 slot = 39 jualan kalah kepada 38%×13 = 41).'),
+            t('7 promotions recommended (RIZKY Low→Prio 86.6, RETNO Low→Prio 86.0, RAYHANA Mid→Prio 83.9, JHAIHAN Low→Prio 76.4) and 6 demotions (IMA, NANA, FAHIRA, ERI, LUIS, MARSHA Prio→Mid).',
+              '7 повышений (RIZKY Low→Prio 86,6, RETNO Low→Prio 86,0, RAYHANA Mid→Prio 83,9, JHAIHAN Low→Prio 76,4) и 6 понижений (IMA, NANA, FAHIRA, ERI, LUIS, MARSHA Prio→Mid).',
+              '7 promociones (RIZKY Low→Prio 86,6, RETNO Low→Prio 86,0, RAYHANA Mid→Prio 83,9, JHAIHAN Low→Prio 76,4) y 6 demociones (IMA, NANA, FAHIRA, ERI, LUIS, MARSHA Prio→Mid).',
+              '7 promosi (RIZKY Low→Prio 86,6, RETNO Low→Prio 86,0, RAYHANA Mid→Prio 83,9, JHAIHAN Low→Prio 76,4) dan 6 demosi (IMA, NANA, FAHIRA, ERI, LUIS, MARSHA Prio→Mid).',
+              '7 kenaikan (RIZKY Low→Prio 86.6, RETNO Low→Prio 86.0, RAYHANA Mid→Prio 83.9, JHAIHAN Low→Prio 76.4) dan 6 penurunan (IMA, NANA, FAHIRA, ERI, LUIS, MARSHA Prio→Mid).'),
+            t('Top scorers: SUNAN 96.6 (51 sales, 47.2% A2S, $114 rev/slot), FRISCA 95.6, JAELANI 94.0 ($158 rev/slot). 141 of 206 active TCMs have no tier in Sheet14.',
+              'Топ-скор: SUNAN 96,6 (51 продаж, 47,2% A2S, $114 rev/slot), FRISCA 95,6, JAELANI 94,0 ($158 rev/slot). 141 из 206 активных TCM не имеют тира в Sheet14.',
+              'Top scorers: SUNAN 96,6 (51 ventas, 47,2% A2S, $114 rev/slot), FRISCA 95,6, JAELANI 94,0 ($158 rev/slot). 141 de 206 TCMs activos sin tier en Sheet14.',
+              'Top scorer: SUNAN 96,6 (51 sales, 47,2% A2S, $114 rev/slot), FRISCA 95,6, JAELANI 94,0 ($158 rev/slot). 141 dari 206 TCM aktif tanpa tier di Sheet14.',
+              'Skor tertinggi: SUNAN 96.6 (51 jualan, 47.2% A2S, $114 rev/slot), FRISCA 95.6, JAELANI 94.0 ($158 rev/slot). 141 daripada 206 TCM aktif tanpa tier dalam Sheet14.')
+          ]
+        },
+        {
+          file: 'taufiq-tcm-routing-v3.html',
+          author: 'Taufiq',
+          title: 'TCM-to-Masterclass Assignment — Board Brief v3 (ABCD Routing)',
+          tags: ['TCM Routing', 'ABCD Segments', 'Autodistribution', 'Capacity Planning', 'Indonesia'],
+          type: 'html',
+          summary: t(
+            'Final corrected board brief proposing that ABCD lead segments be the primary routing signal for auto-distribution: send A+B (Hot) clients to Prio TCMs first. Verified impact estimates and an explicit list of patterns killed by retesting against pre-attendance data.',
+            'Финальный исправленный board-brief: ABCD-сегменты — основной сигнал для роутинга автодистрибуции; A+B (Hot) клиенты идут к Prio TCM в первую очередь. Подтверждённые оценки эффекта и список паттернов, отброшенных после ретеста на pre-attendance данных.',
+            'Brief final corregido al board: los segmentos ABCD deben ser la señal primaria de routing de auto-distribución; clientes A+B (Hot) van primero a TCMs Prio. Estimaciones de impacto verificadas y lista de patrones eliminados al retestar con datos pre-attendance.',
+            'Board brief final yang dikoreksi: segmen ABCD jadi sinyal utama untuk routing autodistribusi — klien A+B (Hot) diarahkan ke TCM Prio terlebih dahulu. Estimasi dampak terverifikasi dan daftar pola yang dihilangkan setelah retest dengan data pre-attendance.',
+            'Taklimat board akhir yang dibetulkan: segmen ABCD menjadi isyarat utama untuk penghalaan autoagihan — pelanggan A+B (Hot) dihantar ke TCM Prio terlebih dahulu. Anggaran impak yang disahkan dan senarai corak yang dibuang selepas uji semula dengan data pra-kehadiran.'
+          ),
+          findings: [
+            t('A+B (Hot) Prio TCMs convert 44.1% vs 29.7% Non-Prio — a +14.4pp gap — and higher AOV ($259 vs $233). Per-segment: A★ 66.7 vs 53.4, B 36.2 vs 24.9, C 38.5 vs 27.2, D 37.3 vs 23.0.',
+              'A+B (Hot) у Prio TCM конвертит 44,1% против 29,7% у Non-Prio — разрыв +14,4 п.п. — и AOV выше ($259 vs $233). По сегментам: A★ 66,7 vs 53,4, B 36,2 vs 24,9, C 38,5 vs 27,2, D 37,3 vs 23,0.',
+              'A+B (Hot) Prio TCMs convierten 44,1% vs 29,7% Non-Prio — brecha +14,4pp — y AOV mayor ($259 vs $233). Por segmento: A★ 66,7 vs 53,4, B 36,2 vs 24,9, C 38,5 vs 27,2, D 37,3 vs 23,0.',
+              'A+B (Hot) Prio TCM konversi 44,1% vs 29,7% Non-Prio — gap +14,4pp — dan AOV lebih tinggi ($259 vs $233). Per segmen: A★ 66,7 vs 53,4, B 36,2 vs 24,9, C 38,5 vs 27,2, D 37,3 vs 23,0.',
+              'A+B (Hot) Prio TCM tukar 44.1% vs 29.7% Non-Prio — jurang +14.4pp — dan AOV lebih tinggi ($259 vs $233). Setiap segmen: A★ 66.7 vs 53.4, B 36.2 vs 24.9, C 38.5 vs 27.2, D 37.3 vs 23.0.'),
+            t('283 A+B attended/week currently go to Non-Prio while 19 active Prio TCMs run at only 43% utilisation (165 of 380 max slots/week). Gap per redirected session = $45 ($114 Prio vs $69 Non-Prio).',
+              '283 A+B attended/нед сейчас идут к Non-Prio, при том что 19 активных Prio TCM имеют утилизацию 43% (165 из 380 max слотов/нед). Gap на перенаправленную сессию = $45 ($114 Prio vs $69 Non-Prio).',
+              '283 A+B asistidas/sem van a Non-Prio mientras 19 Prio activos están al 43% (165 de 380 max slots/sem). Gap por sesión redirigida = $45 ($114 Prio vs $69 Non-Prio).',
+              '283 A+B attended/minggu saat ini ke Non-Prio sementara 19 Prio TCM aktif hanya 43% utilisasi (165 dari 380 slot/minggu). Gap per sesi yang dialihkan = $45 ($114 Prio vs $69 Non-Prio).',
+              '283 A+B hadir/minggu kini ke Non-Prio sementara 19 TCM Prio aktif hanya 43% penggunaan (165 daripada 380 slot/minggu). Jurang setiap sesi yang dialihkan = $45 ($114 Prio vs $69 Non-Prio).'),
+            t('Annual revenue uplift from A+B → Prio first: $257K conservative (60% util cap, 110 redirected/week) to $503K aggressive (fill to 20-slot cap, 215 redirected/week). Built on 4,208 attended sessions with ABCD tags.',
+              'Годовой uplift от A+B → Prio: $257K консервативно (cap 60%, 110/нед) до $503K агрессивно (заполнение до 20-слот cap, 215/нед). Построено на 4 208 attended-сессиях с ABCD-тегами.',
+              'Uplift anual de A+B → Prio: $257K conservador (cap 60%, 110/sem) hasta $503K agresivo (lleno hasta 20-slot cap, 215/sem). Sobre 4 208 sesiones atendidas con tags ABCD.',
+              'Uplift revenue tahunan dari A+B → Prio: $257K konservatif (cap 60%, 110/minggu) hingga $503K agresif (isi sampai cap 20-slot, 215/minggu). Dari 4.208 sesi attended dengan tag ABCD.',
+              'Uplift hasil tahunan daripada A+B → Prio: $257K konservatif (cap 60%, 110/minggu) hingga $503K agresif (isi sehingga cap 20-slot, 215/minggu). Dibina atas 4,208 sesi hadir dengan tag ABCD.'),
+            t('Killed patterns: Pattern 5 day-of-week scheduling and Pattern 1 "lobby waste on Low Class clients" — both vanished when retested with pre-attendance ABCD instead of post-attendance Financial_Strength proxy.',
+              'Удалённые паттерны: Pattern 5 (расписание по дням недели) и Pattern 1 («потери лобби на Low Class клиентах») — оба исчезли при ретесте на pre-attendance ABCD вместо post-attendance Financial_Strength прокси.',
+              'Patrones eliminados: Pattern 5 (scheduling por día) y Pattern 1 ("desperdicio de lobby en Low Class") — ambos desaparecieron al retestar con ABCD pre-attendance en vez de proxy Financial_Strength post-attendance.',
+              'Pola yang dihapus: Pattern 5 (penjadwalan per hari) dan Pattern 1 ("lobby waste pada klien Low Class") — keduanya hilang saat retest dengan ABCD pre-attendance bukan proxy Financial_Strength post-attendance.',
+              'Corak yang dibuang: Pattern 5 (penjadualan mengikut hari) dan Pattern 1 ("pembaziran lobi pada pelanggan Low Class") — kedua-duanya hilang apabila diuji semula dengan ABCD pra-kehadiran bukan proksi Financial_Strength pasca-kehadiran.')
+          ]
+        }
+      ]
+    }
+  ];
 
   window.Algonova.data = {
     dashboards: DASHBOARDS,
@@ -927,6 +1152,7 @@ window.Algonova = window.Algonova || {};
     team: TEAM,
     faq: FAQ,
     research: RESEARCH,
+    hackathons: HACKATHONS,
     researchLabels: RESEARCH_LABELS,
     buLabels: BU_LABELS
   };

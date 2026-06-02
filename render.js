@@ -257,8 +257,100 @@
     target.appendChild(grid);
   }
 
-  function renderResearch(target, data, lang, buLabels, labels) {
+  function renderHackathons(target, hackathons, lang, labels) {
+    if (!hackathons || !hackathons.length) return;
+
+    const wrap = el('<section class="hackathons-block"></section>');
+    const heading = el(
+      '<h2 class="hackathons-heading"><span class="hack-emoji">⚡</span> <span>' +
+      escapeHtml(pick(labels.hackathons, lang)) + '</span></h2>'
+    );
+    wrap.appendChild(heading);
+
+    hackathons.forEach(hack => {
+      const itemsCount = (hack.items || []).length;
+      const titleStr = pick(hack.title, lang);
+      const subtitleStr = pick(hack.subtitle, lang);
+      const countStr = itemsCount > 0
+        ? itemsCount + ' ' + pick(labels.reports_n, lang)
+        : pick(labels.coming_soon, lang);
+
+      const details = el(
+        '<details class="hackathon-block">' +
+          '<summary class="hackathon-button">' +
+            '<div class="hack-text">' +
+              '<div class="hack-title">' + escapeHtml(titleStr) + '</div>' +
+              '<div class="hack-subtitle">' + escapeHtml(subtitleStr) + '</div>' +
+            '</div>' +
+            '<div class="hack-aside">' +
+              '<span class="hack-count">' + escapeHtml(countStr) + '</span>' +
+              '<span class="hack-chevron" aria-hidden="true">▾</span>' +
+            '</div>' +
+          '</summary>' +
+          '<div class="hackathon-content"></div>' +
+        '</details>'
+      );
+
+      const content = details.querySelector('.hackathon-content');
+
+      if (itemsCount === 0) {
+        content.appendChild(el(
+          '<div class="hackathon-empty">' +
+            '<span class="empty-text">' + escapeHtml(pick(labels.coming_soon, lang)) + '</span>' +
+          '</div>'
+        ));
+      } else {
+        const grid = el('<div class="grid grid-wide"></div>');
+        hack.items.forEach(item => {
+          const summary = pick(item.summary, lang);
+          const tagsHtml = (item.tags || []).map(tg =>
+            '<span class="bu-chip">' + escapeHtml(tg) + '</span>'
+          ).join('');
+          const findingsItems = (item.findings || []).map(f =>
+            '<li>' + escapeHtml(pick(f, lang)) + '</li>'
+          ).join('');
+          const typeBadge = (item.type || 'html').toUpperCase();
+          const authorBadge = item.author
+            ? '<span class="author-badge">' + escapeHtml(item.author) + '</span>'
+            : '';
+
+          const card = el(
+            '<div class="card card-research card-hackathon">' +
+              '<div class="research-header">' +
+                authorBadge +
+                '<span class="research-date type-' + escapeHtml((item.type || 'html').toLowerCase()) + '">' + escapeHtml(typeBadge) + '</span>' +
+              '</div>' +
+              '<a class="card-name research-title" href="assets/hackathon/' + escapeHtml(item.file) + '" target="_blank" rel="noopener noreferrer">' +
+                escapeHtml(item.title) +
+              '</a>' +
+              '<div class="research-tags">' + tagsHtml + '</div>' +
+              '<p class="research-summary">' + escapeHtml(summary) + '</p>' +
+              (findingsItems
+                ? '<details class="research-findings">' +
+                    '<summary>' +
+                      '<span>' + escapeHtml(pick(labels.findings, lang)) + ' (' + item.findings.length + ')</span>' +
+                      '<span class="faq-chevron" aria-hidden="true">+</span>' +
+                    '</summary>' +
+                    '<ul>' + findingsItems + '</ul>' +
+                  '</details>'
+                : '') +
+            '</div>'
+          );
+          grid.appendChild(card);
+        });
+        content.appendChild(grid);
+      }
+
+      wrap.appendChild(details);
+    });
+
+    target.appendChild(wrap);
+  }
+
+  function renderResearch(target, data, lang, buLabels, labels, hackathons) {
     target.innerHTML = '';
+
+    renderHackathons(target, hackathons, lang, labels);
 
     ['indonesia', 'malaysia', 'latam'].forEach(buKey => {
       const buMeta = BU_META[buKey];
@@ -359,7 +451,7 @@
       if (target) renderTeam(target, data.team, lang, data.buLabels);
     } else if (page === 'research') {
       const target = document.querySelector('[data-render="research"]');
-      if (target) renderResearch(target, data.research, lang, data.buLabels, data.researchLabels || {});
+      if (target) renderResearch(target, data.research, lang, data.buLabels, data.researchLabels || {}, data.hackathons || []);
     } else if (page === 'faq') {
       const target = document.querySelector('[data-render="faq"]');
       if (target) renderFAQ(target, data.faq, lang);
