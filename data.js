@@ -665,6 +665,41 @@ window.Algonova = window.Algonova || {};
   const RESEARCH = {
     indonesia: [
       {
+        file: 'TCM_Capacity_Board_June2026.html',
+        title: 'TCM Capacity Readiness — June 2026 Season Board Briefing',
+        date: '2026-06',
+        tags: ['Indonesia', 'TCM Capacity', 'Sales Forecast', 'A2S', 'Workforce Planning', 'June 2026'],
+        summary: t(
+          'Board briefing on TCM capacity readiness for Indonesia B2C’s June–July 2026 season: raw capacity gap will close by Week 2, but probation-TCM dilution is the real risk to hitting the 2,128 sales / $596K revenue target. Action Plan projects 2,060 sales (97% of target) via smart lead allocation, tenured slot expansion and coaching.',
+          'Брифинг для борда по готовности TCM-капасити под сезон июнь–июль 2026 в B2C Indonesia: разрыв по числу TCM закроется к 2-й неделе, но разбавление пробейшн-TCM — главный риск для цели 2 128 продаж / $596K выручки. План действий даёт 2 060 продаж (97% от цели) за счёт умного распределения лидов, расширения слотов tenured и коучинга.',
+          'Briefing al board sobre la preparación de capacidad TCM para la temporada jun–jul 2026 de B2C Indonesia: la brecha bruta de capacidad cierra en Semana 2, pero la dilución por TCMs en probation es el riesgo real para la meta de 2 128 ventas / $596K de ingresos. El Plan de Acción proyecta 2 060 ventas (97% de la meta) vía asignación inteligente de leads, expansión de slots tenured y coaching.',
+          'Briefing untuk board tentang kesiapan kapasitas TCM untuk musim Juni–Juli 2026 B2C Indonesia: gap kapasitas mentah akan tertutup di Minggu 2, namun dilusi oleh TCM probation adalah risiko utama untuk target 2.128 sales / $596K revenue. Action Plan memproyeksikan 2.060 sales (97% target) via alokasi lead pintar, perluasan slot tenured, dan coaching.',
+          'Taklimat board mengenai kesediaan kapasiti TCM untuk musim Jun–Julai 2026 B2C Indonesia: jurang kapasiti mentah akan tertutup pada Minggu 2, tetapi pencairan oleh TCM probation adalah risiko sebenar untuk sasaran 2,128 jualan / $596K hasil. Pelan Tindakan menjangka 2,060 jualan (97% sasaran) melalui pengagihan lead pintar, perluasan slot tenured dan coaching.'
+        ),
+        findings: [
+          t('FM target June 2026: 2,128 sales / $595,974 revenue at 35% A2S and $280 AOV — +27% YoY sales and +53% YoY revenue (1,671 → 2,128; $390K → $596K).',
+            'Цель FM на июнь 2026: 2 128 продаж / $595 974 выручки при A2S 35% и AOV $280 — +27% YoY по продажам и +53% YoY по выручке (1 671 → 2 128; $390K → $596K).',
+            'Meta FM jun 2026: 2 128 ventas / $595 974 de ingresos a 35% A2S y $280 AOV — +27% YoY en ventas y +53% YoY en ingresos (1 671 → 2 128; $390K → $596K).',
+            'Target FM Juni 2026: 2.128 sales / $595.974 revenue di 35% A2S dan $280 AOV — +27% YoY sales dan +53% YoY revenue (1.671 → 2.128; $390K → $596K).',
+            'Sasaran FM Jun 2026: 2,128 jualan / $595,974 hasil pada 35% A2S dan $280 AOV — +27% YoY jualan dan +53% YoY hasil (1,671 → 2,128; $390K → $596K).'),
+          t('Capacity gap: 137 TCMs now vs 163 needed (optimistic 35% A2S) or 179 (realistic 32%) — gap 26–42 TCMs; pipeline adds +52 (24 deploying + 28 projected) to 189 by Week 2.',
+            'Гэп по капасити: 137 TCM сейчас vs 163 нужно (оптимистично 35% A2S) или 179 (реалистично 32%) — гэп 26–42 TCM; пайплайн добавит +52 (24 в деплое + 28 прогноз) до 189 к 2-й неделе.',
+            'Brecha de capacidad: 137 TCMs ahora vs 163 necesarios (optimista 35% A2S) o 179 (realista 32%) — brecha 26–42 TCMs; pipeline suma +52 (24 desplegando + 28 proyectados) hasta 189 en Semana 2.',
+            'Gap kapasitas: 137 TCM saat ini vs 163 dibutuhkan (optimistis 35% A2S) atau 179 (realistis 32%) — gap 26–42 TCM; pipeline menambah +52 (24 deploying + 28 perkiraan) menjadi 189 di Minggu 2.',
+            'Jurang kapasiti: 137 TCM kini vs 163 diperlukan (optimis 35% A2S) atau 179 (realistik 32%) — jurang 26–42 TCM; pipeline menambah +52 (24 melaksana + 28 dijangka) ke 189 menjelang Minggu 2.'),
+          t('Probation TCMs convert at only 15.5% A2S vs 32% tenured; proportional lead allocation would dilute blended A2S 32% → 27.5%, producing fewer sales than not adding probation TCMs at all.',
+            'Пробейшн-TCM конвертят всего 15,5% A2S против 32% у tenured; пропорциональное распределение лидов размоет blended A2S 32% → 27,5% и даст меньше продаж, чем без пробейшн вообще.',
+            'TCMs en probation convierten solo 15,5% A2S vs 32% tenured; asignación proporcional diluye el A2S combinado 32% → 27,5% y produce menos ventas que sin sumar a los probation.',
+            'TCM probation hanya konversi 15,5% A2S vs 32% tenured; alokasi lead proporsional akan mendilusi blended A2S 32% → 27,5%, menghasilkan sales lebih sedikit daripada tanpa menambah TCM probation.',
+            'TCM probation hanya menukar 15.5% A2S vs 32% tenured; pengagihan lead proportional akan mencairkan blended A2S 32% → 27.5%, menghasilkan jualan lebih sedikit daripada tidak menambah TCM probation langsung.'),
+          t('Action Plan (tenured-first allocation, push tenured to 19 slots, coaching): 2,060 sales = 97% of target ($577K, −$19K gap); upside at sustained 35% A2S reaches ~2,120 sales (~100%).',
+            'План действий (tenured-first, увеличение слотов tenured до 19, коучинг): 2 060 продаж = 97% от цели ($577K, разрыв −$19K); upside при удержании 35% A2S — ~2 120 продаж (~100%).',
+            'Plan de Acción (tenured-first, subir slots tenured a 19, coaching): 2 060 ventas = 97% de la meta ($577K, brecha −$19K); upside con 35% A2S sostenido alcanza ~2 120 ventas (~100%).',
+            'Action Plan (tenured-first, dorong tenured ke 19 slot, coaching): 2.060 sales = 97% target ($577K, gap −$19K); upside di A2S 35% berkelanjutan mencapai ~2.120 sales (~100%).',
+            'Pelan Tindakan (tenured-first, naikkan tenured ke 19 slot, coaching): 2,060 jualan = 97% sasaran ($577K, jurang −$19K); upside pada A2S 35% berterusan mencapai ~2,120 jualan (~100%).')
+        ]
+      },
+      {
         file: 'H2A_Decline_Analysis_Board_Report.html',
         title: 'H2A Conversion Rate Decline Analysis — Board Report',
         date: '2026-05',

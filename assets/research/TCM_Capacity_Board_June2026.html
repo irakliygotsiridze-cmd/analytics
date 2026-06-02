@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TCM Capacity Readiness — June 2026 Season | Board Briefing</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #0B1222; --card: #111B2E; --card-alt: #162036; --border: #1E2D4A;
+    --accent: #3B82F6; --green: #10B981; --amber: #F59E0B; --red: #EF4444;
+    --text: #E2E8F0; --muted: #94A3B8; --dim: #64748B; --white: #FFFFFF;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; line-height: 1.6; }
+  .mono { font-family: 'DM Mono', monospace; }
+
+  /* Header */
+  .header { background: linear-gradient(135deg, #0B1222 0%, #162036 50%, #0B1222 100%); border-bottom: 1px solid var(--border); padding: 32px 40px 28px; }
+  .header-inner { max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px; }
+  .header-label { font-size: 11px; color: var(--accent); text-transform: uppercase; letter-spacing: 0.12em; font-family: 'DM Mono', monospace; margin-bottom: 8px; }
+  .header h1 { font-size: 30px; font-weight: 800; color: var(--white); letter-spacing: -0.03em; line-height: 1.2; }
+  .header-sub { font-size: 16px; color: var(--muted); margin-top: 4px; }
+  .header-meta { text-align: right; font-size: 12px; color: var(--dim); font-family: 'DM Mono', monospace; }
+  .header-meta div { margin-bottom: 2px; }
+
+  .container { max-width: 1100px; margin: 0 auto; padding: 32px 40px; }
+
+  /* Sections */
+  .section { margin-bottom: 40px; }
+  .section-head { display: flex; align-items: center; gap: 12px; margin-bottom: 4px; }
+  .section-bar { width: 4px; height: 24px; border-radius: 2px; }
+  .section-title { font-size: 20px; font-weight: 700; color: var(--white); letter-spacing: -0.02em; }
+  .section-subtitle { margin: 0 0 16px 16px; font-size: 13px; color: var(--dim); font-family: 'DM Mono', monospace; }
+
+  /* KPI Cards */
+  .kpi-row { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 20px; }
+  .kpi { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 20px 24px; flex: 1; min-width: 180px; position: relative; overflow: hidden; }
+  .kpi-bar { position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+  .kpi-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; font-family: 'DM Mono', monospace; margin-bottom: 6px; }
+  .kpi-value { font-size: 28px; font-weight: 800; color: var(--white); letter-spacing: -0.03em; }
+  .kpi-sub { font-size: 12px; margin-top: 4px; font-family: 'DM Mono', monospace; }
+
+  /* Badge */
+  .badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-family: 'DM Mono', monospace; font-weight: 600; }
+  .badge-dot { width: 6px; height: 6px; border-radius: 50%; }
+  .badge-amber { background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.25); color: var(--amber); }
+  .badge-amber .badge-dot { background: var(--amber); }
+  .badge-green { background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.25); color: var(--green); }
+  .badge-green .badge-dot { background: var(--green); }
+  .badge-red { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.25); color: var(--red); }
+  .badge-red .badge-dot { background: var(--red); }
+
+  /* Summary box */
+  .summary-box { background: var(--card-alt); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; font-size: 14px; line-height: 1.7; color: var(--muted); }
+  .summary-box strong { color: var(--white); }
+
+  /* FM Grid */
+  .fm-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; }
+  .fm-cell { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; }
+  .fm-cell-label { font-size: 10px; color: var(--dim); text-transform: uppercase; font-family: 'DM Mono', monospace; letter-spacing: 0.06em; }
+  .fm-cell-value { font-size: 18px; font-weight: 700; color: var(--white); margin-top: 2px; }
+  .yoy-row { display: flex; gap: 24px; margin-top: 16px; font-size: 13px; color: var(--dim); font-family: 'DM Mono', monospace; flex-wrap: wrap; }
+
+  /* Gap cards */
+  .gap-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+  @media (max-width: 700px) { .gap-grid { grid-template-columns: 1fr; } }
+  .gap-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 20px; }
+  .gap-card-title { font-size: 13px; font-weight: 600; font-family: 'DM Mono', monospace; margin-bottom: 12px; }
+  .gap-table { width: 100%; font-size: 13px; border-collapse: collapse; }
+  .gap-table td { padding: 6px 0; }
+  .gap-table td:first-child { color: var(--muted); }
+  .gap-table td:last-child { text-align: right; font-weight: 600; font-family: 'DM Mono', monospace; }
+  .gap-table tr { border-bottom: 1px solid var(--border); }
+  .gap-table tr:last-child { border-bottom: none; }
+  .gap-table tr:last-child td { padding-top: 8px; font-size: 16px; font-weight: 800; }
+
+  /* Chart containers */
+  .chart-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin-bottom: 16px; }
+  .chart-title { font-size: 14px; font-weight: 600; color: var(--white); margin-bottom: 4px; }
+  .chart-sub { font-size: 11px; color: var(--dim); font-family: 'DM Mono', monospace; margin-bottom: 12px; }
+  .chart-footer { display: flex; justify-content: space-around; font-size: 11px; color: var(--dim); font-family: 'DM Mono', monospace; padding-top: 8px; }
+
+  /* Insight callout */
+  .callout { border-radius: 12px; padding: 20px 24px; margin-bottom: 40px; }
+  .callout-warn { background: linear-gradient(135deg, rgba(245,158,11,0.07), rgba(239,68,68,0.03)); border: 1px solid rgba(245,158,11,0.25); }
+  .callout-info { background: linear-gradient(135deg, rgba(59,130,246,0.08), rgba(16,185,129,0.03)); border: 1px solid rgba(59,130,246,0.25); }
+  .callout-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .callout-title { font-size: 15px; font-weight: 700; }
+  .callout-body { font-size: 13.5px; line-height: 1.7; color: var(--muted); }
+  .callout-body strong { color: var(--white); }
+
+  /* Scenario buttons */
+  .scenario-btns { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+  .scenario-btn { padding: 8px 16px; border-radius: 8px; border: 1px solid var(--border); background: var(--card); color: var(--muted); cursor: pointer; font-size: 12px; font-family: 'DM Mono', monospace; font-weight: 600; transition: all 0.2s; }
+  .scenario-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .scenario-btn.active { border-color: var(--accent); background: rgba(59,130,246,0.1); color: var(--accent); }
+
+  /* Scenario detail */
+  .scenario-detail { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 20px; }
+  .scenario-name { font-size: 13px; font-weight: 600; font-family: 'DM Mono', monospace; margin-bottom: 8px; }
+  .scenario-desc { font-size: 13px; color: var(--muted); line-height: 1.6; margin-bottom: 16px; }
+  .kpi-mini-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .kpi-mini { background: var(--card-alt); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; position: relative; overflow: hidden; }
+  .kpi-mini .kpi-bar { height: 3px; }
+  .kpi-mini .kpi-value { font-size: 22px; }
+
+  /* Blended A2S grid */
+  .a2s-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 12px; }
+  .a2s-cell { background: var(--card-alt); border-radius: 8px; padding: 10px 12px; text-align: center; }
+  .a2s-week { font-size: 11px; color: var(--dim); font-family: 'DM Mono', monospace; }
+  .a2s-val { font-size: 18px; font-weight: 700; margin: 2px 0; }
+  .a2s-note { font-size: 10px; color: var(--dim); font-family: 'DM Mono', monospace; }
+
+  /* Pipeline cards */
+  .pipeline-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 700px) { .pipeline-grid { grid-template-columns: 1fr; } }
+  .pipeline-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 20px; }
+  .pipeline-title { font-size: 13px; font-weight: 600; font-family: 'DM Mono', monospace; margin-bottom: 12px; }
+  .pipeline-flow { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; flex-wrap: wrap; }
+  .pipeline-num { text-align: center; }
+  .pipeline-num-val { font-size: 28px; font-weight: 800; color: var(--white); }
+  .pipeline-num-label { font-size: 10px; color: var(--dim); font-family: 'DM Mono', monospace; }
+  .pipeline-arrow { font-size: 24px; color: var(--dim); }
+
+  /* Tables */
+  .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .data-table thead { background: var(--card-alt); }
+  .data-table th { padding: 10px 14px; text-align: left; color: var(--dim); font-size: 11px; font-family: 'DM Mono', monospace; text-transform: uppercase; letter-spacing: 0.06em; border-bottom: 1px solid var(--border); }
+  .data-table td { padding: 10px 14px; border-bottom: 1px solid var(--border); }
+  .data-table .action-name { color: var(--white); font-weight: 500; }
+  .data-table .action-detail { color: var(--dim); font-size: 11px; margin-top: 2px; }
+  .impact-tag { padding: 2px 8px; border-radius: 4px; font-size: 11px; font-family: 'DM Mono', monospace; font-weight: 600; display: inline-block; }
+  .impact-high { background: rgba(239,68,68,0.12); color: var(--red); }
+  .impact-med { background: rgba(245,158,11,0.12); color: var(--amber); }
+  .impact-low { background: rgba(100,116,139,0.12); color: var(--dim); }
+
+  /* Financial table */
+  .fin-table th { text-align: right; }
+  .fin-table th:first-child { text-align: left; }
+  .fin-table td { text-align: right; font-family: 'DM Mono', monospace; }
+  .fin-table td:first-child { text-align: left; font-weight: 600; font-family: 'DM Sans', sans-serif; }
+  .fin-row-target { background: rgba(59,130,246,0.06); }
+  .fin-row-action { background: rgba(59,130,246,0.04); }
+  .fin-row-upside { background: rgba(16,185,129,0.04); }
+
+  /* Note bar */
+  .note-bar { background: var(--card-alt); border-radius: 10px; padding: 14px 20px; font-size: 13px; color: var(--muted); font-family: 'DM Mono', monospace; margin-top: 16px; }
+  .note-bar strong { color: var(--white); }
+  .note-sm { margin-top: 8px; font-size: 12px; color: var(--dim); font-family: 'DM Mono', monospace; }
+
+  /* Assumptions */
+  .assumptions-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; font-size: 12px; color: var(--muted); font-family: 'DM Mono', monospace; line-height: 1.8; }
+  .assumptions-label { color: var(--dim); font-weight: 600; margin-bottom: 4px; }
+  .assumptions-footer { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); font-size: 11px; color: var(--dim); font-family: 'DM Mono', monospace; }
+
+  @media print {
+    body { background: #fff; color: #111; }
+    .header { background: #f8f9fa; border-bottom: 2px solid #ddd; }
+    .kpi, .gap-card, .chart-card, .pipeline-card, .scenario-detail { border: 1px solid #ddd; background: #f8f9fa; }
+    .callout-warn, .callout-info { border: 1px solid #ddd; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-inner">
+    <div>
+      <div class="header-label mono">Board Briefing · B2C Indonesia · Confidential</div>
+      <h1>TCM Capacity Readiness</h1>
+      <div class="header-sub">June–July 2026 Season Preparation</div>
+    </div>
+    <div style="text-align:right">
+      <div class="header-meta">
+        <div>Prepared: June 2, 2026</div>
+        <div>For: Andrei Lobanov (CEO), Irina (B2C Director)</div>
+        <div>By: Sales Analytics</div>
+      </div>
+      <div style="margin-top:8px">
+        <span class="badge badge-amber"><span class="badge-dot"></span>ACTION REQUIRED</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- EXECUTIVE SUMMARY -->
+  <div class="section">
+    <div class="section-head"><div class="section-bar" style="background:var(--accent)"></div><div class="section-title">Executive Summary</div></div>
+    <div class="section-subtitle mono">Status as of June 2, 2026 — Week 1 Start</div>
+
+    <div class="kpi-row">
+      <div class="kpi"><div class="kpi-bar" style="background:var(--accent)"></div><div class="kpi-label">FM Target — Sales</div><div class="kpi-value">2,128</div><div class="kpi-sub" style="color:var(--accent)">$595,974 Revenue</div></div>
+      <div class="kpi"><div class="kpi-bar" style="background:var(--amber)"></div><div class="kpi-label">Current TCMs</div><div class="kpi-value">137</div><div class="kpi-sub" style="color:var(--amber)">Gap: 26–42 TCMs</div></div>
+      <div class="kpi"><div class="kpi-bar" style="background:var(--green)"></div><div class="kpi-label">Pipeline (Next 2 Wks)</div><div class="kpi-value">+52</div><div class="kpi-sub" style="color:var(--green)">24 deploying + 28 projected</div></div>
+      <div class="kpi"><div class="kpi-bar" style="background:var(--amber)"></div><div class="kpi-label">Projected Sales</div><div class="kpi-value">2,060</div><div class="kpi-sub" style="color:var(--amber)">97% of target (Action Plan)</div></div>
+    </div>
+
+    <div class="summary-box">
+      <strong>Bottom line:</strong> TCM raw capacity will be solved by Week 2 (189 TCMs vs 163–179 needed). The real risk is <strong style="color:var(--amber)">A2S% dilution</strong> — probation TCMs convert at 15.5% vs 32% for tenured. Without smart allocation, adding probation TCMs <em>reduces</em> total sales. With the Action Plan (tenured priority + 19 slots by Week 3 + coaching), we project <strong style="color:var(--accent)">2,060 sales (97%)</strong>. If the seasonal A2S boost materializes (35%), we hit <strong style="color:var(--green)">2,120 (≈100%)</strong>.
+    </div>
+  </div>
+
+  <!-- FM TARGET -->
+  <div class="section">
+    <div class="section-head"><div class="section-bar" style="background:var(--accent)"></div><div class="section-title">Financial Model Target — June 2026</div></div>
+    <div class="section-subtitle mono">Decided target · Source: Funnel_Dashboard_Transposed.xlsx · Funnel Final sheet</div>
+
+    <div class="fm-grid">
+      <div class="fm-cell"><div class="fm-cell-label">Sales</div><div class="fm-cell-value">2,128</div></div>
+      <div class="fm-cell"><div class="fm-cell-label">Revenue</div><div class="fm-cell-value">$596K</div></div>
+      <div class="fm-cell"><div class="fm-cell-label">AOV</div><div class="fm-cell-value">$280</div></div>
+      <div class="fm-cell"><div class="fm-cell-label">Attended</div><div class="fm-cell-value">6,081</div></div>
+      <div class="fm-cell"><div class="fm-cell-label">A2S %</div><div class="fm-cell-value">35.0%</div></div>
+      <div class="fm-cell"><div class="fm-cell-label">Leads</div><div class="fm-cell-value">25,758</div></div>
+      <div class="fm-cell"><div class="fm-cell-label">L2A %</div><div class="fm-cell-value">23.61%</div></div>
+      <div class="fm-cell"><div class="fm-cell-label">Budget</div><div class="fm-cell-value">$170K</div></div>
+      <div class="fm-cell"><div class="fm-cell-label">MAC</div><div class="fm-cell-value">$79.87</div></div>
+      <div class="fm-cell"><div class="fm-cell-label">ROAS</div><div class="fm-cell-value">3.51x</div></div>
+    </div>
+    <div class="yoy-row">
+      <span>YoY Attended: <span style="color:var(--green)">+14%</span> (5,335 → 6,081)</span>
+      <span>YoY Sales: <span style="color:var(--green)">+27%</span> (1,671 → 2,128)</span>
+      <span>YoY A2S: <span style="color:var(--amber)">+3.7pp</span> (31.3% → 35.0%)</span>
+      <span>YoY Revenue: <span style="color:var(--green)">+53%</span> ($390K → $596K)</span>
+    </div>
+  </div>
+
+  <!-- CAPACITY GAP -->
+  <div class="section">
+    <div class="section-head"><div class="section-bar" style="background:var(--amber)"></div><div class="section-title">Capacity Gap Analysis</div></div>
+    <div class="section-subtitle mono">15% safety buffer applied (5% force majeure + 5% reschedule + 5% contingency)</div>
+
+    <div class="gap-grid">
+      <div class="gap-card">
+        <div class="gap-card-title" style="color:var(--accent)">SCENARIO A — OPTIMISTIC (35% A2S)</div>
+        <table class="gap-table">
+          <tr><td>Monthly attendance needed</td><td>6,081</td></tr>
+          <tr><td>Weekly attendance</td><td>1,448</td></tr>
+          <tr><td>Slots needed (÷ 60% UR)</td><td>2,414</td></tr>
+          <tr><td>Gross slots (+15% buffer)</td><td>2,776</td></tr>
+          <tr><td>TCMs needed (@17 slots)</td><td>163</td></tr>
+          <tr><td>Current TCMs</td><td>137</td></tr>
+          <tr><td style="color:var(--amber);font-weight:700">Gap</td><td style="color:var(--amber)">26 TCMs</td></tr>
+        </table>
+      </div>
+      <div class="gap-card">
+        <div class="gap-card-title" style="color:var(--red)">SCENARIO B — REALISTIC (32% A2S)</div>
+        <table class="gap-table">
+          <tr><td>Monthly attendance needed</td><td>6,650</td></tr>
+          <tr><td>Weekly attendance</td><td>1,583</td></tr>
+          <tr><td>Slots needed (÷ 60% UR)</td><td>2,639</td></tr>
+          <tr><td>Gross slots (+15% buffer)</td><td>3,035</td></tr>
+          <tr><td>TCMs needed (@17 slots)</td><td>179</td></tr>
+          <tr><td>Current TCMs</td><td>137</td></tr>
+          <tr><td style="color:var(--red);font-weight:700">Gap</td><td style="color:var(--red)">42 TCMs</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- Capacity Build Chart -->
+    <div class="chart-card">
+      <div class="chart-title">TCM Build-Up & Weekly Attendance Capacity</div>
+      <div class="chart-sub">Bars = attendance capacity (slots × 60% UR) · Dashed lines = required weekly attendance thresholds</div>
+      <canvas id="capacityChart" height="120"></canvas>
+      <div class="chart-footer">
+        <span>137T</span><span>137T + 24P</span><span>137T + 52P</span><span>137T + 52P</span><span>137T + 52P</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- CRITICAL INSIGHT -->
+  <div class="callout callout-warn">
+    <div class="callout-head">
+      <span style="font-size:20px">⚠</span>
+      <span class="callout-title" style="color:var(--amber)">Critical Insight — The Probation Dilution Trap</span>
+    </div>
+    <div class="callout-body">
+      Raw capacity is solved by Week 2 (189 TCMs = 1,928 att/week vs 1,448–1,583 needed). But <strong>capacity ≠ sales output</strong>. Probation TCMs convert at <strong style="color:var(--red)">15.5% A2S</strong> (weeks 1-2) vs tenured at <strong style="color:var(--green)">32%</strong>. If attendance is distributed proportionally, adding 52 probation TCMs <strong style="color:var(--red)">drops blended A2S from 32% to 27.5%</strong> — producing fewer sales than having no probation at all. The solution: <strong>smart allocation</strong> (route leads to tenured first) + <strong>push tenured to 19 slots</strong> so they can absorb FM attendance alone. Probation TCMs serve as safety net and ramp for July.
+    </div>
+  </div>
+
+  <!-- SCENARIO COMPARISON -->
+  <div class="section">
+    <div class="section-head"><div class="section-bar" style="background:var(--accent)"></div><div class="section-title">Sales Projection — Four Scenarios</div></div>
+    <div class="section-subtitle mono">Monthly total · Attendance capped by FM lead flow (6,081/mo) · A2S varies by scenario</div>
+
+    <div class="scenario-btns" id="scenarioBtns">
+      <button class="scenario-btn" data-key="noaction" onclick="showScenario('noaction')">No Action</button>
+      <button class="scenario-btn" data-key="conservative" onclick="showScenario('conservative')">Conservative</button>
+      <button class="scenario-btn active" data-key="action" onclick="showScenario('action')">Action Plan</button>
+      <button class="scenario-btn" data-key="upside" onclick="showScenario('upside')">Upside</button>
+    </div>
+
+    <div class="gap-grid">
+      <div id="scenarioDetail" class="scenario-detail">
+        <!-- Filled by JS -->
+      </div>
+      <div class="chart-card" style="margin-bottom:0">
+        <div class="chart-title mono" style="font-size:13px">ALL SCENARIOS vs TARGET</div>
+        <canvas id="scenarioBarChart" height="160"></canvas>
+      </div>
+    </div>
+
+    <!-- Weekly Sales Trajectory -->
+    <div class="chart-card" style="margin-top:16px">
+      <div class="chart-title">Weekly Sales Trajectory by Scenario</div>
+      <div class="chart-sub">Smart allocation: tenured handles primary attendance · Probation = overflow + ramp</div>
+      <canvas id="salesTrajectoryChart" height="110"></canvas>
+    </div>
+  </div>
+
+  <!-- PROBATION IMPACT -->
+  <div class="section">
+    <div class="section-head"><div class="section-bar" style="background:var(--red)"></div><div class="section-title">Probation A2S% Dilution & Ramp Curve</div></div>
+    <div class="section-subtitle mono">Fact: Probation TCMs convert at 15.5% A2S in weeks 1-2 · Ramp expected to 24% by week 3-4</div>
+
+    <div class="chart-card">
+      <canvas id="a2sChart" height="110"></canvas>
+      <div class="a2s-grid">
+        <div class="a2s-cell"><div class="a2s-week mono">Wk 1</div><div class="a2s-val" style="color:var(--amber)">29.5%</div><div class="a2s-note mono">blended · 14.9% prob share</div></div>
+        <div class="a2s-cell"><div class="a2s-week mono">Wk 2</div><div class="a2s-val" style="color:var(--red)">27.5%</div><div class="a2s-note mono">blended · 27.5% prob share</div></div>
+        <div class="a2s-cell"><div class="a2s-week mono">Wk 3</div><div class="a2s-val" style="color:var(--amber)">28.5%</div><div class="a2s-note mono">blended · 27.5% prob share</div></div>
+        <div class="a2s-cell"><div class="a2s-week mono">Wk 4</div><div class="a2s-val" style="color:var(--amber)">29.8%</div><div class="a2s-note mono">blended · 27.5% prob share</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ONBOARDING PIPELINE -->
+  <div class="section">
+    <div class="section-head"><div class="section-bar" style="background:var(--green)"></div><div class="section-title">Onboarding Pipeline — June Intake</div></div>
+    <div class="section-subtitle mono">Onboarding cycle: 1 week training + 1 week FE/QC = 2 weeks to deploy</div>
+
+    <div class="pipeline-grid">
+      <div class="pipeline-card">
+        <div class="pipeline-title" style="color:var(--green)">BATCH 1 — DEPLOYING THIS WEEK</div>
+        <div class="pipeline-flow">
+          <div class="pipeline-num"><div class="pipeline-num-val">29</div><div class="pipeline-num-label mono">FE Scheduled</div></div>
+          <div class="pipeline-arrow">→</div>
+          <div class="pipeline-num"><div class="pipeline-num-val" style="color:var(--green)">24</div><div class="pipeline-num-label mono">Passed (82%)</div></div>
+          <div class="pipeline-arrow">→</div>
+          <div class="pipeline-num"><div class="pipeline-num-val" style="color:var(--accent)">24</div><div class="pipeline-num-label mono">Deploying Wk 1</div></div>
+        </div>
+        <span class="badge badge-green"><span class="badge-dot"></span>CONFIRMED</span>
+      </div>
+      <div class="pipeline-card">
+        <div class="pipeline-title" style="color:var(--amber)">BATCH 2 — PROJECTED NEXT WEEK</div>
+        <div class="pipeline-flow">
+          <div class="pipeline-num"><div class="pipeline-num-val">35</div><div class="pipeline-num-label mono">FE Scheduled</div></div>
+          <div class="pipeline-arrow">→</div>
+          <div class="pipeline-num"><div class="pipeline-num-val" style="color:var(--amber)">28</div><div class="pipeline-num-label mono">Expected (80%)</div></div>
+          <div class="pipeline-arrow">→</div>
+          <div class="pipeline-num"><div class="pipeline-num-val" style="color:var(--accent)">28</div><div class="pipeline-num-label mono">Deploy Wk 2</div></div>
+        </div>
+        <span class="badge badge-amber"><span class="badge-dot"></span>PROJECTED</span>
+      </div>
+    </div>
+
+    <div class="note-bar"><strong>TCM Timeline:</strong> 137 (now) → 161 (Jun 7) → 189 (Jun 14) — <span style="color:var(--green)">Exceeds both scenario thresholds by Week 2</span></div>
+    <div class="note-sm">Root cause of gap: HR supply scaled late (3rd week May vs 3rd week April escalation). Onboarding takes 2 weeks. Already escalated mass hiring in April — supply is now flowing.</div>
+  </div>
+
+  <!-- ACTION PLAN -->
+  <div class="section">
+    <div class="section-head"><div class="section-bar" style="background:var(--green)"></div><div class="section-title">Action Plan — 8 Interventions</div></div>
+    <div class="section-subtitle mono">Prioritized by impact on June sales output</div>
+
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden">
+      <table class="data-table">
+        <thead><tr><th>#</th><th>Action</th><th>Owner</th><th>Start</th><th>Impact</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td class="mono" style="color:var(--dim)">1</td><td><div class="action-name">Push tenured TCMs from 17 → 19 slots/week</div><div class="action-detail">Adds ~165 att/wk capacity. Eliminates probation dilution risk.</div></td><td class="mono" style="color:var(--muted);font-size:12px">Sales Ops</td><td class="mono" style="color:var(--muted);font-size:12px">Week 3</td><td><span class="impact-tag impact-high">HIGH</span></td><td><span class="badge badge-amber"><span class="badge-dot"></span>PLANNED</span></td></tr>
+          <tr><td class="mono" style="color:var(--dim)">2</td><td><div class="action-name">Smart attendance allocation — tenured priority</div><div class="action-detail">Route leads to tenured first. Probation handles overflow/training only.</div></td><td class="mono" style="color:var(--muted);font-size:12px">Sales Ops</td><td class="mono" style="color:var(--muted);font-size:12px">Week 1</td><td><span class="impact-tag impact-high">HIGH</span></td><td><span class="badge badge-green"><span class="badge-dot"></span>ACTIVE</span></td></tr>
+          <tr><td class="mono" style="color:var(--dim)">3</td><td><div class="action-name">Maximize onboarding batch throughput (+50%)</div><div class="action-detail">Current: 29 FE/wk. Target: 35+ FE/wk. Last batch: 82% pass.</div></td><td class="mono" style="color:var(--muted);font-size:12px">HR + Training</td><td class="mono" style="color:var(--muted);font-size:12px">Active</td><td><span class="impact-tag impact-med">MED</span></td><td><span class="badge badge-green"><span class="badge-dot"></span>ACTIVE</span></td></tr>
+          <tr><td class="mono" style="color:var(--dim)">4</td><td><div class="action-name">Increase leader FE exam capacity (+50%)</div><div class="action-detail">Bottleneck on final exam throughput. Parallel exam sessions.</div></td><td class="mono" style="color:var(--muted);font-size:12px">QC / Leaders</td><td class="mono" style="color:var(--muted);font-size:12px">Active</td><td><span class="impact-tag impact-med">MED</span></td><td><span class="badge badge-green"><span class="badge-dot"></span>ACTIVE</span></td></tr>
+          <tr><td class="mono" style="color:var(--dim)">5</td><td><div class="action-name">Lower TCM acceptance benchmark by 15%</div><div class="action-detail">Scoring threshold reduced to increase pass rate. Risk: quality dilution.</div></td><td class="mono" style="color:var(--muted);font-size:12px">QC</td><td class="mono" style="color:var(--muted);font-size:12px">Active</td><td><span class="impact-tag impact-med">MED</span></td><td><span class="badge badge-green"><span class="badge-dot"></span>ACTIVE</span></td></tr>
+          <tr><td class="mono" style="color:var(--dim)">6</td><td><div class="action-name">Zero termination — hard coach instead of firing</div><div class="action-detail">Retain capacity. Re-train underperformers. Risk: A2S% floor drops.</div></td><td class="mono" style="color:var(--muted);font-size:12px">Team Leads</td><td class="mono" style="color:var(--muted);font-size:12px">Active</td><td><span class="impact-tag impact-low">LOW-MED</span></td><td><span class="badge badge-green"><span class="badge-dot"></span>ACTIVE</span></td></tr>
+          <tr><td class="mono" style="color:var(--dim)">7</td><td><div class="action-name">Intensive coaching sprint for probation TCMs</div><div class="action-detail">Target: accelerate ramp from 15.5% → 24% A2S within 2 weeks.</div></td><td class="mono" style="color:var(--muted);font-size:12px">QC + Leads</td><td class="mono" style="color:var(--muted);font-size:12px">Week 1</td><td><span class="impact-tag impact-high">HIGH</span></td><td><span class="badge badge-amber"><span class="badge-dot"></span>PLANNED</span></td></tr>
+          <tr><td class="mono" style="color:var(--dim)">8</td><td><div class="action-name">Referral quick-hire for employee friends</div><div class="action-detail">Faster sourcing. Avg 5-8 referrals/week from active employees.</div></td><td class="mono" style="color:var(--muted);font-size:12px">HR</td><td class="mono" style="color:var(--muted);font-size:12px">Active</td><td><span class="impact-tag impact-low">LOW</span></td><td><span class="badge badge-green"><span class="badge-dot"></span>ACTIVE</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- RISK REGISTER -->
+  <div class="section">
+    <div class="section-head"><div class="section-bar" style="background:var(--red)"></div><div class="section-title">Risk Register</div></div>
+    <div class="section-subtitle mono">6 identified risks · Severity × Likelihood assessment</div>
+
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;overflow-x:auto">
+      <table class="data-table">
+        <thead><tr><th>Risk</th><th>Severity</th><th>Likelihood</th><th>Impact</th><th>Mitigation</th><th></th></tr></thead>
+        <tbody>
+          <tr><td style="color:var(--white);font-weight:500;max-width:200px">A2S% dilution from probation TCMs</td><td class="mono" style="font-size:12px;color:var(--red)">HIGH</td><td class="mono" style="font-size:12px;color:var(--red)">HIGH</td><td style="color:var(--muted);font-size:12px;max-width:160px">~170 fewer sales if naive allocation</td><td style="color:var(--muted);font-size:12px;max-width:200px">Smart allocation + intensive coaching sprint</td><td><span class="badge badge-amber"><span class="badge-dot"></span>MONITORING</span></td></tr>
+          <tr><td style="color:var(--white);font-weight:500">HR onboarding pipeline delay or dropout</td><td class="mono" style="font-size:12px;color:var(--amber)">MED</td><td class="mono" style="font-size:12px;color:var(--amber)">MED</td><td style="color:var(--muted);font-size:12px">Fewer TCMs in Wk 2-3</td><td style="color:var(--muted);font-size:12px">50% batch throughput increase + FE capacity</td><td><span class="badge badge-amber"><span class="badge-dot"></span>MONITORING</span></td></tr>
+          <tr><td style="color:var(--white);font-weight:500">Zero termination drags overall A2S%</td><td class="mono" style="font-size:12px;color:var(--amber)">MED</td><td class="mono" style="font-size:12px;color:var(--red)">HIGH</td><td style="color:var(--muted);font-size:12px">Bottom quartile at ~20% A2S</td><td style="color:var(--muted);font-size:12px">Hard coaching + re-training + smart allocation</td><td><span class="badge badge-amber"><span class="badge-dot"></span>MONITORING</span></td></tr>
+          <tr><td style="color:var(--white);font-weight:500">Season A2S boost doesn't materialize</td><td class="mono" style="font-size:12px;color:var(--red)">HIGH</td><td class="mono" style="font-size:12px;color:var(--green)">LOW</td><td style="color:var(--muted);font-size:12px">Stuck at 32% vs 35% target</td><td style="color:var(--muted);font-size:12px">Action Plan still delivers 97% at 32%</td><td><span class="badge badge-green"><span class="badge-dot"></span>MITIGATED</span></td></tr>
+          <tr><td style="color:var(--white);font-weight:500">Tenured TCM burnout at 19 slots/week</td><td class="mono" style="font-size:12px;color:var(--amber)">MED</td><td class="mono" style="font-size:12px;color:var(--amber)">MED</td><td style="color:var(--muted);font-size:12px">Quality drop weeks 3-4</td><td style="color:var(--muted);font-size:12px">Phase: 17→18→19 over 2 weeks. Monitor A2S daily.</td><td><span class="badge badge-amber"><span class="badge-dot"></span>MONITORING</span></td></tr>
+          <tr><td style="color:var(--white);font-weight:500">Tech issues (autodistribution, lobby links)</td><td class="mono" style="font-size:12px;color:var(--amber)">LOW</td><td class="mono" style="font-size:12px;color:var(--amber)">MED</td><td style="color:var(--muted);font-size:12px">H2A drops on affected days</td><td style="color:var(--muted);font-size:12px">CRM team escalation. Manual fallback.</td><td><span class="badge badge-green"><span class="badge-dot"></span>MITIGATED</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- FINANCIAL IMPACT -->
+  <div class="section">
+    <div class="section-head"><div class="section-bar" style="background:var(--accent)"></div><div class="section-title">Financial Impact Summary</div></div>
+    <div class="section-subtitle mono">Revenue projection per scenario · AOV = $280 · FU recovery not included in base projections</div>
+
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;overflow-x:auto">
+      <table class="data-table fin-table">
+        <thead><tr><th>Scenario</th><th>Sales</th><th>% Target</th><th>Revenue</th><th>Gap ($)</th><th>Gap (%)</th><th>BM Capacity</th></tr></thead>
+        <tbody>
+          <tr class="fin-row-target"><td style="color:var(--white)">FM Target</td><td>2,128</td><td style="color:var(--white)">100%</td><td>$596K</td><td style="color:var(--dim)">—</td><td style="color:var(--dim)">—</td><td><span class="badge badge-green"><span class="badge-dot"></span>Sufficient</span></td></tr>
+          <tr><td style="color:var(--red)">No Action</td><td>1,922</td><td style="color:var(--red)">90%</td><td>$538K</td><td style="color:var(--red)">-$58K</td><td style="color:var(--red)">-9.7%</td><td><span class="badge badge-green"><span class="badge-dot"></span>Sufficient</span></td></tr>
+          <tr><td style="color:var(--amber)">Conservative</td><td>1,956</td><td style="color:var(--amber)">92%</td><td>$548K</td><td style="color:var(--red)">-$48K</td><td style="color:var(--red)">-8.1%</td><td><span class="badge badge-green"><span class="badge-dot"></span>Sufficient</span></td></tr>
+          <tr class="fin-row-action"><td style="color:var(--accent)">Action Plan</td><td style="font-weight:700">2,060</td><td style="color:var(--accent);font-weight:700">97%</td><td style="font-weight:700">$577K</td><td style="color:var(--amber)">-$19K</td><td style="color:var(--amber)">-3.2%</td><td><span class="badge badge-green"><span class="badge-dot"></span>Sufficient</span></td></tr>
+          <tr class="fin-row-upside"><td style="color:var(--green)">Upside</td><td style="font-weight:700">2,120</td><td style="color:var(--green);font-weight:700">≈100%</td><td style="font-weight:700">$594K</td><td style="color:var(--dim)">-$2K</td><td style="color:var(--dim)">-0.4%</td><td><span class="badge badge-green"><span class="badge-dot"></span>Sufficient</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note-sm">BM capacity confirmed sufficient — can handle up to 1,000 leads/day (25,758/month = ~860/day). No bottleneck on booking side.</div>
+  </div>
+
+  <!-- RECOMMENDATION -->
+  <div class="callout callout-info">
+    <div style="font-size:16px;font-weight:700;color:var(--white);margin-bottom:12px">Recommendation</div>
+    <div style="font-size:14px;line-height:1.8;color:var(--muted)">
+      <strong style="color:var(--accent)">Execute the Action Plan scenario.</strong> The three high-impact interventions are: (1) push tenured TCMs to 19 slots/week by Week 3, (2) route attendance priority to tenured TCMs with smart allocation, and (3) intensive coaching sprint for probation TCMs. This combination delivers <strong>~2,060 sales (97% of target, $577K revenue)</strong> even at the realistic 32% A2S rate. The remaining $19K gap is coverable by FU Manager recovery (historically 5-8% of total sales).
+    </div>
+    <div style="font-size:14px;line-height:1.8;color:var(--muted);margin-top:12px">
+      If the <strong style="color:var(--green)">June-July seasonal A2S boost materializes</strong> (as it has in the past 3 years), tenured TCMs reach 35% and we deliver <strong style="color:var(--green)">~2,120 sales — essentially 100% of target ($594K)</strong>.
+    </div>
+    <div style="font-size:14px;line-height:1.8;color:var(--muted);margin-top:12px">
+      The 52 probation TCMs being deployed are not a June play — they are the <strong>July capacity investment</strong>. By July, these TCMs will have 4+ weeks of experience, expected A2S of 28–30%, and will be critical for sustaining the season's second peak month.
+    </div>
+  </div>
+
+  <!-- ASSUMPTIONS -->
+  <div class="section">
+    <div class="section-head"><div class="section-bar" style="background:var(--dim)"></div><div class="section-title">Assumptions & Methodology</div></div>
+    <div class="section-subtitle mono">Key parameters used in all projections</div>
+
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px">
+      <div class="assumptions-grid">
+        <div>
+          <div class="assumptions-label">CAPACITY PARAMETERS</div>
+          <div>Utilization Rate (UR): 60%</div>
+          <div>Safety Buffer: 15% (5% FM + 5% reschedule + 5% contingency)</div>
+          <div>Current slots/TCM/week: 17 (scaling to 19)</div>
+          <div>June weeks: 4.3 (30 days)</div>
+          <div>Active TCMs (Jun 1): 137</div>
+        </div>
+        <div>
+          <div class="assumptions-label">CONVERSION PARAMETERS</div>
+          <div>Tenured A2S%: 32% (realistic) / 35% (optimistic)</div>
+          <div>Probation A2S% wk 1-2: 15.5%</div>
+          <div>Probation A2S% wk 3-4: 24% (ramp)</div>
+          <div>FE pass rate: 80-82%</div>
+          <div>Onboarding cycle: 2 weeks to deploy</div>
+        </div>
+      </div>
+      <div class="assumptions-footer">Sources: Funnel_Dashboard_Transposed.xlsx (Funnel Final sheet), sea_rep_online_all_info CSVs, Daily_Margin_Dashboard (margin_gs), SCAC Document, New Manager Lifetime, Plan To Fact data.</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// Chart.js defaults
+Chart.defaults.color = '#94A3B8';
+Chart.defaults.font.family = "'DM Mono', monospace";
+Chart.defaults.font.size = 11;
+Chart.defaults.plugins.legend.labels.boxWidth = 12;
+Chart.defaults.plugins.legend.labels.padding = 16;
+Chart.defaults.scale.grid = { color: '#1E2D4A' };
+
+// ── CAPACITY CHART ──
+new Chart(document.getElementById('capacityChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Baseline', 'Week 1', 'Week 2', 'Week 3', 'Week 4+'],
+    datasets: [{
+      label: 'Attendance Capacity/wk',
+      data: [1397, 1642, 1928, 1928, 1928],
+      backgroundColor: ['#3B82F680','#3B82F6A0','#3B82F6','#3B82F6','#3B82F6'],
+      borderRadius: 6, barPercentage: 0.65,
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { display: false },
+      annotation: { annotations: {} }
+    },
+    scales: {
+      y: { beginAtZero: false, min: 800, max: 2200, ticks: { stepSize: 400 } }
+    }
+  },
+  plugins: [{
+    afterDraw(chart) {
+      const ctx = chart.ctx;
+      const yScale = chart.scales.y;
+      const xScale = chart.scales.x;
+      // Target @35% line
+      const y35 = yScale.getPixelForValue(1448);
+      ctx.save();
+      ctx.setLineDash([6,4]);
+      ctx.strokeStyle = '#10B981'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(xScale.left, y35); ctx.lineTo(xScale.right, y35); ctx.stroke();
+      ctx.fillStyle = '#10B981'; ctx.font = "11px 'DM Mono'"; ctx.textAlign = 'right';
+      ctx.fillText('Target @35% = 1,448', xScale.right - 4, y35 - 6);
+      // Target @32% line
+      const y32 = yScale.getPixelForValue(1583);
+      ctx.strokeStyle = '#F59E0B';
+      ctx.beginPath(); ctx.moveTo(xScale.left, y32); ctx.lineTo(xScale.right, y32); ctx.stroke();
+      ctx.fillStyle = '#F59E0B';
+      ctx.fillText('Target @32% = 1,583', xScale.right - 4, y32 - 6);
+      ctx.restore();
+    }
+  }]
+});
+
+// ── SCENARIO BAR CHART ──
+new Chart(document.getElementById('scenarioBarChart'), {
+  type: 'bar',
+  data: {
+    labels: ['No Action', 'Conservative', 'Action Plan', 'Upside'],
+    datasets: [{
+      label: 'Projected Sales',
+      data: [1922, 1956, 2060, 2120],
+      backgroundColor: ['#EF4444CC','#F59E0BCC','#3B82F6','#10B981'],
+      borderRadius: 6, barPercentage: 0.7,
+    }]
+  },
+  options: {
+    indexAxis: 'y', responsive: true,
+    plugins: { legend: { display: false } },
+    scales: { x: { min: 1700, max: 2200, ticks: { stepSize: 100 } } }
+  },
+  plugins: [{
+    afterDraw(chart) {
+      const ctx = chart.ctx;
+      const xScale = chart.scales.x;
+      const yScale = chart.scales.y;
+      const x = xScale.getPixelForValue(2128);
+      ctx.save(); ctx.setLineDash([4,4]); ctx.strokeStyle = '#FFFFFF'; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(x, yScale.top); ctx.lineTo(x, yScale.bottom); ctx.stroke();
+      ctx.fillStyle = '#FFFFFF'; ctx.font = "10px 'DM Mono'"; ctx.textAlign = 'center';
+      ctx.fillText('Target: 2,128', x, yScale.top - 6);
+      ctx.restore();
+    }
+  }]
+});
+
+// ── SALES TRAJECTORY ──
+new Chart(document.getElementById('salesTrajectoryChart'), {
+  type: 'line',
+  data: {
+    labels: ['Wk 1', 'Wk 2', 'Wk 3', 'Wk 4+'],
+    datasets: [
+      { label: 'FM Target/wk (507)', data: [507,507,507,507], borderColor: '#FFFFFF60', borderDash: [6,4], borderWidth: 1.5, pointRadius: 0, fill: false },
+      { label: 'Conservative', data: [455,455,455,455], borderColor: '#F59E0B', borderWidth: 2, pointRadius: 4, fill: false, tension: 0.1 },
+      { label: 'Action Plan', data: [455,455,500,500], borderColor: '#3B82F6', borderWidth: 2.5, pointRadius: 5, fill: false, tension: 0.1 },
+      { label: 'Upside', data: [492,492,547,547], borderColor: '#10B981', borderWidth: 2, pointRadius: 4, fill: false, tension: 0.1 },
+    ]
+  },
+  options: {
+    responsive: true,
+    scales: { y: { min: 400, max: 580, ticks: { stepSize: 40 } } },
+    plugins: { legend: { position: 'bottom' } }
+  }
+});
+
+// ── A2S CHART ──
+new Chart(document.getElementById('a2sChart'), {
+  type: 'line',
+  data: {
+    labels: ['Wk 1', 'Wk 2', 'Wk 3', 'Wk 4'],
+    datasets: [
+      { label: 'Tenured A2S%', data: [32,32,32,32], borderColor: '#10B981', backgroundColor: '#10B98115', borderWidth: 2, pointRadius: 3, fill: true },
+      { label: 'Blended A2S% (naive alloc)', data: [29.5,27.5,28.5,29.8], borderColor: '#F59E0B', borderWidth: 2.5, pointRadius: 5, fill: false, tension: 0.2 },
+      { label: 'Probation A2S%', data: [15.5,15.5,20,24], borderColor: '#EF4444', borderDash: [4,4], borderWidth: 2, pointRadius: 4, fill: false, tension: 0.2 },
+    ]
+  },
+  options: {
+    responsive: true,
+    scales: { y: { min: 10, max: 38, ticks: { callback: v => v + '%' } } },
+    plugins: { legend: { position: 'bottom' } }
+  },
+  plugins: [{
+    afterDraw(chart) {
+      const ctx = chart.ctx;
+      const yScale = chart.scales.y;
+      const xScale = chart.scales.x;
+      const y = yScale.getPixelForValue(35);
+      ctx.save(); ctx.setLineDash([6,4]); ctx.strokeStyle = '#10B98180'; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(xScale.left, y); ctx.lineTo(xScale.right, y); ctx.stroke();
+      ctx.fillStyle = '#10B981'; ctx.font = "10px 'DM Mono'"; ctx.textAlign = 'right';
+      ctx.fillText('FM Target 35%', xScale.right - 4, y - 6);
+      ctx.restore();
+    }
+  }]
+});
+
+// ── SCENARIO SWITCHER ──
+const scenarios = {
+  noaction: { name: 'NO ACTION', color: '#EF4444', sales: '1,922', pct: '90%', rev: '$538K', gap: '-$58K', gapPct: '-9.7%', desc: '137 TCMs, 17 slots, 32% A2S. Capacity-constrained, no pipeline deployment.', statusColor: 'red', statusLabel: 'CRITICAL' },
+  conservative: { name: 'CONSERVATIVE', color: '#F59E0B', sales: '1,956', pct: '92%', rev: '$548K', gap: '-$48K', gapPct: '-8.1%', desc: 'Deploy pipeline + smart allocation. Probation handles overflow only. 17 slots throughout.', statusColor: 'amber', statusLabel: 'AT RISK' },
+  action: { name: 'ACTION PLAN', color: '#3B82F6', sales: '2,060', pct: '97%', rev: '$577K', gap: '-$19K', gapPct: '-3.2%', desc: 'Pipeline + smart allocation + push tenured to 19 slots by Week 3 + intensive coaching.', statusColor: 'amber', statusLabel: 'ON TRACK' },
+  upside: { name: 'UPSIDE', color: '#10B981', sales: '2,120', pct: '≈100%', rev: '$594K', gap: '-$2K', gapPct: '-0.4%', desc: 'Action Plan + season A2S boost to 35%. FU recovery closes remaining gap.', statusColor: 'green', statusLabel: 'ON TARGET' },
+};
+
+function showScenario(key) {
+  const s = scenarios[key];
+  document.querySelectorAll('.scenario-btn').forEach(b => b.classList.toggle('active', b.dataset.key === key));
+  document.getElementById('scenarioDetail').innerHTML = `
+    <div class="scenario-name" style="color:${s.color}">${s.name}</div>
+    <div class="scenario-desc">${s.desc}</div>
+    <div class="kpi-mini-grid">
+      <div class="kpi-mini"><div class="kpi-bar" style="background:${s.color}"></div><div class="kpi-label">Sales</div><div class="kpi-value">${s.sales}</div><div class="kpi-sub" style="color:${s.color}">${s.pct} of target</div></div>
+      <div class="kpi-mini"><div class="kpi-bar" style="background:${s.color}"></div><div class="kpi-label">Revenue</div><div class="kpi-value">${s.rev}</div><div class="kpi-sub" style="color:${s.color}">Gap: ${s.gap}</div></div>
+    </div>
+    <div style="margin-top:12px"><span class="badge badge-${s.statusColor}"><span class="badge-dot"></span>${s.statusLabel}</span></div>
+  `;
+}
+showScenario('action');
+</script>
+</body>
+</html>
