@@ -8,7 +8,7 @@ deploy-dev:
   variables:
     ROOT_IMAGE_PATH: services
     VALUES: ai-services
-    CLUSTER: in-hel-fin-develop
+    CLUSTER: dev-htz
     ENV: dev
     DST: environments.yaml
     TAG: ${CI_COMMIT_SHORT_SHA}
