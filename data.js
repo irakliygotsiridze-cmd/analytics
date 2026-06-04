@@ -204,7 +204,25 @@ window.Algonova = window.Algonova || {};
         ]
       }
     ],
-    latam: []
+    latam: [
+      {
+        section: S.primary,
+        items: [
+          {
+            name: { en: 'Actual sales report', ru: 'Отчёт по фактическим продажам', es: 'Reporte de ventas reales', id: 'Laporan penjualan aktual', ms: 'Laporan jualan sebenar' },
+            metrics: {
+              en: 'Primary sales revenue, AOV, L2B',
+              ru: 'Выручка первичные продажи, AOV, L2B',
+              es: 'Ingresos ventas primarias, AOV, L2B',
+              id: 'Pendapatan penjualan primer, AOV, L2B',
+              ms: 'Hasil jualan primer, AOV, L2B'
+            },
+            update: U.daily, platform: 'Power BI',
+            url: 'https://app.powerbi.com/groups/ac759549-8a66-47da-92da-66bca3cd0bd3/reports/0eeeefab-e1e9-4a33-bb22-c74f89bc5b37/499abade226abb1686c6?experience=power-bi'
+          }
+        ]
+      }
+    ]
   };
 
   // ── Helper to build short {en,ru,es,id,ms} translations succinctly ──
