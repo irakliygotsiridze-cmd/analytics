@@ -665,6 +665,41 @@ window.Algonova = window.Algonova || {};
   const RESEARCH = {
     indonesia: [
       {
+        file: 'sales_incidents_q2_full_report_3.html',
+        title: 'Q2 2026 Sales Technical Incidents Report — April & May',
+        date: '2026-06',
+        tags: ['Indonesia', 'Incidents', 'Sales Ops', 'L2S', 'Downtime', 'Revenue Loss', 'CRM'],
+        summary: t(
+          'Operational incident report for the Sales department covering April–May 2026 in Indonesia B2C: 70 technical incidents, 338 hours of downtime and ~$30K in lost revenue. Identifies Apr 21–30 as the critical cluster where simultaneous failures of auto-distribution, greeting templates and the L2B funnel drove L2S down 24% vs baseline.',
+          'Операционный отчёт по инцидентам отдела продаж за апрель–май 2026 в B2C Indonesia: 70 технических инцидентов, 338 часов даунтайма и ~$30K потерянной выручки. Период 21–30 апреля — критический кластер: одновременные сбои автодистрибуции, шаблонов приветствия и воронки L2B уронили L2S на 24% к бейзлайну.',
+          'Reporte operativo de incidentes del departamento de Ventas para abril–mayo 2026 en B2C Indonesia: 70 incidentes técnicos, 338 horas de downtime y ~$30K en ingresos perdidos. Identifica el 21–30 abr como el clúster crítico donde fallas simultáneas de auto-distribución, templates de saludo y el funnel L2B bajaron L2S 24% vs baseline.',
+          'Laporan insiden operasional departemen Sales untuk April–Mei 2026 di B2C Indonesia: 70 insiden teknis, 338 jam downtime, dan ~$30K kehilangan revenue. 21–30 April adalah klaster kritis dengan kegagalan autodistribusi, template greeting, dan funnel L2B bersamaan yang menurunkan L2S 24% vs baseline.',
+          'Laporan insiden operasi jabatan Jualan untuk April–Mei 2026 di B2C Indonesia: 70 insiden teknikal, 338 jam downtime dan ~$30K kehilangan hasil. 21–30 April adalah kluster kritikal dengan kegagalan serentak autoagihan, templat ucapan, dan funnel L2B yang menjatuhkan L2S 24% vs garis dasar.'
+        ),
+        findings: [
+          t('70 total incidents over April–May 2026, 43 (61%) at Severity 3, with 338 hours of total downtime (~42 working days).',
+            '70 инцидентов всего за апрель–май 2026, 43 (61%) — Severity 3, общий даунтайм 338 часов (~42 рабочих дня).',
+            '70 incidentes totales en abr–may 2026, 43 (61%) Severity 3, con 338 horas de downtime (~42 días laborables).',
+            '70 insiden total April–Mei 2026, 43 (61%) Severity 3, total downtime 338 jam (~42 hari kerja).',
+            '70 insiden keseluruhan April–Mei 2026, 43 (61%) Severity 3, jumlah downtime 338 jam (~42 hari bekerja).'),
+          t('April 21–30 worst window: 27 incidents (18 critical), weekly L2S 4.84% vs 6.35% baseline (−1.51pp, −24% conversion efficiency).',
+            'Худшее окно — 21–30 апреля: 27 инцидентов (18 критических), недельный L2S 4,84% vs бейзлайн 6,35% (−1,51 п.п., −24% эффективности конверсии).',
+            'Peor ventana 21–30 abr: 27 incidentes (18 críticos), L2S semanal 4,84% vs baseline 6,35% (−1,51pp, −24% eficiencia de conversión).',
+            'Window terburuk 21–30 April: 27 insiden (18 kritis), L2S mingguan 4,84% vs baseline 6,35% (−1,51pp, −24% efisiensi konversi).',
+            'Tetingkap terburuk 21–30 April: 27 insiden (18 kritikal), L2S mingguan 4.84% vs garis dasar 6.35% (−1.51pp, −24% kecekapan penukaran).'),
+          t('Estimated revenue loss $30K from 109 deals not closed; peak single-day L2S drop hit 3.5% on Apr 21 (AOV $277).',
+            'Оценка потерь выручки $30K из 109 несостоявшихся сделок; пиковый дневной обвал L2S — 3,5% 21 апреля (AOV $277).',
+            'Pérdida estimada $30K por 109 deals no cerrados; caída pico de L2S 3,5% el 21 abr (AOV $277).',
+            'Estimasi kehilangan revenue $30K dari 109 deal yang tidak ditutup; puncak penurunan L2S harian 3,5% pada 21 April (AOV $277).',
+            'Anggaran kehilangan hasil $30K daripada 109 deal yang tidak ditutup; penurunan L2S harian puncak 3.5% pada 21 April (AOV $277).'),
+          t('Top failures: Auto-distribution/Lobby (107 clients in one full outage), Confirm 2 templates, LMS–AMO Leads/L2B integration (5h+ lead creation failure, 50–70 corrupted leads); H2A was hit hardest — 32 of 70 incidents.',
+            'Главные сбои: автодистрибуция/Lobby (один полный outage на 107 клиентов), шаблоны Confirm 2, интеграция LMS–AMO Leads/L2B (5+ часов отказа создания лидов, 50–70 битых лидов); сильнее всего пострадал H2A — 32 из 70 инцидентов.',
+            'Fallas principales: auto-distribución/Lobby (107 clientes en una caída total), templates Confirm 2, integración LMS–AMO Leads/L2B (5+ h sin creación de leads, 50–70 leads corruptos); H2A fue el más afectado — 32 de 70 incidentes.',
+            'Kegagalan utama: autodistribusi/Lobby (107 klien dalam satu outage penuh), template Confirm 2, integrasi LMS–AMO Leads/L2B (5+ jam gagal create lead, 50–70 lead corrupt); H2A paling terdampak — 32 dari 70 insiden.',
+            'Kegagalan utama: autoagihan/Lobby (107 pelanggan dalam satu gangguan penuh), templat Confirm 2, integrasi LMS–AMO Leads/L2B (5+ jam gagal cipta lead, 50–70 lead rosak); H2A paling terkesan — 32 daripada 70 insiden.')
+        ]
+      },
+      {
         file: 'TCM_Capacity_Board_June2026.html',
         title: 'TCM Capacity Readiness — June 2026 Season Board Briefing',
         date: '2026-06',

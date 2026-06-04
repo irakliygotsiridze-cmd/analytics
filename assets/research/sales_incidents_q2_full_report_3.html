@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Q2 2026 · Incident Report · Sales</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f7f6f2;--surface:#fff;--surface2:#f0efe9;--surface3:#e8e6de;--border:rgba(0,0,0,.08);--border2:rgba(0,0,0,.14);--text:#181714;--text2:#5a5750;--text3:#9e9b93;--red:#c0392b;--red-light:#fde8e8;--red-mid:#f5c6c6;--orange:#c45e0a;--orange-light:#fdeede;--blue:#1a5fa8;--blue-light:#ddeefa;--green:#1a7a45;--green-light:#e2f5eb;--purple:#6b35a8;--purple-light:#f0e6f8;--sans:'DM Sans',sans-serif;--display:'Syne',sans-serif;--mono:'DM Mono',monospace}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;line-height:1.6}
+
+.nav{position:sticky;top:0;z-index:100;background:rgba(247,246,242,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border2);padding:0 40px;display:flex;align-items:center;height:52px}
+.nav-logo{font-family:var(--display);font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text);margin-right:28px;flex-shrink:0}
+.nav-logo span{color:var(--red)}
+.nav-links{display:flex;flex:1;overflow-x:auto}
+.nav-link{font-family:var(--mono);font-size:11px;color:var(--text3);text-decoration:none;padding:0 14px;height:52px;display:flex;align-items:center;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap;text-transform:uppercase;letter-spacing:.08em}
+.nav-link:hover{color:var(--text);border-color:var(--border2)}
+.nav-link.active{color:var(--red);border-color:var(--red)}
+.nav-tag{font-family:var(--mono);font-size:10px;background:var(--red);color:#fff;padding:3px 10px;border-radius:20px;letter-spacing:.06em;margin-left:8px;flex-shrink:0}
+
+.wrap{max-width:1100px;margin:0 auto;padding:0 40px 100px}
+
+.hero{padding:64px 0 48px;border-bottom:1px solid var(--border2);margin-bottom:56px;display:grid;grid-template-columns:1fr auto;gap:40px;align-items:end}
+.hero-eyebrow{font-family:var(--mono);font-size:11px;color:var(--red);letter-spacing:.14em;text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.blink{width:6px;height:6px;border-radius:50%;background:var(--red);animation:blink 1.6s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+.hero h1{font-family:var(--display);font-size:clamp(36px,5vw,58px);font-weight:800;line-height:1.05;letter-spacing:-.03em}
+.hero h1 em{font-style:normal;color:var(--red)}
+.hero-meta{margin-top:20px;font-size:13px;color:var(--text2);font-family:var(--mono);line-height:2}
+.hero-total{font-family:var(--display);font-size:80px;font-weight:800;line-height:1;letter-spacing:-.04em;color:var(--red)}
+.hero-total-label{font-family:var(--mono);font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-top:4px}
+
+.section{margin-bottom:64px}
+.section-head{display:flex;align-items:baseline;gap:12px;margin-bottom:24px;padding-bottom:12px;border-bottom:1px solid var(--border2)}
+.section-num{font-family:var(--mono);font-size:11px;color:var(--red);letter-spacing:.1em}
+.section-head h2{font-family:var(--display);font-size:22px;font-weight:700;letter-spacing:-.02em}
+.sh-desc{font-size:13px;color:var(--text2);margin-left:auto;font-family:var(--mono)}
+
+.kpi-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 16px;position:relative;overflow:hidden}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:10px 10px 0 0}
+.kpi.k-red::before{background:var(--red)}.kpi.k-orange::before{background:var(--orange)}.kpi.k-blue::before{background:var(--blue)}.kpi.k-green::before{background:var(--green)}
+.kpi-label{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:10px}
+.kpi-val{font-family:var(--display);font-size:28px;font-weight:700;line-height:1;letter-spacing:-.02em}
+.kpi.k-red .kpi-val{color:var(--red)}.kpi.k-orange .kpi-val{color:var(--orange)}.kpi.k-blue .kpi-val{color:var(--blue)}.kpi.k-green .kpi-val{color:var(--green)}
+.kpi-sub{font-size:11px;color:var(--text3);margin-top:5px}
+
+.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px}
+.chart-title{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:20px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+
+.cat-grid{display:grid;gap:10px}
+.cat-row{display:flex;align-items:center;gap:12px}
+.cat-name{width:200px;font-size:12px;color:var(--text);flex-shrink:0}
+.cat-track{flex:1;height:24px;background:var(--surface2);border-radius:4px;overflow:hidden;border:1px solid var(--border)}
+.cat-fill{height:100%;border-radius:4px;display:flex;align-items:center;padding-left:8px;font-size:10px;font-family:var(--mono);font-weight:500;color:#fff}
+.cat-num{width:28px;text-align:right;font-family:var(--mono);font-size:12px;color:var(--text3);flex-shrink:0}
+
+.badge{display:inline-block;font-size:10px;font-family:var(--mono);font-weight:500;padding:2px 7px;border-radius:4px;letter-spacing:.03em;white-space:nowrap}
+.b-red{background:var(--red-light);color:#8b1c1c;border:1px solid var(--red-mid)}
+.b-orange{background:var(--orange-light);color:#7a3800;border:1px solid #f5c89a}
+.b-blue{background:var(--blue-light);color:#0f3e6e;border:1px solid #9dcaf0}
+.b-gray{background:var(--surface2);color:var(--text2);border:1px solid var(--border2)}
+.b-purple{background:var(--purple-light);color:#4a2275;border:1px solid #d5b5f5}
+
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+thead th{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);padding:10px 14px;text-align:left;background:var(--surface2);border-bottom:1px solid var(--border2);white-space:nowrap}
+tbody tr{border-bottom:1px solid var(--border);transition:background .12s}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:var(--surface2)}
+tbody td{padding:10px 14px;font-size:13px;vertical-align:top;line-height:1.5}
+td.td-cat{font-weight:500;font-size:12px;white-space:nowrap}
+td.td-issues{color:var(--text2);max-width:380px;font-size:12px}
+
+.week-row{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.week-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px}
+.week-card.hot{border-color:var(--red-mid)}
+.week-label{font-family:var(--mono);font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px}
+.week-count{font-family:var(--display);font-size:32px;font-weight:700;line-height:1}
+.week-sub{font-size:11px;color:var(--text3);margin-top:4px}
+.week-sub span{color:var(--red);font-weight:500}
+.week-bar{height:3px;border-radius:2px;margin-top:12px}
+
+.hotdays-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.hotday{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px;display:flex;justify-content:space-between;align-items:center}
+.hotday.wknd{border-color:var(--red-mid);background:#fff9f9}
+.hotday-date{font-family:var(--mono);font-size:12px;color:var(--text);font-weight:500}
+.hotday-wd{font-size:10px;color:var(--text3);font-family:var(--mono);margin-top:2px}
+.hotday-count{font-family:var(--display);font-size:24px;font-weight:700;color:var(--red)}
+
+.wd-grid{display:flex;gap:12px;align-items:flex-end;height:100px}
+.wd-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;height:100%;justify-content:flex-end}
+.wd-bar{width:100%;border-radius:4px 4px 0 0;min-height:4px}
+.wd-val{font-family:var(--mono);font-size:12px;font-weight:500}
+.wd-lbl{font-family:var(--mono);font-size:11px;color:var(--text3);margin-top:4px}
+
+.loss-summary{background:#fff8f8;border:1px solid var(--red-mid);border-radius:12px;padding:28px;display:grid;grid-template-columns:auto 1fr;gap:32px;align-items:center}
+.loss-big{font-family:var(--display);font-size:72px;font-weight:800;color:var(--red);line-height:1;letter-spacing:-.04em}
+.loss-big-label{font-family:var(--mono);font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-top:6px}
+.loss-row{display:flex;align-items:baseline;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
+.loss-row:last-child{border-bottom:none}
+.loss-row-label{font-size:13px;color:var(--text2);flex:1}
+.loss-row-val{font-family:var(--mono);font-size:16px;font-weight:500;color:var(--text)}
+
+.formula-box{background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:16px 20px;font-family:var(--mono);font-size:12px;color:var(--text2);line-height:2}
+.formula-box strong{color:var(--text)}
+
+.insight{background:var(--surface);border-left:3px solid var(--orange);border-radius:0 8px 8px 0;padding:16px 20px;font-size:13px;color:var(--text2);line-height:1.7}
+.insight strong{color:var(--text)}
+.loss-bar-inline{display:inline-block;height:6px;border-radius:3px;background:var(--red);vertical-align:middle;margin-left:8px;opacity:.55}
+
+.day-selector{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.day-btn{font-family:var(--mono);font-size:11px;padding:6px 14px;border:1px solid var(--border2);border-radius:6px;background:var(--surface);color:var(--text2);cursor:pointer;transition:all .15s;letter-spacing:.04em}
+.day-btn:hover{background:var(--surface2);color:var(--text)}
+.day-btn.active{background:var(--red);color:#fff;border-color:var(--red)}
+.day-hero{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px 28px;margin-bottom:16px;display:grid;grid-template-columns:auto 1fr auto;gap:24px;align-items:center}
+.day-date-big{font-family:var(--display);font-size:52px;font-weight:800;line-height:1;letter-spacing:-.04em;color:var(--text)}
+.day-date-sub{font-family:var(--mono);font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-top:4px}
+.day-verdict-val{font-family:var(--display);font-size:36px;font-weight:700;line-height:1;text-align:right}
+.day-verdict-label{font-family:var(--mono);font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.09em;margin-top:4px;text-align:right}
+.day-verdict-rank{font-family:var(--mono);font-size:11px;color:var(--text3);margin-top:8px;text-align:right}
+.mm-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:16px}
+.mm{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 14px}
+.mm-label{font-family:var(--mono);font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px}
+.mm-val{font-family:var(--display);font-size:20px;font-weight:700;line-height:1}
+.mm-delta{font-size:11px;margin-top:3px;font-family:var(--mono)}
+.inc-cards{display:grid;gap:10px;margin-bottom:20px}
+.inc-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 20px;border-left:3px solid var(--red)}
+.inc-card.c2{border-left-color:var(--orange)}.inc-card.c1{border-left-color:var(--text3)}
+.inc-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px}
+.inc-name{font-weight:500;font-size:14px;color:var(--text);line-height:1.4}
+.inc-badges{display:flex;gap:6px;flex-shrink:0;flex-wrap:wrap;justify-content:flex-end}
+.inc-meta{display:flex;gap:8px;margin-top:6px;font-size:12px;color:var(--text2);align-items:baseline}
+.inc-meta-label{color:var(--text3);font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.07em;min-width:76px}
+.rank-bars{display:grid;gap:7px}
+.rank-row{display:flex;align-items:center;gap:10px}
+.rank-label{font-family:var(--mono);font-size:10px;color:var(--text2);width:54px;flex-shrink:0}
+.rank-track{flex:1;height:20px;background:var(--surface2);border-radius:3px;overflow:hidden;border:1px solid var(--border)}
+.rank-fill{height:100%;border-radius:3px;display:flex;align-items:center;padding-left:6px;font-size:10px;font-family:var(--mono);color:#fff;font-weight:500}
+.rank-val{font-family:var(--mono);font-size:10px;color:var(--text3);width:52px;text-align:right;flex-shrink:0}
+
+.footer{border-top:1px solid var(--border2);padding:24px 0;display:flex;justify-content:space-between;align-items:center;margin-top:40px}
+.footer-note{font-family:var(--mono);font-size:11px;color:var(--text3)}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.fade{opacity:0;animation:fadeUp .5s ease forwards}
+.d1{animation-delay:.05s}.d2{animation-delay:.1s}.d3{animation-delay:.15s}.d4{animation-delay:.2s}.d5{animation-delay:.25s}.d6{animation-delay:.3s}
+
+@media(max-width:800px){
+  .wrap{padding:0 20px 60px}.nav{padding:0 20px}
+  .kpi-grid{grid-template-columns:repeat(3,1fr)}
+  .two-col,.three-col{grid-template-columns:1fr}
+  .week-row{grid-template-columns:repeat(3,1fr)}
+  .hotdays-grid{grid-template-columns:repeat(3,1fr)}
+  .hero{grid-template-columns:1fr}.loss-summary{grid-template-columns:1fr}
+  .mm-grid{grid-template-columns:repeat(3,1fr)}
+  .day-hero{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-logo">Sales <span>Report</span></div>
+  <div class="nav-links">
+    <a class="nav-link active" href="#overview">Overview</a>
+    <a class="nav-link" href="#incidents">KPIs</a>
+    <a class="nav-link" href="#timeline">Timeline</a>
+    <a class="nav-link" href="#categories">Categories</a>
+    <a class="nav-link" href="#l2s">L2S Impact</a>
+    <a class="nav-link" href="#losses">Revenue Loss</a>
+    <a class="nav-link" href="#dayview">Day Drill-Down</a>
+    <a class="nav-link" href="#teams">Ownership</a>
+  </div>
+  <span class="nav-tag">Q2 2026</span>
+</nav>
+
+<div class="wrap">
+
+<!-- HERO -->
+<div class="hero fade d1" id="overview">
+  <div>
+    <div class="hero-eyebrow"><div class="blink"></div>Q2 2026 · Operational Incident Report · Sales Department</div>
+    <h1>Technical Incidents —<br><em>April & May</em></h1>
+    <div class="hero-meta">Period: April 1 — May 31, 2026<br>Source: Sales Team Time Log<br>AOV: $277 &nbsp;·&nbsp; Baseline L2S: 6.35%</div>
+  </div>
+  <div style="text-align:right">
+    <div class="hero-total">70</div>
+    <div class="hero-total-label">total incidents</div>
+  </div>
+</div>
+
+<!-- S1: KPI -->
+<div class="section fade d2" id="incidents">
+  <div class="section-head"><span class="section-num">01</span><h2>Key Metrics</h2></div>
+  <div class="kpi-grid">
+    <div class="kpi k-red"><div class="kpi-label">Total Incidents</div><div class="kpi-val">70</div><div class="kpi-sub">April — May 2026</div></div>
+    <div class="kpi k-red"><div class="kpi-label">Severity · Level 3</div><div class="kpi-val">43</div><div class="kpi-sub">61% of all incidents</div></div>
+    <div class="kpi k-orange"><div class="kpi-label">Total Downtime</div><div class="kpi-val">338 h</div><div class="kpi-sub">≈ 42 working days</div></div>
+    <div class="kpi k-blue"><div class="kpi-label">Most Impacted Metric</div><div class="kpi-val">H2A</div><div class="kpi-sub">32 of 70 incidents</div></div>
+    <div class="kpi k-red"><div class="kpi-label">Estimated Revenue Loss</div><div class="kpi-val">$30K</div><div class="kpi-sub">109 deals not closed</div></div>
+    <div class="kpi k-orange"><div class="kpi-label">Peak L2S Drop</div><div class="kpi-val">3.5%</div><div class="kpi-sub">Apr 21 · baseline 6.35%</div></div>
+  </div>
+</div>
+
+<!-- S2: TIMELINE -->
+<div class="section fade d3" id="timeline">
+  <div class="section-head"><span class="section-num">02</span><h2>Incident Timeline</h2><span class="sh-desc">30 unique days affected</span></div>
+  <div class="two-col" style="margin-bottom:16px">
+    <div class="chart-card">
+      <div class="chart-title">Incidents by Day of Week</div>
+      <div class="wd-grid" id="wd-bars"></div>
+      <div style="display:flex;gap:14px;margin-top:14px;font-size:11px;color:var(--text3);font-family:var(--mono)">
+        <span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;background:var(--blue-light);border-radius:2px;border:1px solid #9dcaf0"></span>Weekdays · 45</span>
+        <span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;background:var(--red-light);border-radius:2px;border:1px solid var(--red-mid)"></span>Weekends · 25</span>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Weekly Breakdown</div>
+      <div class="week-row">
+        <div class="week-card"><div class="week-label">Apr 1–6</div><div class="week-count" style="color:var(--orange)">13</div><div class="week-sub"><span>10</span> critical</div><div class="week-bar" style="background:var(--orange);width:48%"></div></div>
+        <div class="week-card"><div class="week-label">Apr 7–13</div><div class="week-count" style="color:var(--blue)">9</div><div class="week-sub"><span>4</span> critical</div><div class="week-bar" style="background:var(--blue);width:33%"></div></div>
+        <div class="week-card"><div class="week-label">Apr 14–20</div><div class="week-count" style="color:var(--orange)">11</div><div class="week-sub"><span>7</span> critical</div><div class="week-bar" style="background:var(--orange);width:41%"></div></div>
+        <div class="week-card hot"><div class="week-label">Apr 21–30 🔥</div><div class="week-count" style="color:var(--red)">27</div><div class="week-sub"><span>18</span> critical</div><div class="week-bar" style="background:var(--red);width:100%"></div></div>
+        <div class="week-card"><div class="week-label">May 6–31</div><div class="week-count" style="color:var(--text3)">10</div><div class="week-sub"><span>4</span> critical</div><div class="week-bar" style="background:var(--text3);width:37%"></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="chart-card">
+    <div class="chart-title">Top 10 Worst Days</div>
+    <div class="hotdays-grid" id="hotdays"></div>
+  </div>
+</div>
+
+<!-- S3: CATEGORIES -->
+<div class="section fade d3" id="categories">
+  <div class="section-head"><span class="section-num">03</span><h2>Incident Categories</h2></div>
+  <div class="two-col">
+    <div class="chart-card">
+      <div class="chart-title">Incidents by Category</div>
+      <div class="cat-grid" id="cat-bars"></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Incident Duration Breakdown</div>
+      <div style="position:relative;height:200px"><canvas id="durChart"></canvas></div>
+      <div id="dur-leg" style="margin-top:14px;display:grid;gap:7px"></div>
+    </div>
+  </div>
+  <div class="chart-card" style="margin-top:16px">
+    <div class="chart-title">Category Details</div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Category</th><th>Key Issues</th><th>Metric</th><th>Severity</th></tr></thead>
+        <tbody>
+          <tr><td class="td-cat" style="color:var(--red)">Auto-distribution / Lobby</td><td class="td-issues">Lobby links not sent automatically (recurring); 10–20 min delays; clients not routed to TCMs; duplicate entries for 7 TCMs; full outage affecting 107 clients</td><td><span class="badge b-red">H2A</span></td><td><span class="badge b-red">🔴 Critical</span></td></tr>
+          <tr><td class="td-cat" style="color:var(--orange)">Confirm 2 / Templates</td><td class="td-issues">Confirm 2 templates not delivered or sent with incorrect time; bot triggered reminders at 18:00 instead of 14:00; reschedule template fired prematurely</td><td><span class="badge b-orange">H2A</span></td><td><span class="badge b-red">🔴 Critical</span></td></tr>
+          <tr><td class="td-cat" style="color:var(--red)">Leads / L2B Funnel</td><td class="td-issues">LMS↔AMO integration failure — leads not created for 5+ hours; 50–70 leads with corrupted data; parent name written into child name field</td><td><span class="badge b-red">L2B</span></td><td><span class="badge b-red">🔴 Critical</span></td></tr>
+          <tr><td class="td-cat" style="color:var(--blue)">CRM (AMO)</td><td class="td-issues">Lagging and freezing across all BM accounts; inbox unresponsive for a full week; unable to attach files to notes; Call Gear widget not rendering; WABA delay 15+ min</td><td><span class="badge b-blue">L2A</span></td><td><span class="badge b-orange">🟡 Medium</span></td></tr>
+          <tr><td class="td-cat" style="color:var(--red)">Greeting / Confirm 0</td><td class="td-issues">All autobooking greetings failed; new leads received no greeting template; Confirm 0 not sent to clients who initiated first contact</td><td><span class="badge b-red">L2B</span></td><td><span class="badge b-red">🔴 Critical</span></td></tr>
+          <tr><td class="td-cat" style="color:var(--purple)">Bot Logic</td><td class="td-issues">Bot continued sending reminders to clients already in session (status "on progress"); reschedule template triggered on "attend" status in LMS</td><td><span class="badge b-purple">H2A</span></td><td><span class="badge b-orange">🟡 Medium</span></td></tr>
+          <tr><td class="td-cat" style="color:var(--text3)">WhatsApp / WABA</td><td class="td-issues">"Number not registered on WhatsApp" error; inbound message delay of 15+ minutes</td><td><span class="badge b-gray">L2B</span></td><td><span class="badge b-gray">⚪ Low</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- S4: L2S -->
+<div class="section fade d4" id="l2s">
+  <div class="section-head"><span class="section-num">04</span><h2>L2S Correlation with Incidents</h2><span class="sh-desc">Lead-to-Sale conversion rate</span></div>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px">
+    <div class="kpi k-blue"><div class="kpi-label">Baseline L2S (clean days)</div><div class="kpi-val">6.35%</div><div class="kpi-sub">days without incidents</div></div>
+    <div class="kpi k-orange"><div class="kpi-label">L2S on Incident Days</div><div class="kpi-val">6.20%</div><div class="kpi-sub">−0.15 pp on average</div></div>
+    <div class="kpi k-red"><div class="kpi-label">L2S on Heavy Days (3+)</div><div class="kpi-val">5.72%</div><div class="kpi-sub">−0.63 pp vs baseline</div></div>
+    <div class="kpi k-red"><div class="kpi-label">Apr 21–30 Weekly Avg</div><div class="kpi-val">4.84%</div><div class="kpi-sub">−1.51 pp vs baseline</div></div>
+  </div>
+  <div class="chart-card">
+    <div class="chart-title">Daily L2S % · Incident days highlighted</div>
+    <div style="display:flex;flex-wrap:wrap;gap:16px;margin-bottom:12px;font-size:11px;color:var(--text3);font-family:var(--mono)">
+      <span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;background:#378ADD;border-radius:2px"></span>L2S %</span>
+      <span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;background:rgba(192,57,43,.2);border-radius:2px;border:1px solid rgba(192,57,43,.4)"></span>Days with incidents</span>
+      <span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;background:rgba(192,57,43,.7);border-radius:2px"></span>Heavy days (3+ incidents)</span>
+      <span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:2px;background:rgba(150,150,150,.5);"></span>Baseline 6.35%</span>
+    </div>
+    <div style="position:relative;height:280px"><canvas id="l2sChart"></canvas></div>
+  </div>
+  <div class="insight" style="margin-top:16px">
+    <strong>Key finding:</strong> isolated incidents show minimal L2S impact (−0.15 pp). However, when 3 or more incidents cluster on a single day, L2S consistently falls ~1 pp below baseline. The most critical period — April 21–30 — saw auto-distribution, greeting templates, and the L2B funnel fail simultaneously: three systems directly responsible for converting leads into sales. L2S dropped to <strong>4.84%</strong> against a baseline of <strong>6.35%</strong>, a <strong>−24%</strong> decline in conversion efficiency.
+  </div>
+</div>
+
+<!-- S5: LOSSES -->
+<div class="section fade d5" id="losses">
+  <div class="section-head"><span class="section-num">05</span><h2>Revenue Loss Estimation</h2></div>
+  <div class="formula-box" style="margin-bottom:16px">
+    <strong>Formula:</strong> &nbsp; Revenue Loss = Daily MQL × (Baseline L2S − Actual L2S) × AOV &nbsp;·&nbsp; <strong>AOV = $277</strong> &nbsp;·&nbsp; <strong>Baseline L2S = 6.35%</strong>
+  </div>
+  <div class="loss-summary" style="margin-bottom:16px">
+    <div>
+      <div class="loss-big">$30,256</div>
+      <div class="loss-big-label">Full-period estimate</div>
+    </div>
+    <div>
+      <div class="loss-row"><span class="loss-row-label">Conservative estimate (heavy days only — 3+ incidents)</span><span class="loss-row-val">$11,791</span></div>
+      <div class="loss-row"><span class="loss-row-label">Realistic range</span><span class="loss-row-val">$15,000–$20,000</span></div>
+      <div class="loss-row"><span class="loss-row-label">Estimated deals not closed (full-period)</span><span class="loss-row-val">109 deals</span></div>
+      <div class="loss-row"><span class="loss-row-label">Average loss per incident day</span><span class="loss-row-val">$865</span></div>
+      <div class="loss-row"><span class="loss-row-label">Peak week — April 21–30</span><span class="loss-row-val" style="color:var(--red)">$14,779</span></div>
+    </div>
+  </div>
+  <div class="two-col">
+    <div class="chart-card">
+      <div class="chart-title">Daily Revenue Loss ($) overlaid with L2S</div>
+      <div style="display:flex;flex-wrap:wrap;gap:14px;margin-bottom:10px;font-size:11px;color:var(--text3);font-family:var(--mono)">
+        <span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;background:rgba(192,57,43,.7);border-radius:2px"></span>Revenue loss $</span>
+        <span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;background:#1a5fa8;border-radius:2px"></span>L2S %</span>
+      </div>
+      <div style="position:relative;height:260px"><canvas id="lossChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Weekly Revenue Loss</div>
+      <div style="position:relative;height:165px;margin-bottom:20px"><canvas id="weekLossChart"></canvas></div>
+      <div class="chart-title">Top 10 Most Costly Days</div>
+      <table style="width:100%;border-collapse:collapse;font-size:12px">
+        <thead><tr>
+          <th style="font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);padding:5px 8px;text-align:left;border-bottom:1px solid var(--border2)">Date</th>
+          <th style="font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);padding:5px 8px;text-align:left;border-bottom:1px solid var(--border2)">L2S</th>
+          <th style="font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);padding:5px 8px;text-align:left;border-bottom:1px solid var(--border2)">Δ vs Base</th>
+          <th style="font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);padding:5px 8px;text-align:left;border-bottom:1px solid var(--border2)">Est. Loss</th>
+        </tr></thead>
+        <tbody id="loss-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+  <div class="insight" style="margin-top:16px;border-left-color:var(--red)">
+    <strong>Methodology note:</strong> this analysis measures correlation, not causation. L2S fluctuations may be influenced by factors beyond incidents (lead quality, seasonality, day-of-week effects). These figures should be treated as a <strong>risk exposure estimate</strong>, not a confirmed P&L impact. That said, the alignment between the incident peak (Apr 21–30) and the deepest L2S trough is unlikely to be coincidental given that the systems that failed are directly upstream of conversion.
+  </div>
+</div>
+
+<!-- S6: DAY DRILL-DOWN -->
+<div class="section fade d5" id="dayview">
+  <div class="section-head"><span class="section-num">06</span><h2>Day-Level Drill-Down</h2><span class="sh-desc">Select a date to inspect</span></div>
+  <div class="day-selector" id="day-selector"></div>
+  <div class="day-hero">
+    <div>
+      <div class="day-date-big" id="dv-date">—</div>
+      <div class="day-date-sub" id="dv-sub">—</div>
+    </div>
+    <div id="dv-summary" style="font-size:13px;color:var(--text2);line-height:1.9"></div>
+    <div>
+      <div class="day-verdict-val" id="dv-loss">—</div>
+      <div class="day-verdict-label">estimated revenue loss</div>
+      <div class="day-verdict-rank" id="dv-rank">—</div>
+    </div>
+  </div>
+  <div class="mm-grid" id="dv-metrics"></div>
+  <div style="margin-bottom:10px;font-family:var(--mono);font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.1em">Incidents on this day</div>
+  <div class="inc-cards" id="dv-incidents"></div>
+  <div class="two-col">
+    <div class="chart-card">
+      <div class="chart-title">L2S in weekly context (±3 days)</div>
+      <div style="position:relative;height:200px"><canvas id="dv-chart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Loss ranking among all incident days</div>
+      <div class="rank-bars" id="dv-rank-bars"></div>
+    </div>
+  </div>
+</div>
+
+<!-- S7: OWNERSHIP -->
+<div class="section fade d6" id="teams">
+  <div class="section-head"><span class="section-num">07</span><h2>Escalation Ownership</h2></div>
+  <div class="three-col">
+    <div class="chart-card">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+        <div style="width:36px;height:36px;border-radius:8px;background:var(--blue-light);color:var(--blue);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:12px;font-weight:500">CRM</div>
+        <div><div style="font-weight:500;font-size:14px">CRM Team</div><div style="font-size:11px;color:var(--text3)">Primary escalation recipient</div></div>
+      </div>
+      <div style="font-size:12px;color:var(--text2);line-height:1.7">Confirm 0/2 templates, greeting messages, LMS↔AMO integration, AMO inbox freezes, WABA message delays</div>
+    </div>
+    <div class="chart-card">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+        <div style="width:36px;height:36px;border-radius:8px;background:var(--orange-light);color:var(--orange);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:12px;font-weight:500">AD</div>
+        <div><div style="font-weight:500;font-size:14px">AutoDist Team</div><div style="font-size:11px;color:var(--text3)">Auto-distribution & lobby links</div></div>
+      </div>
+      <div style="font-size:12px;color:var(--text2);line-height:1.7">All lobby link delivery failures, client-to-TCM routing issues, and duplicate booking entries</div>
+    </div>
+    <div class="chart-card">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+        <div style="width:36px;height:36px;border-radius:8px;background:var(--surface2);color:var(--text2);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:12px;font-weight:500">DEV</div>
+        <div><div style="font-weight:500;font-size:14px">Dev Team</div><div style="font-size:11px;color:var(--text3)">Critical joint escalations</div></div>
+      </div>
+      <div style="font-size:12px;color:var(--text2);line-height:1.7">Co-escalated with AutoDist on critical distribution outages. Several issues remain <strong>unresolved</strong> as of reporting date.</div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  <div class="footer-note">Q2 2026 Operational Incident Report · Sales Department</div>
+  <div class="footer-note">70 incidents · 43 critical · ~$30K estimated revenue exposure</div>
+</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const isDark   = matchMedia('(prefers-color-scheme: dark)').matches;
+const GC       = isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)';
+const TC       = '#9e9b93';
+const AOV      = 277;
+const BASELINE = 6.35;
+
+/* DATA */
+const ALL_DATES = ["01.04","02.04","03.04","04.04","05.04","06.04","07.04","08.04","09.04","10.04","11.04","12.04","13.04","14.04","15.04","16.04","17.04","18.04","19.04","20.04","21.04","22.04","23.04","24.04","25.04","26.04","27.04","28.04","29.04","30.04","01.05","02.05","03.05","04.05","05.05","06.05","07.05","08.05","09.05","10.05","11.05","12.05","13.05","14.05","15.05","16.05","17.05","18.05","19.05","20.05","21.05","22.05","23.05","24.05","25.05","26.05","27.05","28.05","29.05","30.05","31.05"];
+const L2S_ALL  = [8.2,10.1,4.4,7.7,7.3,5.3,6.2,5.7,5.6,5.8,7.8,6.9,6.9,9.4,6.9,7.1,6.3,7.0,5.6,4.7,3.5,4.3,5.2,4.6,5.1,5.4,5.1,3.9,5.0,6.3,7.0,8.4,5.8,5.6,5.4,5.9,6.2,5.2,4.8,14.7,5.6,5.6,6.3,5.8,6.0,7.1,6.3,6.0,5.0,5.2,8.2,5.6,6.4,5.9,5.7,7.1,5.2,5.4,5.9,9.9,5.4];
+const L2S_MAP  = {};
+ALL_DATES.forEach((d,i) => L2S_MAP[d] = L2S_ALL[i]);
+const INC_MAP  = {"01.04":3,"02.04":1,"03.04":2,"04.04":4,"05.04":2,"06.04":1,"07.04":1,"08.04":1,"09.04":5,"11.04":1,"13.04":1,"14.04":1,"15.04":4,"16.04":1,"18.04":3,"19.04":1,"20.04":1,"21.04":4,"22.04":1,"24.04":3,"25.04":5,"26.04":5,"27.04":1,"28.04":3,"29.04":3,"30.04":2,"06.05":1,"08.05":1,"09.05":1,"15.05":2,"17.05":1,"21.05":1,"22.05":1,"24.05":1,"30.05":1};
+const DAY_DATA = [["01.04",317,8.2,3],["02.04",382,10.1,1],["03.04",425,4.4,2],["04.04",384,7.7,4],["05.04",357,7.3,2],["06.04",341,5.3,1],["07.04",399,6.2,1],["08.04",439,5.7,1],["09.04",389,5.6,5],["11.04",378,7.8,1],["13.04",400,6.9,1],["14.04",390,9.4,1],["15.04",368,6.9,4],["16.04",490,7.1,1],["18.04",520,7.0,3],["19.04",495,5.6,1],["20.04",475,4.7,1],["21.04",402,3.5,4],["22.04",414,4.3,1],["24.04",374,4.6,3],["25.04",456,5.1,5],["26.04",455,5.4,5],["27.04",404,5.1,1],["28.04",303,3.9,3],["29.04",319,5.0,3],["30.04",402,6.3,2],["06.05",602,5.9,1],["08.05",372,5.2,1],["09.05",750,4.8,1],["15.05",470,6.0,2],["17.05",534,6.3,1],["21.05",558,8.2,1],["22.05",489,5.6,1],["24.05",477,5.9,1],["30.05",534,9.9,1]];
+const LOSSES   = DAY_DATA.map(d => { const dl = BASELINE - d[2]; return dl > 0 ? Math.round(d[1]*dl/100*AOV) : 0; });
+
+const DAY_DB = {
+  "01.04":{label:"Apr 1",wd:"Wednesday",incs:[{name:"H2A auto-distribution failure — lobby links not sent",metric:"H2A",crit:3,dur:"1–2 Hours",action:"AutoDist Team"},{name:"L2B funnel — leads not reaching account managers",metric:"L2B",crit:3,dur:"2–4 Hours",action:"CRM Team"},{name:"WABA inbound message delay 15+ min",metric:"L2B",crit:1,dur:"1–2 Hours",action:"CRM Team"}],l2s:8.2,booking:317,cpbook:9.3,l2a:23.7,b2a:40.4,att:128,attf:104},
+  "09.04":{label:"Apr 9",wd:"Thursday",incs:[{name:"LMS↔AMO integration failure — leads not created for 5+ hours (50 leads stuck)",metric:"L2B+L2A",crit:3,dur:"Whole Day",action:"CRM Team + Dev"},{name:"L2B funnel — still unresolved by end of day",metric:"L2B",crit:3,dur:"Still Ongoing",action:"CRM Team"},{name:"Lobby link not sent automatically",metric:"H2A",crit:1,dur:"1–2 Hours",action:"AutoDist Team"},{name:"Auto-distribution fully down for the day",metric:"H2A",crit:1,dur:"Whole Day",action:"AutoDist Team"},{name:"Workflow failure — TCM routing broken",metric:"—",crit:2,dur:"1–2 Hours",action:"Dev Team"}],l2s:5.6,booking:389,cpbook:11.2,l2a:20.4,b2a:36.8,att:143,attf:135},
+  "15.04":{label:"Apr 15",wd:"Wednesday",incs:[{name:"L2B funnel — 70 leads received with corrupted data",metric:"L2B",crit:3,dur:"2–4 Hours",action:"CRM Team"},{name:"L2B/L2A — still unresolved (ongoing)",metric:"L2B/L2A",crit:3,dur:"Still Ongoing",action:"CRM Team"},{name:"Lobby link auto-send disabled",metric:"H2A",crit:3,dur:"Whole Day",action:"AutoDist Team"},{name:"Confirm 2 templates — delivery delay",metric:"H2A",crit:3,dur:"1–2 Hours",action:"CRM Team"}],l2s:6.9,booking:368,cpbook:10.1,l2a:18.6,b2a:32.9,att:121,attf:134},
+  "21.04":{label:"Apr 21",wd:"Tuesday",incs:[{name:"L2B SLA breached — leads going cold (all day)",metric:"L2B",crit:3,dur:"Whole Day",action:"CRM Team"},{name:"L2B SLA breach — leads losing intent",metric:"L2B",crit:3,dur:"2–4 Hours",action:"CRM Team"},{name:"L2B SLA violation",metric:"SLA L2B",crit:2,dur:"2–4 Hours",action:"CRM Team"},{name:"Cascading failure: Confirm 2 + SLA Inbox + auto-distribution",metric:"L2A/L2B/H2A",crit:3,dur:"2–4 Hours",action:"CRM + AutoDist"}],l2s:3.5,booking:402,cpbook:11.1,l2a:16.8,b2a:32.3,att:130,attf:141},
+  "25.04":{label:"Apr 25",wd:"Saturday",incs:[{name:"Confirm 2 templates — not delivered all day",metric:"H2A",crit:3,dur:"Whole Day",action:"CRM Team"},{name:"L2A SLA inbox — still ongoing",metric:"L2A",crit:2,dur:"Still Ongoing",action:"CRM Team"},{name:"L2B — still ongoing",metric:"L2B",crit:1,dur:"Still Ongoing",action:"CRM Team"},{name:"H2A auto-distribution down all day",metric:"H2A",crit:3,dur:"Whole Day",action:"AutoDist Team"},{name:"H2A — second auto-distribution outage",metric:"H2A",crit:3,dur:"Whole Day",action:"AutoDist Team"}],l2s:5.1,booking:456,cpbook:8.9,l2a:21.4,b2a:36.8,att:168,attf:157},
+  "28.04":{label:"Apr 28",wd:"Tuesday",incs:[{name:"Workflow failure — distribution routing",metric:"Workflow",crit:1,dur:"1–2 Hours",action:"Dev Team"},{name:"H2A auto-distribution down all day",metric:"H2A",crit:3,dur:"Whole Day",action:"AutoDist Team"},{name:"Confirm 2 — templates not sent",metric:"H2A",crit:3,dur:"1–2 Hours",action:"CRM Team"}],l2s:3.9,booking:303,cpbook:8.6,l2a:15.7,b2a:29.0,att:88,attf:102},
+  "15.05":{label:"May 15",wd:"Friday",incs:[{name:"Confirm 0 — template not sent to clients who initiated first contact",metric:"L2B",crit:2,dur:"Still Ongoing",action:"CRM Team"},{name:"Confirm 2 templates — not delivered all day",metric:"H2A",crit:3,dur:"Whole Day",action:"CRM Team"}],l2s:6.0,booking:470,cpbook:10.3,l2a:20.3,b2a:35.3,att:166,attf:160},
+  "22.05":{label:"May 22",wd:"Friday",incs:[{name:"H2A auto-distribution failure — lobby link delivery broken",metric:"H2A",crit:3,dur:"Whole Day",action:"AutoDist Team"}],l2s:5.6,booking:489,cpbook:11.1,l2a:19.7,b2a:32.3,att:158,attf:172}
+};
+
+/* NAV SCROLL */
+const navLinks = document.querySelectorAll('.nav-link');
+window.addEventListener('scroll', () => {
+  let cur = '';
+  document.querySelectorAll('[id]').forEach(s => { if (window.scrollY >= s.offsetTop - 80) cur = s.id; });
+  navLinks.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + cur));
+}, {passive:true});
+
+/* WEEKDAY BARS */
+[{l:'Mon',v:4,w:false},{l:'Tue',v:9,w:false},{l:'Wed',v:13,w:false},{l:'Thu',v:10,w:false},{l:'Fri',v:9,w:false},{l:'Sat',v:15,w:true},{l:'Sun',v:10,w:true}].forEach(d => {
+  const pct = (d.v/15*100).toFixed(0);
+  const bg = d.w ? 'rgba(192,57,43,.18)' : 'rgba(26,95,168,.18)';
+  const border = d.w ? '1px solid rgba(192,57,43,.35)' : '1px solid rgba(26,95,168,.25)';
+  const col = d.w ? '#c0392b' : '#1a5fa8';
+  document.getElementById('wd-bars').innerHTML += `<div class="wd-col"><div class="wd-val" style="color:${col}">${d.v}</div><div class="wd-bar" style="height:${pct}%;background:${bg};border:${border}"></div><div class="wd-lbl">${d.l}</div></div>`;
+});
+
+/* HOT DAYS */
+[{date:'Apr 9',wd:'Thu',v:5},{date:'Apr 25',wd:'Sat',v:5},{date:'Apr 26',wd:'Sun',v:5},{date:'Apr 4',wd:'Sat',v:4},{date:'Apr 15',wd:'Wed',v:4},{date:'Apr 21',wd:'Tue',v:4},{date:'Apr 1',wd:'Wed',v:3},{date:'Apr 18',wd:'Sat',v:3},{date:'Apr 24',wd:'Fri',v:3},{date:'Apr 28',wd:'Tue',v:3}].forEach(d => {
+  const wknd = ['Sat','Sun'].includes(d.wd);
+  document.getElementById('hotdays').innerHTML += `<div class="hotday${wknd?' wknd':''}"><div><div class="hotday-date">${d.date}</div><div class="hotday-wd" style="${wknd?'color:var(--red)':''}">${d.wd}${wknd?' · weekend':''}</div></div><div class="hotday-count">${d.v}</div></div>`;
+});
+
+/* CATEGORY BARS */
+[{l:'Auto-distribution / Lobby',v:22,c:'#c0392b'},{l:'Confirm 2 / Templates',v:16,c:'#c45e0a'},{l:'Leads / L2B Funnel',v:10,c:'#d06020'},{l:'CRM (AMO)',v:8,c:'#1a5fa8'},{l:'Greeting / Confirm 0',v:6,c:'#6b35a8'},{l:'Bot Logic',v:5,c:'#1a7a45'},{l:'WhatsApp / WABA',v:3,c:'#9e9b93'}].forEach(c => {
+  const pct = (c.v/22*100).toFixed(1);
+  document.getElementById('cat-bars').innerHTML += `<div class="cat-row"><div class="cat-name">${c.l}</div><div class="cat-track"><div class="cat-fill" style="width:${pct}%;background:${c.c};opacity:.85">${c.v>=8?c.v:''}</div></div><div class="cat-num">${c.v}</div></div>`;
+});
+
+/* DONUT */
+const durColors = ['#c0392b','#c45e0a','#1a5fa8','#9e9b93'];
+const durLabels = ['Whole Day (21)','1–2 Hours (25)','2–4 Hours (12)','Still Ongoing (12)'];
+[21,25,12,12].forEach((v,i) => {
+  document.getElementById('dur-leg').innerHTML += `<div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text2)"><span style="width:8px;height:8px;border-radius:2px;background:${durColors[i]};flex-shrink:0"></span>${durLabels[i]}</div>`;
+});
+new Chart(document.getElementById('durChart'), {
+  type:'doughnut',
+  data:{labels:durLabels,datasets:[{data:[21,25,12,12],backgroundColor:durColors,borderColor:'#fff',borderWidth:3,hoverOffset:5}]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` ${c.label}: ${c.raw}`}}},cutout:'62%'}
+});
+
+/* L2S CHART */
+const bgBars = ALL_DATES.map(d => { const n=INC_MAP[d]||0; return n>=3?'rgba(192,57,43,.5)':n>=1?'rgba(192,57,43,.15)':'rgba(0,0,0,0)'; });
+new Chart(document.getElementById('l2sChart'), {
+  type:'bar',
+  data:{labels:ALL_DATES,datasets:[
+    {type:'bar',data:ALL_DATES.map(d=>(INC_MAP[d]||0)>0?15:null),backgroundColor:bgBars,borderColor:'rgba(0,0,0,0)',borderRadius:2,yAxisID:'y',order:3},
+    {type:'line',data:L2S_ALL,borderColor:'#1a5fa8',backgroundColor:'rgba(26,95,168,.06)',borderWidth:2,pointRadius:2,tension:0.3,fill:true,yAxisID:'y',order:1,pointBackgroundColor:ALL_DATES.map(d=>{const n=INC_MAP[d]||0;return n>=3?'#c0392b':n>=1?'#c45e0a':'#1a5fa8';})},
+    {type:'line',data:ALL_DATES.map(()=>BASELINE),borderColor:'rgba(150,150,150,.35)',borderDash:[4,4],borderWidth:1,pointRadius:0,yAxisID:'y',order:0}
+  ]},
+  options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>{if(c.datasetIndex===1)return ` L2S: ${c.raw}%`;return null;},afterBody:c=>{const n=INC_MAP[c[0].label]||0;return n?[` Incidents: ${n}`]:[];}}}},scales:{x:{ticks:{color:TC,font:{size:10},maxRotation:45,autoSkip:true,maxTicksLimit:20},grid:{color:GC}},y:{min:0,max:16,ticks:{color:TC,font:{size:11},callback:v=>v<=12?v+'%':''},grid:{color:GC}}}}
+});
+
+/* LOSS CHART */
+new Chart(document.getElementById('lossChart'), {
+  type:'bar',
+  data:{labels:DAY_DATA.map(d=>d[0]),datasets:[
+    {type:'bar',data:LOSSES,backgroundColor:DAY_DATA.map((d,i)=>d[3]>=3?'rgba(192,57,43,.8)':'rgba(192,57,43,.4)'),borderRadius:3,yAxisID:'y1',order:2},
+    {type:'line',data:DAY_DATA.map(d=>d[2]),borderColor:'#1a5fa8',backgroundColor:'transparent',borderWidth:1.5,pointRadius:1.5,tension:0.3,yAxisID:'y2',order:1},
+    {type:'line',data:DAY_DATA.map(()=>BASELINE),borderColor:'rgba(150,150,150,.35)',borderDash:[4,4],borderWidth:1,pointRadius:0,yAxisID:'y2',order:0}
+  ]},
+  options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>{if(c.datasetIndex===0)return ` Loss: $${c.raw.toLocaleString()}`;if(c.datasetIndex===1)return ` L2S: ${c.raw}%`;return null;}}}},scales:{x:{ticks:{color:TC,font:{size:10},maxRotation:45,autoSkip:true,maxTicksLimit:18},grid:{color:GC}},y1:{position:'left',ticks:{color:TC,font:{size:11},callback:v=>'$'+v.toLocaleString()},grid:{color:GC}},y2:{position:'right',min:0,max:15,ticks:{color:'#1a5fa8',font:{size:11},callback:v=>v+'%'},grid:{display:false}}}}
+});
+
+/* WEEKLY LOSS */
+new Chart(document.getElementById('weekLossChart'), {
+  type:'bar',
+  data:{labels:['Apr 1–6','Apr 7–13','Apr 14–20','Apr 21–30','May'],datasets:[{data:[3279,1752,3189,14779,7256],backgroundColor:['rgba(196,94,10,.6)','rgba(196,94,10,.4)','rgba(196,94,10,.6)','rgba(192,57,43,.85)','rgba(196,94,10,.55)'],borderRadius:5}]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' $'+c.raw.toLocaleString()}}},scales:{x:{ticks:{color:TC,font:{size:11}},grid:{display:false}},y:{ticks:{color:TC,font:{size:11},callback:v=>'$'+v.toLocaleString()},grid:{color:GC}}}}
+});
+
+/* TOP LOSS TABLE */
+const top10 = DAY_DATA.map((d,i)=>({date:d[0],l2s:d[2],inc:d[3],loss:LOSSES[i]})).filter(d=>d.loss>0).sort((a,b)=>b.loss-a.loss).slice(0,10);
+const maxL  = top10[0].loss;
+top10.forEach(d => {
+  const delta = (BASELINE - d.l2s).toFixed(2);
+  const bw = Math.round(d.loss/maxL*50);
+  document.getElementById('loss-tbody').innerHTML += `<tr><td style="font-family:var(--mono);font-size:11px;padding:5px 8px;border-bottom:1px solid var(--border)">${d.date}</td><td style="font-family:var(--mono);font-size:11px;padding:5px 8px;border-bottom:1px solid var(--border);color:#1a5fa8">${d.l2s}%</td><td style="font-family:var(--mono);font-size:11px;padding:5px 8px;border-bottom:1px solid var(--border);color:#c0392b">−${delta}pp</td><td style="padding:5px 8px;border-bottom:1px solid var(--border)"><span style="font-family:var(--mono);font-size:11px;font-weight:500">$${d.loss.toLocaleString()}</span><span class="loss-bar-inline" style="width:${bw}px"></span></td></tr>`;
+});
+
+/* DAY DRILL-DOWN */
+let dvChartInst = null;
+function calcLoss(key) { const d=DAY_DB[key]; const dl=BASELINE-d.l2s; return dl>0?Math.round(d.booking*dl/100*AOV):0; }
+
+function renderDay(key) {
+  const d    = DAY_DB[key];
+  const loss = calcLoss(key);
+  const critMax = Math.max(...d.incs.map(i=>i.crit));
+
+  document.querySelectorAll('.day-btn').forEach(b => b.classList.toggle('active', b.dataset.key === key));
+
+  document.getElementById('dv-date').textContent = d.label;
+  document.getElementById('dv-sub').textContent  = d.wd + ' · ' + d.incs.length + ' incident' + (d.incs.length>1?'s':'');
+
+  const lossEl = document.getElementById('dv-loss');
+  lossEl.textContent = loss > 0 ? '$'+loss.toLocaleString() : '~$0';
+  lossEl.style.color = loss>1000?'var(--red)':loss>200?'var(--orange)':'var(--green)';
+
+  const dl_str = (BASELINE - d.l2s).toFixed(2);
+  const dir    = d.l2s < BASELINE ? `L2S down ${dl_str} pp vs baseline` : `L2S on target (+${Math.abs(dl_str)} pp above baseline)`;
+  document.getElementById('dv-summary').innerHTML = `${dir}<br>Bookings: <strong>${d.booking}</strong> &nbsp;·&nbsp; CPBook: <strong>$${d.cpbook}</strong><br>Escalated to: CRM Team${d.incs.some(i=>i.action.includes('AutoDist'))?', AutoDist Team':''}`;
+
+  const allSorted = Object.keys(DAY_DB).map(k=>({key:k,loss:calcLoss(k)})).filter(r=>r.loss>0).sort((a,b)=>b.loss-a.loss);
+  const rank = allSorted.findIndex(r=>r.key===key);
+  document.getElementById('dv-rank').textContent = rank>=0 ? `Ranked #${rank+1} of ${allSorted.length} incident days` : '—';
+
+  const dl = d.l2s - BASELINE;
+  document.getElementById('dv-metrics').innerHTML = [
+    {l:'L2S',    v:d.l2s+'%',    delta:dl.toFixed(2)+'pp', pos:dl>=0},
+    {l:'Bookings',v:d.booking,   delta:null},
+    {l:'CPBook', v:'$'+d.cpbook, delta:null},
+    {l:'%L2A',   v:d.l2a+'%',   delta:null},
+    {l:'%B2A',   v:d.b2a+'%',   delta:null},
+    {l:'Att',    v:d.att,        delta:null}
+  ].map(m=>`<div class="mm"><div class="mm-label">${m.l}</div><div class="mm-val">${m.v}</div>${m.delta?`<div class="mm-delta" style="color:${m.pos?'var(--green)':'var(--red)'}">${m.pos?'+':''}${m.delta} vs base</div>`:''}</div>`).join('');
+
+  document.getElementById('dv-incidents').innerHTML = d.incs.map(inc => {
+    const cls   = inc.crit===2?'c2':inc.crit===1?'c1':'';
+    const cb    = inc.crit===3?'b-red':inc.crit===2?'b-orange':'b-gray';
+    const cl    = inc.crit===3?'🔴 Critical':inc.crit===2?'🟡 Medium':'⚪ Low';
+    const db    = (inc.dur.includes('Whole')||inc.dur.includes('Ongoing'))?'b-red':'b-orange';
+    return `<div class="inc-card ${cls}"><div class="inc-header"><div class="inc-name">${inc.name}</div><div class="inc-badges"><span class="badge b-gray">${inc.metric}</span><span class="badge ${db}">${inc.dur}</span><span class="badge ${cb}">${cl}</span></div></div><div class="inc-meta"><span class="inc-meta-label">Escalated to</span><span>${inc.action}</span></div></div>`;
+  }).join('');
+
+  const allKeys = Object.keys(L2S_MAP);
+  const idx  = allKeys.indexOf(key);
+  const from = Math.max(0,idx-3), to = Math.min(allKeys.length-1,idx+3);
+  const ctxKeys = allKeys.slice(from,to+1);
+  const ctxVals = ctxKeys.map(k=>L2S_MAP[k]);
+
+  if (dvChartInst) { dvChartInst.destroy(); dvChartInst=null; }
+  dvChartInst = new Chart(document.getElementById('dv-chart'), {
+    type:'line',
+    data:{labels:ctxKeys,datasets:[
+      {data:ctxVals,borderColor:'#1a5fa8',backgroundColor:'rgba(26,95,168,.06)',borderWidth:2,tension:0.3,fill:true,pointBackgroundColor:ctxKeys.map(k=>k===key?(critMax>=3?'#c0392b':'#c45e0a'):'#9e9b93'),pointRadius:ctxKeys.map(k=>k===key?7:3),pointBorderWidth:0},
+      {data:ctxKeys.map(()=>BASELINE),borderColor:'rgba(150,150,150,.35)',borderDash:[4,4],borderWidth:1,pointRadius:0}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` L2S: ${c.raw}%`}}},scales:{x:{ticks:{color:TC,font:{size:11}},grid:{color:GC}},y:{min:0,max:12,ticks:{color:TC,font:{size:11},callback:v=>v+'%'},grid:{color:GC}}}}
+  });
+
+  const rankData = Object.keys(DAY_DB).map(k=>({key:k,label:DAY_DB[k].label,loss:calcLoss(k)})).filter(r=>r.loss>0).sort((a,b)=>b.loss-a.loss);
+  const maxR = rankData[0]?.loss||1;
+  document.getElementById('dv-rank-bars').innerHTML = rankData.map(r => {
+    const isActive = r.key===key;
+    const pct = Math.round(r.loss/maxR*100);
+    const bg  = isActive?'var(--red)':'rgba(192,57,43,.32)';
+    return `<div class="rank-row"><div class="rank-label" style="${isActive?'color:var(--red);font-weight:500':''}">${r.label}</div><div class="rank-track"><div class="rank-fill" style="width:${pct}%;background:${bg}">${pct>30?'$'+r.loss.toLocaleString():''}</div></div><div class="rank-val">$${r.loss.toLocaleString()}</div></div>`;
+  }).join('');
+}
+
+/* BUILD BUTTONS */
+const selectorEl = document.getElementById('day-selector');
+Object.keys(DAY_DB).forEach(key => {
+  const btn = document.createElement('button');
+  btn.className   = 'day-btn';
+  btn.dataset.key = key;
+  btn.textContent = DAY_DB[key].label;
+  if (calcLoss(key) > 1500) btn.style.borderColor = 'rgba(192,57,43,.5)';
+  btn.addEventListener('click', () => renderDay(key));
+  selectorEl.appendChild(btn);
+});
+renderDay('15.05');
+</script>
+</body>
+</html>
