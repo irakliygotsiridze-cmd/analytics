@@ -683,6 +683,41 @@ window.Algonova = window.Algonova || {};
   const RESEARCH = {
     indonesia: [
       {
+        file: 'Algonova_FM_2026.html',
+        title: 'Algonova FM 2026 — Interactive Financial Model (Indonesia)',
+        date: '2026-08',
+        tags: ['Indonesia', 'Financial Model', 'FM 2026', 'Forecast', 'Renewals', 'P&L', 'Scenario Planning', 'Levers'],
+        summary: t(
+          'Interactive port of the Algonova FM 2026 financial model for Indonesia B2C. Jan–May are locked actuals; Jun–Dec are lever-driven forecasts. Combines the sheet OKR baseline with Danila’s ported cohort model for renewals, and exposes monthly P&L, scenario-vs-baseline comparison and a full FY 2026 view. Includes a sheet-parity self-check that forces the model back onto the source Google Sheet to catch port regressions.',
+          'Интерактивный порт финансовой модели Algonova FM 2026 для B2C Indonesia. Янв–май — залоченные факты; июн–дек — прогноз, управляемый леверами. Сочетает OKR-бейзлайн из шита с портированной когортной моделью Данилы для продлений; показывает месячный P&L, сравнение сценария с бейзлайном и годовой FY 2026. Внутри есть чек sheet-parity: возвращает модель к исходному Google Sheet, чтобы ловить регрессии порта.',
+          'Port interactivo del modelo financiero Algonova FM 2026 para B2C Indonesia. Ene–may bloqueados como reales; jun–dic son forecast por palancas. Combina el baseline OKR del sheet con el modelo de cohortes portado de Danila para renovaciones; muestra P&L mensual, comparación escenario vs baseline y vista FY 2026. Incluye un check de paridad con el sheet que fuerza al modelo a reproducir el Google Sheet original para detectar regresiones del port.',
+          'Port interaktif model keuangan Algonova FM 2026 untuk B2C Indonesia. Jan–Mei terkunci sebagai aktual; Jun–Des adalah forecast berbasis lever. Menggabungkan baseline OKR dari sheet dengan model kohort porta Danila untuk renewal; menampilkan P&L bulanan, perbandingan skenario vs baseline, dan tampilan FY 2026. Dilengkapi sheet-parity self-check yang mengembalikan model ke Google Sheet sumber untuk menangkap regresi port.',
+          'Port interaktif model kewangan Algonova FM 2026 untuk B2C Indonesia. Jan–Mei dikunci sebagai sebenar; Jun–Dis adalah ramalan didorong lever. Menggabungkan garis dasar OKR sheet dengan model kohort porta Danila untuk pembaharuan; menunjukkan P&L bulanan, perbandingan senario vs garis dasar dan pandangan FY 2026. Termasuk semakan sheet-parity yang memaksa model kembali ke Google Sheet asal untuk menangkap regresi port.'
+        ),
+        findings: [
+          t('Actuals + forecast split: Jan–May 2026 locked to source; Jun–Dec driven by user-set levers (funnels, AOV, capacity, renewals).',
+            'Разделение факта и прогноза: янв–май 2026 залочены к источнику; июн–дек управляются леверами пользователя (воронки, AOV, капасити, продления).',
+            'Split real + forecast: ene–may 2026 bloqueado al origen; jun–dic manejado por palancas del usuario (funnels, AOV, capacidad, renovaciones).',
+            'Pembagian aktual + forecast: Jan–Mei 2026 terkunci ke sumber; Jun–Des dikendalikan lever pengguna (funnel, AOV, kapasitas, renewal).',
+            'Pembahagian sebenar + ramalan: Jan–Mei 2026 dikunci ke sumber; Jun–Dis dikawal oleh lever pengguna (funnel, AOV, kapasiti, pembaharuan).'),
+          t('Renewal engine: Danila’s ported cohort model with switchable anchor (sheet row 67 vs Danila’s 28-Jul run) to test forecast sensitivity to the renewals assumption.',
+            'Двигатель продлений: портированная когортная модель Данилы с переключаемым якорем (строка 67 из шита vs прогон Данилы от 28 июля) — тестирует чувствительность прогноза к предпосылке о продлениях.',
+            'Motor de renovaciones: modelo de cohortes portado de Danila con anclaje conmutable (fila 67 del sheet vs corrida de Danila del 28-jul) para probar la sensibilidad del forecast al supuesto de renovaciones.',
+            'Mesin renewal: model kohort porta Danila dengan anchor yang bisa diganti (row 67 sheet vs run Danila 28 Jul) untuk menguji sensitivitas forecast terhadap asumsi renewal.',
+            'Enjin pembaharuan: model kohort porta Danila dengan sauh boleh tukar (baris 67 sheet vs jalanan Danila 28 Jul) untuk menguji sensitiviti ramalan terhadap andaian pembaharuan.'),
+          t('Sheet-parity self-check: resets all levers to defaults and forces the renewal anchor back to row 67, so the model must reproduce UPD OKR Version (Jun’26) to within $1 — anything above is a port bug, not an opinion.',
+            'Sheet-parity self-check: сбрасывает все леверы в дефолт и возвращает якорь продлений на строку 67, модель обязана воспроизвести UPD OKR Version (июн’26) с точностью до $1 — всё выше — баг порта, а не разногласие.',
+            'Self-check de paridad con el sheet: resetea todas las palancas a defaults y devuelve el anclaje de renovaciones a la fila 67, el modelo debe reproducir la UPD OKR Version (jun’26) con margen de $1 — cualquier cosa por encima es bug del port, no opinión.',
+            'Sheet-parity self-check: mereset semua lever ke default dan mengembalikan anchor renewal ke row 67, model wajib mereproduksi UPD OKR Version (Jun’26) dalam batas $1 — di atas itu adalah bug port, bukan opini.',
+            'Semakan diri sheet-parity: menetapkan semula semua lever ke lalai dan memaksa sauh pembaharuan kembali ke baris 67, model mesti menghasilkan semula UPD OKR Version (Jun’26) dalam jarak $1 — apa-apa di atas itu adalah pepijat port, bukan pendapat.'),
+          t('Comparison layer: three-version overlay (sheet OKR baseline, Danila’s cohort run, current scenario) plus monthly P&L with scenario-vs-baseline bars, capped baseline line, and FY 2026 roll-up.',
+            'Слой сравнения: тройной оверлей (OKR-бейзлайн из шита, прогон Данилы, текущий сценарий) + месячный P&L со столбцами «сценарий vs бейзлайн», ограничительной линией бейзлайна и годовым свёртыванием FY 2026.',
+            'Capa de comparación: overlay de tres versiones (baseline OKR del sheet, corrida de cohortes de Danila, escenario actual) + P&L mensual con barras escenario-vs-baseline, línea de baseline con tope y roll-up FY 2026.',
+            'Lapisan perbandingan: overlay tiga versi (baseline OKR sheet, run kohort Danila, skenario saat ini) + P&L bulanan dengan bar skenario-vs-baseline, garis baseline ber-cap, dan roll-up FY 2026.',
+            'Lapisan perbandingan: overlay tiga versi (garis dasar OKR sheet, jalanan kohort Danila, senario semasa) + P&L bulanan dengan bar senario-vs-garis dasar, garis garis dasar bercap, dan roll-up FY 2026.')
+        ]
+      },
+      {
         file: 'sales_incidents_q2_full_report_3.html',
         title: 'Q2 2026 Sales Technical Incidents Report — April & May',
         date: '2026-06',
